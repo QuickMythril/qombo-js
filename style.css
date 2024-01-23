@@ -1,0 +1,139 @@
+@font-face {
+    font-family: 'Lexend';
+    src: url('Lexend-Regular.ttf') format('truetype');
+}
+
+body {
+    font-family: 'Lexend', sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+header {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 1rem 0;
+}
+
+header h1 {
+    margin: 0;
+}
+
+main {
+    width: 80%;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+section {
+    margin-bottom: 20px;
+}
+
+section h2 {
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+    margin-top: 0;
+}
+
+p, table {
+    margin: 10px 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid #ddd;
+}
+
+th, td {
+    text-align: left;
+    padding: 8px;
+}
+
+th {
+    background-color: #f4f4f4;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #333;
+    color: #fff;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+#user-info {
+    padding: 10px;
+}
+
+#user-details p, #wallet-info h3, #wallet-info p {
+    margin: 5px 0;
+}
+
+#user-avatar {
+    width: 100px;
+    height: 100px;
+    margin-top: 10px;
+}
+
+#login-prompt {
+    text-align: center;
+}
+
+#login-button {
+    background-color: #003366;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+}
+
+/* Light Theme */
+body.light {
+    color: #003366; /* Darker blue text */
+    background-color: #b3d1ff; /* Lighter blue background */
+}
+
+body.light header,
+body.light section h2,
+body.light footer {
+    background-color: #003366; /* Darker blue */
+    color: #b3d1ff; /* Lighter blue */
+}
+
+body.light th {
+    background-color: #b3d1ff;
+}
+
+/* Dark Theme */
+body.dark {
+    color: #b3d1ff; /* Light blue text */
+    background-color: #003366; /* Dark blue background */
+}
+
+body.dark header,
+body.dark section h2,
+body.dark footer {
+    background-color: #b3d1ff; /* Light blue */
+    color: #003366; /* Dark blue */
+}
+
+body.dark th {
+    background-color: #003366;
+}

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qombo: Data Navigator - v1.0.0</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Qombo: Data Navigator - v1.0.0</h1>
+    </header>
+    <main>
+        <section id="user-info" style="display: none;">
+            <h2>User Information</h2>
+            <div id="user-details">
+                <p>Address: <span id="user-address"></span></p>
+                <p>Public Key: <span id="user-public-key"></span></p>
+                <p>Registered Name: <span id="user-name"></span></p>
+                <!-- <img id="user-avatar" src="" alt="User Avatar" style="display: none;">
+                <div id="wallet-info">
+                    <h3>Wallet Info</h3>
+                    !-- Wallet info will be populated here --
+                </div> -->
+            </div>
+            <div id="login-prompt">
+                <p>No user is logged in.</p>
+                <button id="login-button">Login</button>
+            </div>
+        </section>
+        
+        <section id="blockchain-info">
+            <h2>Blockchain Information</h2>
+            <p>Current Block Height: <span id="block-height">Loading...</span></p>
+            <p>Current Total Supply: <span id="total-supply">Loading...</span></p>
+            <p>Current Block Reward: <span id="block-reward">Loading...</span></p>
+            <p>Number of Blocks in the Past Day: <span id="blocks-past-day">Loading...</span></p>
+        </section>
+
+        <section id="online-accounts">
+            <h2>Online Accounts</h2>
+            <table id="accounts-table">
+                <thead>
+                    <tr>
+                        <th>Level</th>
+                        <th>Accounts</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Online accounts will be populated here -->
+                </tbody>
+            </table>
+        </section>
+
+        <section id="transaction-info">
+            <h2>Unconfirmed Transactions</h2>
+            <p>Total Unconfirmed Transactions: <span id="total-unconfirmed">Loading...</span></p>
+            <div id="transaction-types">
+                <!-- Transaction types will be populated here -->
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
