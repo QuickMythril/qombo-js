@@ -4,15 +4,11 @@ document.addEventListener('DOMContentLoaded', function() {
     fetchCurrentTimestamp();
     fetchOnlineAccounts();
     fetchUnconfirmedTransactions();
-    fetchUserData();
-});
-
-document.getElementById('login-button').addEventListener('click', function() {
-    fetchUserData();
+    calculateAndDisplayDailyQortInfo();
 });
 
 function applyTheme() {
-    const theme = window._qdnTheme || 'light'; // Default to light if _qdnTheme is not set
+    const theme = window._qdnTheme || 'dark';
     document.body.className = theme;
 }
 
@@ -33,6 +29,17 @@ function fetchCirculatingSupply() {
             document.getElementById('total-supply').textContent = data;
         })
         .catch(error => console.error('Error fetching circulating supply:', error));
+}
+
+function fetchBlockHeightAndCirculatingSupply() {
+    return Promise.all([
+        fetch('/blocks/timestamp/' + (Date.now() - (24 * 60 * 60 * 1000)))
+            .then(response => response.json())
+            .then(data => parseInt(document.getElementById('blocks-past-day').textContent)),
+        fetch('/stats/supply/circulating')
+            .then(response => response.text())
+            .then(data => parseFloat(data))
+    ]);
 }
 
 function fetchCurrentTimestamp() {
@@ -62,10 +69,9 @@ function fetchCurrentTimestamp() {
 }
 
 function fetchBlockReward(currentHeight) {
-    let reward = 5; // Initial reward
-    const decreaseInterval = 259200; // Interval for reward decrease
+    let reward = 5;
+    const decreaseInterval = 259200;
 
-    // Calculate current reward
     if (currentHeight > decreaseInterval) {
         reward -= Math.floor((currentHeight - 1) / decreaseInterval) * 0.25;
     }
@@ -112,66 +118,23 @@ function fetchOnlineAccounts() {
         .catch(error => console.error('Error fetching online accounts:', error));
 }
 
-async function fetchUserData() {
-    try {
-        const account = await qortalRequest({ action: "GET_USER_ACCOUNT" });
-        document.getElementById('user-info').style.display = 'block';
-        document.getElementById('login-prompt').style.display = 'none';
-        populateUserInfo(account);
-        //fetchUserWallet(account.address);
-    } catch (error) {
-        console.error('Error fetching user data:', error);
-        document.getElementById('user-info').style.display = 'block';
-        document.getElementById('user-details').style.display = 'none';
-        document.getElementById('login-prompt').style.display = 'block';
-    }
-}
+function calculateAndDisplayDailyQortInfo() {
+    fetchBlockHeightAndCirculatingSupply()
+        .then(([blocksInPastDay, totalCirculatingSupply]) => {
+            const dailyQort = calculateDailyQort(blocksInPastDay);
+            const percentageOfTotal = calculatePercentageOfTotal(dailyQort, totalCirculatingSupply);
 
-async function populateUserInfo(account) {
-    document.getElementById('user-address').textContent = account.address;
-    document.getElementById('user-public-key').textContent = account.publicKey;
-
-    fetch(`/names/address/${account.address}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.length > 0) {
-                const userName = data[0].name;
-                document.getElementById('user-name').textContent = userName;
-                //fetchUserAvatar(userName);
-            }
+            document.getElementById('qort-per-day').textContent = dailyQort.toFixed(2) + ' QORT';
+            document.getElementById('daily-percentage').textContent = percentageOfTotal.toFixed(2) + '%';
         })
-        .catch(error => console.error('Error fetching user name:', error));
+        .catch(error => console.error('Error calculating daily QORT info:', error));
 }
 
-function fetchUserAvatar(userName) {
-    fetch(`/arbitrary/THUMBNAIL/${userName}/qortal_avatar`)
-        .then(response => response.blob())
-        .then(blob => {
-            if (blob.size > 0) {
-                const avatarUrl = URL.createObjectURL(blob);
-                const avatarImg = document.getElementById('user-avatar');
-                avatarImg.src = avatarUrl;
-                avatarImg.style.display = 'block';
-            }
-        })
-        .catch(error => console.error('Error fetching user avatar:', error));
+function calculateDailyQort(blocksInPastDay) {
+    const blockReward = parseFloat(document.getElementById('block-reward').textContent.split(' ')[0]);
+    return blocksInPastDay * blockReward;
 }
 
-async function fetchUserWallet(address) {
-    const walletInfoDiv = document.getElementById('wallet-info');
-    walletInfoDiv.innerHTML = ''; // Clear previous wallet info
-    const coins = ["QORT", "ARRR", "BTC", "LTC", "DOGE", "DGB", "RVN"];
-
-    coins.forEach(async coin => {
-        try {
-            const balance = await qortalRequest({ action: "GET_USER_WALLET", coin: coin });
-            if (balance !== '0') {
-                const p = document.createElement('p');
-                p.textContent = `${coin} Balance: ${balance}`;
-                walletInfoDiv.appendChild(p);
-            }
-        } catch (error) {
-            console.error(`Error fetching ${coin} balance:`, error);
-        }
-    });
+function calculatePercentageOfTotal(dailyQort, totalCirculatingSupply) {
+    return (dailyQort / totalCirculatingSupply) * 100;
 }

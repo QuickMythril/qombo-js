@@ -78,6 +78,18 @@ footer {
     width: 100%;
 }
 
+#menu-list {
+    text-align: center;
+}
+
+#load-more {
+    background-color: #003366;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+}
+
 #user-info {
     padding: 10px;
 }
