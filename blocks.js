@@ -9,7 +9,10 @@ function fetchBlockHeight() {
             document.getElementById('block-height').textContent = data;
             fetchAndDisplayBlocks(data - 9, data + 1);
         })
-        .catch(error => console.error('Error fetching block height:', error));
+        .catch(error => {
+            document.getElementById('block-height').textContent = `Error fetching block height: ${error}`;
+            console.error('Error fetching block height:', error);
+        });
 }
 
 function fetchAndDisplayBlocks(start, end) {

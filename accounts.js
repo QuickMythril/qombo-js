@@ -1,10 +1,83 @@
 document.addEventListener('DOMContentLoaded', function() {
     fetchCirculatingSupply();
     fetchCurrentTimestamp();
-    fetchOnlineAccounts();
-    fetchUnconfirmedTransactions();
     calculateAndDisplayDailyQortInfo();
 });
+
+document.getElementById('search-button').addEventListener('click', handleSearch);
+document.getElementById('search-input').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+        handleSearch();
+    }
+});
+
+function handleSearch() {
+    const searchQuery = document.getElementById('search-input').value;
+    if (!searchQuery) return;
+    if (searchQuery.startsWith('Q') && !searchQuery.includes('0') && !searchQuery.includes('O') && !searchQuery.includes('I') && !searchQuery.includes('l') && searchQuery.length >= 26 && searchQuery.length <= 35) {
+        validateAddress(searchQuery);
+    } else if (searchQuery.length >= 3 && searchQuery.length <= 40) {
+        searchByName(searchQuery);
+    }
+}
+
+function validateAddress(address) {
+    fetch('/addresses/validate/' + address)
+        .then(response => response.json())
+        .then(isValid => {
+            if (isValid) {
+                fetchAddressDetails(address);
+            } else {
+                alert('Invalid address.');
+            }
+        })
+        .catch(error => console.error('Error validating address:', error));
+}
+
+function fetchAddressDetails(address) {
+    document.getElementById('account-details').innerHTML = '';
+    Promise.all([
+        fetch('/addresses/' + address).then(response => response.json()),
+        fetch('/addresses/balance/' + address).then(response => response.text()),
+        fetch('/names/address/' + address).then(response => response.json())
+    ]).then(([addressDetails, balance, names]) => {
+        let detailsHtml = `
+            ${names.length > 0 ? `<p>Registered Name: ${names[0].name}</p>` : ''}
+            <p>Address: ${address}</p>
+            <p>Public Key: ${addressDetails.publicKey}</p>
+            <p>Level: ${addressDetails.level}${addressDetails.flags === 1 ? ' (Founder)' : ''}</p>
+            <p>Blocks Minted: ${addressDetails.blocksMinted}
+            ${addressDetails.blocksMintedAdjustment > 0 ? ` (+${addressDetails.blocksMintedAdjustment})` : ''}
+            ${addressDetails.blocksMintedPenalty > 0 ? ` (-${addressDetails.blocksMintedPenalty})` : ''}</p>
+            <p>Balance: ${parseFloat(balance).toFixed(8)} QORT</p>
+        `;
+        document.getElementById('account-details').innerHTML = detailsHtml;
+    }).catch(error => console.error('Error fetching address details:', error));
+}
+
+function searchByName(name) {
+    document.getElementById('account-results').innerHTML = '';
+    fetch('/names/search?query=' + name)
+        .then(response => response.json())
+        .then(results => {
+            if (results.length > 0) {
+                let resultsHtml = '';
+                results.forEach(result => {
+                    resultsHtml += `
+                        <p>${result.owner} - ${result.name}${result.isForSale ? ' [For Sale]' : ''} - ${result.data} - ${new Date(result.registered).toLocaleString()}</p>
+                    `;
+                });
+                document.getElementById('account-results').innerHTML = resultsHtml;
+                const exactMatch = results.find(r => r.name.toLowerCase() === name.toLowerCase());
+                if (exactMatch) {
+                    fetchAddressDetails(exactMatch.owner);
+                }
+            } else {
+                document.getElementById('account-results').innerHTML = '<p>No results found.</p>';
+            }
+        })
+        .catch(error => console.error('Error searching by name:', error));
+}
 
 function fetchBlockHeight() {
     fetch('/blocks/height')
@@ -23,7 +96,7 @@ function fetchCirculatingSupply() {
     fetch('/stats/supply/circulating')
         .then(response => response.text())
         .then(data => {
-            document.getElementById('total-supply').textContent = data.toFixed(2);
+            document.getElementById('total-supply').textContent = data;
         })
         .catch(error => console.error('Error fetching circulating supply:', error));
 }
@@ -46,7 +119,6 @@ function fetchCurrentTimestamp() {
             document.getElementById('block-height').textContent = currentBlockHeight;
             fetchBlockReward(currentBlockHeight);
             currentBlockHeight = parseInt(currentBlockHeight);
-
             fetch('/utils/timestamp')
                 .then(response => response.text())
                 .then(currentTimestamp => {
@@ -68,51 +140,10 @@ function fetchCurrentTimestamp() {
 function fetchBlockReward(currentHeight) {
     let reward = 5;
     const decreaseInterval = 259200;
-
     if (currentHeight > decreaseInterval) {
         reward -= Math.floor((currentHeight - 1) / decreaseInterval) * 0.25;
     }
-
     document.getElementById('block-reward').textContent = reward.toFixed(2) + ' QORT';
-}
-
-function fetchUnconfirmedTransactions() {
-    fetch('/transactions/unconfirmed')
-        .then(response => response.json())
-        .then(data => {
-            const transactionTypes = {};
-            data.forEach(transaction => {
-                const type = transaction.type;
-                transactionTypes[type] = (transactionTypes[type] || 0) + 1;
-            });
-
-            const totalUnconfirmed = data.length;
-            document.getElementById('total-unconfirmed').textContent = totalUnconfirmed;
-
-            const transactionTypesDiv = document.getElementById('transaction-types');
-            Object.keys(transactionTypes).forEach(type => {
-                const p = document.createElement('p');
-                p.textContent = `Type ${type}: ${transactionTypes[type]}`;
-                transactionTypesDiv.appendChild(p);
-            });
-        })
-        .catch(error => console.error('Error fetching unconfirmed transactions:', error));
-}
-
-function fetchOnlineAccounts() {
-    fetch('/addresses/online/levels')
-        .then(response => response.json())
-        .then(data => {
-            const tableBody = document.getElementById('accounts-table').getElementsByTagName('tbody')[0];
-            data.forEach(account => {
-                const row = tableBody.insertRow();
-                const cell1 = row.insertCell(0);
-                const cell2 = row.insertCell(1);
-                cell1.textContent = account.level;
-                cell2.textContent = account.count;
-            });
-        })
-        .catch(error => console.error('Error fetching online accounts:', error));
 }
 
 function calculateAndDisplayDailyQortInfo() {
@@ -120,8 +151,8 @@ function calculateAndDisplayDailyQortInfo() {
         .then(([blocksInPastDay, totalCirculatingSupply]) => {
             const dailyQort = calculateDailyQort(blocksInPastDay);
             const percentageOfTotal = calculatePercentageOfTotal(dailyQort, totalCirculatingSupply);
-            const dailyQortString = `${dailyQort.toFixed(2)} QORT (${percentageOfTotal.toFixed(2)}% of total`;
-            document.getElementById('qort-per-day').textContent = dailyQortString;
+            document.getElementById('qort-per-day').textContent = dailyQort.toFixed(2) + ' QORT';
+            document.getElementById('daily-percentage').textContent = percentageOfTotal.toFixed(2) + '%';
         })
         .catch(error => console.error('Error calculating daily QORT info:', error));
 }

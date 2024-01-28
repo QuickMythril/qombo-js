@@ -10,7 +10,10 @@ function fetchBlockHeight() {
             document.getElementById('block-height').textContent = data;
             fetchAndDisplayTxs(data - 99, data + 1);
         })
-        .catch(error => console.error('Error fetching block height:', error));
+        .catch(error => {
+            document.getElementById('block-height').textContent = `Error fetching block height: ${error}`;
+            console.error('Error fetching block height:', error);
+        });
 }
 
 function fetchUnconfirmedTransactions() {
@@ -33,7 +36,10 @@ function fetchUnconfirmedTransactions() {
                 transactionTypesDiv.appendChild(p);
             });
         })
-        .catch(error => console.error('Error fetching unconfirmed transactions:', error));
+        .catch(error => {
+            document.getElementById('total-unconfirmed').textContent = `Error fetching unconfirmed transactions: ${error}`;
+            console.error('Error fetching unconfirmed transactions:', error);
+        });
 }
 
 async function fetchAndDisplayTxs(start, end) {

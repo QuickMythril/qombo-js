@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Qombo: Data Navigator - v1.1.1-beta</title>
+    <title>Qombo: Data Navigator - v1.2.0</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <h1>Qombo: Data Navigator - v1.1.1-beta</h1>
+        <h1>Qombo: Data Navigator - v1.2.0</h1>
     </header>
     <main>
         <section id="menu-bar">
             <div id="menu-list">
-                <p><span id="menu-home"><a href="index.html">Home</a> | <a href="blocks.html">Blocks</a> | <a href="txs.html">Transactions</a> | Trades</span></p>
+                <p><span id="menu-trades"><a href="index.html">Home</a> | <a href="blocks.html">Blocks</a> | <a href="txs.html">Transactions</a> | Trades | <a href="accounts.html">Accounts</a></span></p>
             </div>
         </section>
         
@@ -21,21 +21,21 @@
             <h2>Blockchain Information</h2>
             <p>Current Block Height: <span id="block-height">Loading...</span></p>
             <div id="daily-volumes">
-                <h3>Daily Volumes</h3>
+                <h3>Daily Volume</h3>
                 <ul>
-                    <li>LTC Volume: <span id="litecoin-volume">Loading...</span></li>
-                    <li>BTC Volume: <span id="bitcoin-volume">Loading...</span></li>
-                    <li>DOGE Volume: <span id="dogecoin-volume">Loading...</span></li>
-                    <li>RVN Volume: <span id="ravencoin-volume">Loading...</span></li>
-                    <li>DGB Volume: <span id="digibyte-volume">Loading...</span></li>
-                    <li>ARRR Volume: <span id="piratechain-volume">Loading...</span></li>
+                    <li>LTC: <span id="litecoin-volume">Loading...</span></li>
+                    <li>BTC: <span id="bitcoin-volume">Loading...</span></li>
+                    <li>DOGE: <span id="dogecoin-volume">Loading...</span></li>
+                    <li>RVN: <span id="ravencoin-volume">Loading...</span></li>
+                    <li>DGB: <span id="digibyte-volume">Loading...</span></li>
+                    <li>ARRR: <span id="piratechain-volume">Loading...</span></li>
                 </ul>
             </div>            
         </section>
 
         <section id="trade-info">
             <h2>Available Trades</h2>
-            <p>Total Available Trades: <span id="total-trades">Loading...</span></p>
+            <p>Total Available Trades: <span id="total-trades">Loading... (not working yet)</span></p>
             <div id="trade-data">
             </div>
         </section>

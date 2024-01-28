@@ -29,6 +29,7 @@ main {
     padding: 20px;
     background-color: #2d3749;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 25px;
 }
 
 section {
@@ -40,6 +41,15 @@ section h2 {
     color: #c9d2d9;
     padding: 10px;
     margin-top: 0;
+    border-radius: 20px;
+}
+
+section h3 {
+    background-color: #070d19;
+    color: #c9d2d9;
+    padding: 5px;
+    margin-top: 0;
+    border-radius: 15px;
 }
 
 a {
@@ -52,23 +62,16 @@ p, table {
 
 table {
     width: 100%;
-    border-collapse: collapse;
 }
 
-table, th, td {
-    border: 1px solid #c9d2d9;
-}
 
 th, td {
     text-align: left;
     padding: 8px;
+    border: 1px solid #4c5154;
 }
 
 th {
-    background-color: #0f1a2e;
-}
-
-tr:nth-child(even) {
     background-color: #0f1a2e;
 }
 
@@ -88,6 +91,7 @@ button {
     padding: 10px 20px;
     border: none;
     cursor: pointer;
+    border-radius: 15px;
 }
 
 select {
@@ -96,10 +100,17 @@ select {
     padding: 5px 10px;
     border: none;
     cursor: pointer;
+    border-radius: 10px;
 }
 
 #menu-list {
     text-align: center;
+}
+
+#search-button {
+    padding: 5px 10px;
+    border-radius: 10px;
+    margin-right: 10px;
 }
 
 #user-info {

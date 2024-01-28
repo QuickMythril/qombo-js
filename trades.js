@@ -25,8 +25,11 @@ function fetchBlockHeight() {
         .then(data => {
             document.getElementById('block-height').textContent = data;
             fetchDailyVolumes(dayAgoTimestamp);
-        })        
-        .catch(error => console.error('Error fetching block height:', error));
+        })
+        .catch(error => {
+            document.getElementById('block-height').textContent = `Error fetching block height: ${error}`;
+            console.error('Error fetching block height:', error);
+        });
 }
 
 async function fetchDailyVolumes(timestamp) {
@@ -47,7 +50,7 @@ async function fetchDailyVolumes(timestamp) {
             });
             if (trades.length > 0) {
                 const avgPerQort = dailyForeign / dailyQort;
-                document.getElementById(`${coin.toLowerCase()}-volume`).textContent = `Total: ${dailyQort}, Foreign: ${dailyForeign}, Avg/QORT: ${avgPerQort}`;
+                document.getElementById(`${coin.toLowerCase()}-volume`).textContent = `${dailyForeign.toFixed(8)}, QORT: ${dailyQort}, 1 QORT = ${avgPerQort.toFixed(8)} ${coin}`;
             } else {
                 document.getElementById(`${coin.toLowerCase()}-volume`).textContent = `N/A`;
             }
@@ -72,7 +75,7 @@ async function fetchAndDisplayTrades(start, coin) {
             let toNameOrAddress = await displayNameOrAddress(trade.buyerReceivingAddress);
             row.insertCell(2).textContent = toNameOrAddress;
             row.insertCell(3).textContent = trade.foreignAmount;
-            row.insertCell(4).textContent = (trade.foreignAmount / trade.qortAmount);
+            row.insertCell(4).textContent = (trade.foreignAmount / trade.qortAmount).toFixed(8);
             let formattedTimestamp = formatTimestamp(trade.tradeTimestamp);
             row.insertCell(5).textContent = formattedTimestamp;                
             tableBody.appendChild(row);
