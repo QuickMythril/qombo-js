@@ -20,17 +20,20 @@ function getUrlParameter(name) {
 }
 
 function fetchBlockHeight(callback) {
+    let tableHtml = '<table><tr><th>Current Block Height</th>';
     fetch('/blocks/height')
         .then(response => response.text())
         .then(data => {
-            document.getElementById('block-height').textContent = data;
+            tableHtml += `<td>${data}</td></tr></table>`;
+            document.getElementById('info-table').innerHTML = tableHtml;
             if (callback) {
                 callback(data);
             }
         })
         .catch(error => {
-            document.getElementById('block-height').textContent = `Error fetching block height: ${error}`;
             console.error('Error fetching block height:', error);
+            tableHtml += `<td>Error: ${error}</td></tr></table>`;
+            document.getElementById('info-table').innerHTML = tableHtml;
         });
 }
 
