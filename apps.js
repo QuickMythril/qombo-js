@@ -33,7 +33,9 @@ function fetchBlockHeight() {
 
 function handleSearch() {
     const searchQuery = document.getElementById('search-input').value;
-    if (!searchQuery) return;
+    if (!searchQuery) {
+        searchByName('');
+    }
     if (searchQuery.startsWith('Q') && !searchQuery.includes('0') && !searchQuery.includes('O') && !searchQuery.includes('I') && !searchQuery.includes('l') && searchQuery.length >= 26 && searchQuery.length <= 35) {
         validateAddress(searchQuery);
     } else if (searchQuery.length >= 0 && searchQuery.length <= 40) {
@@ -67,7 +69,7 @@ function fetchAddressDetails(address) {
 }
 
 function searchByName(name) {
-    document.getElementById('app-results').innerHTML = '';
+    document.getElementById('app-results').innerHTML = '<p>Searching...</p>';
     fetch('/arbitrary/resources/search?service=APP&name=' + name)
     .then(response => response.json())
     .then(results => {
@@ -78,16 +80,33 @@ function searchByName(name) {
                     <th>Name</th>
                     <th>Size</th>
                     <th>Created</th>
-                    <th>Updated</th>
+                    <th>Last Updated</th>
                 </tr>
             `;
+            results.sort((a, b) => b.created - a.created);
+            results.sort((a, b) => (b.updated || 0) - (a.updated || 0));
             results.forEach(result => {
+                let createdString = new Date(result.created).toLocaleString()
+                let updatedString = new Date(result.updated).toLocaleString()
+                if (updatedString === 'Invalid Date') {
+                    updatedString = 'Never'
+                }
+                let sizeString = '';
+                if (result.size > (1024*1024)) {
+                    let adjustedSize = (result.size / (1024*1024)).toFixed(2);
+                    sizeString = adjustedSize + ' mb';
+                } else if (result.size > 1024) {
+                    let adjustedSize = (result.size / 1024).toFixed(2);
+                    sizeString = adjustedSize + ' kb';
+                } else {
+                    sizeString = result.size + ' b'
+                }
                 tableHtml += `
                     <tr>
                         <td>${result.name}</td>
-                        <td>${result.size}</td>
-                        <td>${new Date(result.created).toLocaleString()}</td>
-                        <td>${new Date(result.updated).toLocaleString()}</td>
+                        <td>${sizeString}</td>
+                        <td>${createdString}</td>
+                        <td>${updatedString}</td>
                     </tr>
                 `;
             });
