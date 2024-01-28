@@ -130,3 +130,26 @@ select {
 #login-prompt {
     text-align: center;
 }
+
+/* Pirate Theme */
+/*
+#bb9645-#f2de99 = Gold
+#082db2-#071642 = Blue
+#6d6d6d-#131313 = Gray
+*/
+/*
+Work in progress
+a.pirate {
+    color: #bb9645;
+}
+
+button.pirate {
+    background-color: #bb9645;
+    color: #131313;
+}
+
+select.pirate {
+    background-color: #bb9645;
+    color: #131313;
+}
+*/

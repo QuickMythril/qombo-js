@@ -3,23 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Qombo: Data Navigator - v1.2.2-rc</title>
+    <title>Qombo: Data Navigator - v1.3.0-rc</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <h1>Qombo: Data Navigator - v1.2.2-rc</h1>
+        <h1>Qombo: Data Navigator - v1.3.0-rc</h1>
     </header>
     <main>
         <section id="menu-bar">
             <div id="menu-list">
-                <p><span id="menu-blocks"><a href="index.html">Home</a> | Blocks | <a href="txs.html">Transactions</a> | <a href="trades.html">Trades</a> | <a href="accounts.html">Accounts</a></span></p>
+                <p><span id="menu-blocks"><a href="index.html">Home</a> | Blocks | <a href="txs.html">Transactions</a> | <a href="trades.html">Trades</a> | <a href="accounts.html">Accounts</a> | <a href="apps.html">Apps</a></span></p>
             </div>
         </section>
         
         <section id="blockchain-info">
             <h2>Blockchain Information</h2>
             <p>Current Block Height: <span id="block-height">Loading...</span></p>
+        </section>
+        
+        <section id="block-search">
+            <h2>Block Details - <button id="search-button">Search</button><input type="text" id="search-input" placeholder="Enter block height"></h2>
+            <div id="block-details"></div>
+        </section>
+
+        <section id="block-txs">
+            <h2>Block Transactions</h2>
+            <table id="txs-table">
+                <thead>
+                    <tr>
+                        <th>Height</th>
+                        <th>Signature</th>
+                        <th>TX Type</th>
+                        <th>Creator</th>
+                        <th>Fee Paid</th>
+                        <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
         </section>
 
         <section id="recent-blocks">
