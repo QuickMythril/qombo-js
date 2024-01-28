@@ -1,14 +1,16 @@
 document.addEventListener('DOMContentLoaded', function() {
-    fetchBlockHeight();
+    fetchBlockHeight(fetchAndDisplayTxs);
     fetchUnconfirmedTransactions();
 });
 
-function fetchBlockHeight() {
+function fetchBlockHeight(callback) {
     fetch('/blocks/height')
         .then(response => response.text())
         .then(data => {
             document.getElementById('block-height').textContent = data;
-            fetchAndDisplayTxs(data - 99, data + 1);
+            if (callback) {
+                callback(data);
+            }
         })
         .catch(error => {
             document.getElementById('block-height').textContent = `Error fetching block height: ${error}`;
@@ -25,10 +27,8 @@ function fetchUnconfirmedTransactions() {
                 const type = transaction.type;
                 transactionTypes[type] = (transactionTypes[type] || 0) + 1;
             });
-
             const totalUnconfirmed = data.length;
             document.getElementById('total-unconfirmed').textContent = totalUnconfirmed;
-
             const transactionTypesDiv = document.getElementById('transaction-types');
             Object.keys(transactionTypes).forEach(type => {
                 const p = document.createElement('p');
@@ -42,12 +42,13 @@ function fetchUnconfirmedTransactions() {
         });
 }
 
-async function fetchAndDisplayTxs(start, end) {
+async function fetchAndDisplayTxs(height) {
     try {
-        const response = await fetch(`/transactions/search?startBlock=${start}&blockLimit=${end-start}&confirmationStatus=CONFIRMED&limit=0`);
+        const response = await fetch(`/transactions/search?startBlock=${height-99}&blockLimit=100&confirmationStatus=CONFIRMED&limit=0`);
         const txs = await response.json();
         const tableBody = document.getElementById('txs-table').getElementsByTagName('tbody')[0];
-        txs.reverse().forEach(async tx => {
+        txs.sort((a, b) => b.timestamp - a.timestamp);
+        txs.forEach(async tx => {
             let row = document.createElement('tr');
             row.insertCell(0).textContent = tx.blockHeight;
             let shortenedSignature = tx.signature.substring(0, 4) + '...' + tx.signature.substring(tx.signature.length - 4);
@@ -86,9 +87,7 @@ document.getElementById('load-more').addEventListener('click', function() {
     const lastRow = tableBody.lastElementChild;
     if (lastRow) {
         let lastBlockHeight = parseInt(lastRow.cells[0].textContent);
-        let newStart = lastBlockHeight - 100;
-        let newEnd = lastBlockHeight;
-        fetchAndDisplayTxs(newStart, newEnd);
+        fetchAndDisplayTxs(lastBlockHeight-1);
     } else {
         console.error('No rows in the table.');
     }
@@ -96,6 +95,5 @@ document.getElementById('load-more').addEventListener('click', function() {
 
 function formatTimestamp(timestamp) {
     const date = new Date(timestamp);
-    const gmtString = date.toGMTString();
-    return `${gmtString}`;
+    return date.toGMTString();
 }

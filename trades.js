@@ -19,12 +19,14 @@ function getUrlParameter(name) {
     return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
 }
 
-function fetchBlockHeight() {
+function fetchBlockHeight(callback) {
     fetch('/blocks/height')
         .then(response => response.text())
         .then(data => {
             document.getElementById('block-height').textContent = data;
-            fetchDailyVolumes(dayAgoTimestamp);
+            if (callback) {
+                callback(data);
+            }
         })
         .catch(error => {
             document.getElementById('block-height').textContent = `Error fetching block height: ${error}`;
@@ -122,6 +124,5 @@ document.getElementById('coin-dropdown').addEventListener('change', function() {
 
 function formatTimestamp(timestamp) {
     const date = new Date(timestamp);
-    const gmtString = date.toGMTString();
-    return `${gmtString}`;
+    return date.toGMTString();
 }

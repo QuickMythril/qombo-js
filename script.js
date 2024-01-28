@@ -1,17 +1,28 @@
 document.addEventListener('DOMContentLoaded', function() {
-    fetchCirculatingSupply();
-    fetchCurrentTimestamp();
-    fetchOnlineAccounts();
-    fetchUnconfirmedTransactions();
-    calculateAndDisplayDailyQortInfo();
+    fetchBlockHeight()
+        .then(currentHeight => {
+            fetchBlockReward(currentHeight);
+            return Promise.all([
+                fetchCirculatingSupply(),
+                fetchDailyBlocks(),
+                fetchOnlineAccounts(),
+                fetchUnconfirmedTransactions()
+            ]);
+        })
+        .then(() => {
+            calculateDailyQort();
+        })
+        .catch(error => {
+            console.error('An error occurred in the fetch chain:', error);
+        });
 });
 
 function fetchBlockHeight() {
-    fetch('/blocks/height')
+    return fetch('/blocks/height')
         .then(response => response.text())
         .then(data => {
             document.getElementById('block-height').textContent = data;
-            fetchBlockReward(data);
+            return data;
         })
         .catch(error => {
             document.getElementById('block-height').textContent = `Error fetching block height: ${error}`;
@@ -19,84 +30,65 @@ function fetchBlockHeight() {
         });
 }
 
+function fetchBlockReward(currentHeight) {
+    let reward = 5;
+    const decreaseInterval = 259200;
+    if (currentHeight > decreaseInterval) {
+        reward -= Math.floor((currentHeight - 1) / decreaseInterval) * 0.25;
+    }
+    document.getElementById('block-reward').textContent = reward.toFixed(2);
+}
+
 function fetchCirculatingSupply() {
-    fetch('/stats/supply/circulating')
+    return fetch('/stats/supply/circulating')
         .then(response => response.text())
         .then(data => {
-            document.getElementById('total-supply').textContent = data.toFixed(2);
+            document.getElementById('total-supply').textContent = parseFloat(data).toFixed(2);
+            return parseFloat(data);
         })
-        .catch(error => console.error('Error fetching circulating supply:', error));
+        .catch(error => {
+            document.getElementById('total-supply').textContent = `Error fetching circulating supply: ${error}`;
+            console.error('Error fetching circulating supply:', error);
+            throw error;
+        });
 }
 
-function fetchBlockHeightAndCirculatingSupply() {
-    return Promise.all([
-        fetch('/blocks/timestamp/' + (Date.now() - (24 * 60 * 60 * 1000)))
-            .then(response => response.json())
-            .then(data => parseInt(document.getElementById('blocks-past-day').textContent)),
-        fetch('/stats/supply/circulating')
-            .then(response => response.text())
-            .then(data => parseFloat(data))
-    ]);
-}
-
-function fetchCurrentTimestamp() {
-    fetch('/blocks/height')
+function fetchDailyBlocks() {
+    return fetch('/blocks/height')
         .then(response => response.text())
         .then(currentBlockHeight => {
             document.getElementById('block-height').textContent = currentBlockHeight;
-            fetchBlockReward(currentBlockHeight);
+            return currentBlockHeight;
+        })
+        .then(currentBlockHeight => {
             currentBlockHeight = parseInt(currentBlockHeight);
-
-            fetch('/utils/timestamp')
+            return fetch('/utils/timestamp')
                 .then(response => response.text())
                 .then(currentTimestamp => {
                     const oneDayAgoTimestamp = parseInt(currentTimestamp) - (24 * 60 * 60 * 1000);
-                    fetch('/blocks/timestamp/' + oneDayAgoTimestamp)
+                    return fetch('/blocks/timestamp/' + oneDayAgoTimestamp)
                         .then(response => response.json())
                         .then(data => {
                             const oneDayAgoBlockHeight = data.height;
                             const blocksInPastDay = currentBlockHeight - oneDayAgoBlockHeight;
                             document.getElementById('blocks-past-day').textContent = blocksInPastDay;
-                        })
-                        .catch(error => console.error('Error fetching block height from one day ago:', error));
-                })
-                .catch(error => console.error('Error fetching current timestamp:', error));
+                            return blocksInPastDay;
+                        });
+                });
         })
-        .catch(error => console.error('Error fetching current block height:', error));
+        .catch(error => {
+            console.error('Error in fetchDailyBlocks:', error);
+        });
 }
 
-function fetchBlockReward(currentHeight) {
-    let reward = 5;
-    const decreaseInterval = 259200;
-
-    if (currentHeight > decreaseInterval) {
-        reward -= Math.floor((currentHeight - 1) / decreaseInterval) * 0.25;
-    }
-
-    document.getElementById('block-reward').textContent = reward.toFixed(2) + ' QORT';
-}
-
-function fetchUnconfirmedTransactions() {
-    fetch('/transactions/unconfirmed')
-        .then(response => response.json())
-        .then(data => {
-            const transactionTypes = {};
-            data.forEach(transaction => {
-                const type = transaction.type;
-                transactionTypes[type] = (transactionTypes[type] || 0) + 1;
-            });
-
-            const totalUnconfirmed = data.length;
-            document.getElementById('total-unconfirmed').textContent = totalUnconfirmed;
-
-            const transactionTypesDiv = document.getElementById('transaction-types');
-            Object.keys(transactionTypes).forEach(type => {
-                const p = document.createElement('p');
-                p.textContent = `Type ${type}: ${transactionTypes[type]}`;
-                transactionTypesDiv.appendChild(p);
-            });
-        })
-        .catch(error => console.error('Error fetching unconfirmed transactions:', error));
+function calculateDailyQort() {
+    const blocksInPastDay = parseInt(document.getElementById('blocks-past-day').textContent);
+    const blockReward = parseFloat(document.getElementById('block-reward').textContent);
+    const dailyQort = blocksInPastDay * blockReward;
+    const totalCirculatingSupply = parseFloat(document.getElementById('total-supply').textContent);
+    const percentageOfTotal = (dailyQort / totalCirculatingSupply) * 100;
+    const dailyQortString = `${dailyQort.toFixed(2)} QORT (${percentageOfTotal.toFixed(2)}% of total)`;
+    document.getElementById('qort-per-day').textContent = dailyQortString;
 }
 
 function fetchOnlineAccounts() {
@@ -115,22 +107,26 @@ function fetchOnlineAccounts() {
         .catch(error => console.error('Error fetching online accounts:', error));
 }
 
-function calculateAndDisplayDailyQortInfo() {
-    fetchBlockHeightAndCirculatingSupply()
-        .then(([blocksInPastDay, totalCirculatingSupply]) => {
-            const dailyQort = calculateDailyQort(blocksInPastDay);
-            const percentageOfTotal = calculatePercentageOfTotal(dailyQort, totalCirculatingSupply);
-            const dailyQortString = `${dailyQort.toFixed(2)} QORT (${percentageOfTotal.toFixed(2)}% of total`;
-            document.getElementById('qort-per-day').textContent = dailyQortString;
+function fetchUnconfirmedTransactions() {
+    fetch('/transactions/unconfirmed')
+        .then(response => response.json())
+        .then(data => {
+            const transactionTypes = {};
+            data.forEach(transaction => {
+                const type = transaction.type;
+                transactionTypes[type] = (transactionTypes[type] || 0) + 1;
+            });
+            const totalUnconfirmed = data.length;
+            document.getElementById('total-unconfirmed').textContent = totalUnconfirmed;
+            const transactionTypesDiv = document.getElementById('transaction-types');
+            Object.keys(transactionTypes).forEach(type => {
+                const p = document.createElement('p');
+                p.textContent = `Type ${type}: ${transactionTypes[type]}`;
+                transactionTypesDiv.appendChild(p);
+            });
         })
-        .catch(error => console.error('Error calculating daily QORT info:', error));
-}
-
-function calculateDailyQort(blocksInPastDay) {
-    const blockReward = parseFloat(document.getElementById('block-reward').textContent.split(' ')[0]);
-    return blocksInPastDay * blockReward;
-}
-
-function calculatePercentageOfTotal(dailyQort, totalCirculatingSupply) {
-    return (dailyQort / totalCirculatingSupply) * 100;
+        .catch(error => {
+            document.getElementById('total-unconfirmed').textContent = `Error fetching unconfirmed transactions: ${error}`;
+            console.error('Error fetching unconfirmed transactions:', error);
+        });
 }

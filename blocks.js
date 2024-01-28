@@ -1,13 +1,15 @@
 document.addEventListener('DOMContentLoaded', function() {
-    fetchBlockHeight();
+    fetchBlockHeight(fetchAndDisplayBlocks);
 });
 
-function fetchBlockHeight() {
+function fetchBlockHeight(callback) {
     fetch('/blocks/height')
         .then(response => response.text())
         .then(data => {
             document.getElementById('block-height').textContent = data;
-            fetchAndDisplayBlocks(data - 9, data + 1);
+            if (callback) {
+                callback(data);
+            }
         })
         .catch(error => {
             document.getElementById('block-height').textContent = `Error fetching block height: ${error}`;
@@ -15,8 +17,8 @@ function fetchBlockHeight() {
         });
 }
 
-function fetchAndDisplayBlocks(start, end) {
-    fetch(`/blocks/summaries?start=${start}&end=${end}`)
+function fetchAndDisplayBlocks(height) {
+    fetch(`/blocks/summaries?start=${height-9}&end=${height+1}`)
         .then(response => response.json())
         .then(blocks => {
             const tableBody = document.getElementById('blocks-table').getElementsByTagName('tbody')[0];
@@ -40,9 +42,7 @@ document.getElementById('load-more').addEventListener('click', function() {
     const lastRow = tableBody.lastElementChild;
     if (lastRow) {
         let lastBlockHeight = parseInt(lastRow.cells[0].textContent);
-        let newStart = lastBlockHeight - 10;
-        let newEnd = lastBlockHeight;
-        fetchAndDisplayBlocks(newStart, newEnd);
+        fetchAndDisplayBlocks(lastBlockHeight-1);
     } else {
         console.error('No rows in the table.');
     }
@@ -50,6 +50,5 @@ document.getElementById('load-more').addEventListener('click', function() {
 
 function formatTimestamp(timestamp) {
     const date = new Date(timestamp);
-    const gmtString = date.toGMTString();
-    return `${gmtString}`;
+    return date.toGMTString();
 }
