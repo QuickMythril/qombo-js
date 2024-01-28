@@ -82,16 +82,24 @@ footer {
     width: 100%;
 }
 
-#menu-list {
-    text-align: center;
-}
-
-#load-more {
+button {
     background-color: #008fd5;
     color: #c9d2d9;
     padding: 10px 20px;
     border: none;
     cursor: pointer;
+}
+
+select {
+    background-color: #008fd5;
+    color: #c9d2d9;
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+}
+
+#menu-list {
+    text-align: center;
 }
 
 #user-info {
@@ -110,12 +118,4 @@ footer {
 
 #login-prompt {
     text-align: center;
-}
-
-#login-button {
-    background-color: #008fd5;
-    color: #c9d2d9;
-    padding: 10px 20px;
-    border: none;
-    cursor: pointer;
 }

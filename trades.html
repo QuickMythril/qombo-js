@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qombo: Data Navigator - v1.1.1-beta</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Qombo: Data Navigator - v1.1.1-beta</h1>
+    </header>
+    <main>
+        <section id="menu-bar">
+            <div id="menu-list">
+                <p><span id="menu-home"><a href="index.html">Home</a> | <a href="blocks.html">Blocks</a> | <a href="txs.html">Transactions</a> | Trades</span></p>
+            </div>
+        </section>
+        
+        <section id="blockchain-info">
+            <h2>Blockchain Information</h2>
+            <p>Current Block Height: <span id="block-height">Loading...</span></p>
+            <div id="daily-volumes">
+                <h3>Daily Volumes</h3>
+                <ul>
+                    <li>LTC Volume: <span id="litecoin-volume">Loading...</span></li>
+                    <li>BTC Volume: <span id="bitcoin-volume">Loading...</span></li>
+                    <li>DOGE Volume: <span id="dogecoin-volume">Loading...</span></li>
+                    <li>RVN Volume: <span id="ravencoin-volume">Loading...</span></li>
+                    <li>DGB Volume: <span id="digibyte-volume">Loading...</span></li>
+                    <li>ARRR Volume: <span id="piratechain-volume">Loading...</span></li>
+                </ul>
+            </div>            
+        </section>
+
+        <section id="trade-info">
+            <h2>Available Trades</h2>
+            <p>Total Available Trades: <span id="total-trades">Loading...</span></p>
+            <div id="trade-data">
+            </div>
+        </section>
+
+        <section id="recent-trades">
+            <h2><div id="coin-selector">
+                <label for="coin-dropdown">Recent Trades -</label>
+                <select id="coin-dropdown">
+                    <option value="LITECOIN">LTC</option>
+                    <option value="BITCOIN">BTC</option>
+                    <option value="DOGECOIN">DOGE</option>
+                    <option value="RAVENCOIN">RVN</option>
+                    <option value="DIGIBYTE">DGB</option>
+                    <option value="PIRATECHAIN">ARRR</option>
+                </select>
+            </div></h2>
+            <table id="trades-table">
+                <thead>
+                    <tr>
+                        <th>QORT Amount</th>
+                        <th>Traded From</th>
+                        <th>Traded To</th>
+                        <th>"COIN" Amount</th>
+                        <th>Avg. COIN/QORT</th>
+                        <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            <button id="load-more">See More Trades</button>
+        </section>
+    </main>
+
+    <script src="trades.js"></script>
+</body>
+</html>
