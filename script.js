@@ -100,7 +100,7 @@ function fetchOnlineAccounts() {
                 const row = tableBody.insertRow();
                 const cell1 = row.insertCell(0);
                 const cell2 = row.insertCell(1);
-                cell1.textContent = account.level;
+                cell1.textContent = `${account.level == 10 ? '10/F' : account.level}`;
                 cell2.textContent = account.count;
             });
         })
