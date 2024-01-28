@@ -126,17 +126,26 @@ function fetchAddressDetails(address) {
         fetch('/addresses/balance/' + address).then(response => response.text()),
         fetch('/names/address/' + address).then(response => response.json())
     ]).then(([addressDetails, balance, names]) => {
-        let detailsHtml = `
-            ${names.length > 0 ? `<p>Registered Name: ${names[0].name}</p>` : ''}
-            <p>Address: ${address}</p>
-            <p>Public Key: ${addressDetails.publicKey}</p>
-            <p>Level: ${addressDetails.level}${addressDetails.flags === 1 ? ' (Founder)' : ''}</p>
-            <p>Blocks Minted: ${addressDetails.blocksMinted}
-            ${addressDetails.blocksMintedAdjustment > 0 ? ` (+${addressDetails.blocksMintedAdjustment})` : ''}
-            ${addressDetails.blocksMintedPenalty > 0 ? ` (-${addressDetails.blocksMintedPenalty})` : ''}</p>
-            <p>Balance: ${parseFloat(balance).toFixed(8)} QORT</p>
+        let tableHtml = '<table>';
+        if (names.length > 0) {
+            tableHtml += `<tr><th>Registered Name</th><th>${names[0].name}</th></tr>`;
+        }
+        tableHtml += `
+            <tr><th>Address</th><th>${address}</th></tr>
+            <tr><td>Public Key</td><td>${addressDetails.publicKey}</td></tr>
+            <tr><td>Level</td><td>${addressDetails.level}${addressDetails.flags === 1 ? ' (Founder)' : ''}</td></tr>
+            <tr>
+                <td>Blocks Minted</td>
+                <td>
+                    ${addressDetails.blocksMinted}
+                    ${addressDetails.blocksMintedAdjustment > 0 ? ` (+${addressDetails.blocksMintedAdjustment})` : ''}
+                    ${addressDetails.blocksMintedPenalty > 0 ? ` (-${addressDetails.blocksMintedPenalty})` : ''}
+                </td>
+            </tr>
+            <tr><td>Balance</td><td>${parseFloat(balance).toFixed(8)} QORT</td></tr>
         `;
-        document.getElementById('account-details').innerHTML = detailsHtml;
+        tableHtml += '</table>';
+        document.getElementById('account-details').innerHTML = tableHtml;
     }).catch(error => console.error('Error fetching address details:', error));
 }
 
@@ -146,13 +155,29 @@ function searchByName(name) {
         .then(response => response.json())
         .then(results => {
             if (results.length > 0) {
-                let resultsHtml = '';
+                let tableHtml = '<table>';
+                tableHtml += `
+                    <tr>
+                        <th>Address</th>
+                        <th>Name</th>
+                        <th>For Sale</th>
+                        <th>Data</th>
+                        <th>Registered</th>
+                    </tr>
+                `;
                 results.forEach(result => {
-                    resultsHtml += `
-                        <p>${result.owner} - ${result.name}${result.isForSale ? ' [For Sale]' : ''} - ${result.data} - ${new Date(result.registered).toLocaleString()}</p>
+                    tableHtml += `
+                        <tr>
+                            <td>${result.owner}</td>
+                            <td>${result.name}</td>
+                            <td>${result.isForSale ? 'YES' : '-'}</td>
+                            <td>${result.data}</td>
+                            <td>${new Date(result.registered).toLocaleString()}</td>
+                        </tr>
                     `;
                 });
-                document.getElementById('account-results').innerHTML = resultsHtml;
+                tableHtml += '</table>';
+                document.getElementById('account-results').innerHTML = tableHtml;
                 const exactMatch = results.find(r => r.name.toLowerCase() === name.toLowerCase());
                 if (exactMatch) {
                     fetchAddressDetails(exactMatch.owner);
