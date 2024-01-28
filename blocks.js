@@ -1,12 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
-    applyTheme();
     fetchBlockHeight();
 });
-
-function applyTheme() {
-    const theme = window._qdnTheme || 'dark';
-    document.body.className = theme;
-}
 
 function fetchBlockHeight() {
     fetch('/blocks/height')

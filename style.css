@@ -8,13 +8,13 @@ body {
     line-height: 1.6;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4;
-    color: #333;
+    background-color: #0f1a2e;
+    color: #c9d2d9;
 }
 
 header {
-    background-color: #333;
-    color: #fff;
+    background-color: #070d19;
+    color: #c9d2d9;
     text-align: center;
     padding: 1rem 0;
 }
@@ -27,7 +27,7 @@ main {
     width: 80%;
     margin: 20px auto;
     padding: 20px;
-    background-color: #fff;
+    background-color: #2d3749;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -36,10 +36,14 @@ section {
 }
 
 section h2 {
-    background-color: #333;
-    color: #fff;
+    background-color: #070d19;
+    color: #c9d2d9;
     padding: 10px;
     margin-top: 0;
+}
+
+a {
+    color: #008fd5;
 }
 
 p, table {
@@ -52,7 +56,7 @@ table {
 }
 
 table, th, td {
-    border: 1px solid #ddd;
+    border: 1px solid #c9d2d9;
 }
 
 th, td {
@@ -61,18 +65,18 @@ th, td {
 }
 
 th {
-    background-color: #f4f4f4;
+    background-color: #0f1a2e;
 }
 
 tr:nth-child(even) {
-    background-color: #f9f9f9;
+    background-color: #0f1a2e;
 }
 
 footer {
     text-align: center;
     padding: 20px;
-    background-color: #333;
-    color: #fff;
+    background-color: #070d19;
+    color: #c9d2d9;
     position: fixed;
     bottom: 0;
     width: 100%;
@@ -83,8 +87,8 @@ footer {
 }
 
 #load-more {
-    background-color: #003366;
-    color: #fff;
+    background-color: #008fd5;
+    color: #c9d2d9;
     padding: 10px 20px;
     border: none;
     cursor: pointer;
@@ -109,43 +113,9 @@ footer {
 }
 
 #login-button {
-    background-color: #003366;
-    color: #fff;
+    background-color: #008fd5;
+    color: #c9d2d9;
     padding: 10px 20px;
     border: none;
     cursor: pointer;
-}
-
-/* Light Theme */
-body.light {
-    color: #003366; /* Darker blue text */
-    background-color: #b3d1ff; /* Lighter blue background */
-}
-
-body.light header,
-body.light section h2,
-body.light footer {
-    background-color: #003366; /* Darker blue */
-    color: #b3d1ff; /* Lighter blue */
-}
-
-body.light th {
-    background-color: #b3d1ff;
-}
-
-/* Dark Theme */
-body.dark {
-    color: #b3d1ff; /* Light blue text */
-    background-color: #003366; /* Dark blue background */
-}
-
-body.dark header,
-body.dark section h2,
-body.dark footer {
-    background-color: #b3d1ff; /* Light blue */
-    color: #003366; /* Dark blue */
-}
-
-body.dark th {
-    background-color: #003366;
 }

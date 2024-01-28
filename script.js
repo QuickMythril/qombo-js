@@ -1,16 +1,10 @@
 document.addEventListener('DOMContentLoaded', function() {
-    applyTheme();
     fetchCirculatingSupply();
     fetchCurrentTimestamp();
     fetchOnlineAccounts();
     fetchUnconfirmedTransactions();
     calculateAndDisplayDailyQortInfo();
 });
-
-function applyTheme() {
-    const theme = window._qdnTheme || 'dark';
-    document.body.className = theme;
-}
 
 function fetchBlockHeight() {
     fetch('/blocks/height')
