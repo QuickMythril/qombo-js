@@ -83,8 +83,7 @@ function searchByName(name) {
                     <th>Last Updated</th>
                 </tr>
             `;
-            results.sort((a, b) => b.created - a.created);
-            results.sort((a, b) => (b.updated || 0) - (a.updated || 0));
+            results.sort((a, b) => (b.updated || b.created) - (a.updated || a.created));
             results.forEach(result => {
                 let createdString = new Date(result.created).toLocaleString()
                 let updatedString = new Date(result.updated).toLocaleString()
