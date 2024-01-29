@@ -31,13 +31,18 @@ function fetchUnconfirmedTransactions() {
                 transactionTypes[type] = (transactionTypes[type] || 0) + 1;
             });
             const totalUnconfirmed = data.length;
-            document.getElementById('total-unconfirmed').textContent = totalUnconfirmed;
-            const transactionTypesDiv = document.getElementById('transaction-types');
+            let tableHtmlUpper = '<table><tr><th>Total Unconfirmed</th>';
             Object.keys(transactionTypes).forEach(type => {
-                const p = document.createElement('p');
-                p.textContent = `Type ${type}: ${transactionTypes[type]}`;
-                transactionTypesDiv.appendChild(p);
+                tableHtmlUpper += `<th>${type}</th>`;
             });
+            tableHtmlUpper += '</tr>';
+            let tableHtmlLower = `<tr><th>${totalUnconfirmed}</th>`;
+            Object.keys(transactionTypes).forEach(type => {
+                tableHtmlLower += `<td>${transactionTypes[type]}</td>`;
+            });
+            tableHtmlLower += '</tr></table>';
+
+            document.getElementById('transaction-table').innerHTML = tableHtmlUpper + tableHtmlLower;
         })
         .catch(error => {
             document.getElementById('total-unconfirmed').textContent = `Error fetching unconfirmed transactions: ${error}`;
