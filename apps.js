@@ -103,7 +103,7 @@ function searchByName(name) {
                 }
                 tableHtml += `
                     <tr>
-                        <td>${result.name}</td>
+                        <td class="clickable-name" data-name="${result.name}">${result.name}</td>
                         <td>${sizeString}</td>
                         <td>${createdString}</td>
                         <td>${updatedString}</td>
@@ -112,14 +112,30 @@ function searchByName(name) {
             });
             tableHtml += '</table>';
             document.getElementById('app-results').innerHTML = tableHtml;
-            const exactMatch = results.find(r => r.name.toLowerCase() === name.toLowerCase());
-            if (exactMatch) {
+            document.querySelectorAll('.clickable-name').forEach(element => {
+                element.addEventListener('click', function() {
+                    let target = this.getAttribute('data-name');
+                    openNewTab(target, 'APP');
+                });
+            });
+            //const exactMatch = results.find(r => r.name.toLowerCase() === name.toLowerCase());
+            //if (exactMatch) {
                 // TODO - Display specific app info.
                 // fetchAddressDetails(exactMatch.owner);
-            }
+            //}
         } else {
             document.getElementById('app-results').innerHTML = '<p>No results found.</p>';
         }
     })
-    .catch(error => console.error('Error searching by name:', error));
+    .catch(error => {
+        console.error('Error searching by name:', error);
+        document.getElementById('app-results').innerHTML = `<p>Error: ${error}</p>`;
+    })
+}
+
+async function openNewTab(name, service) {
+    const response = await qortalRequest({
+        action: 'OPEN_NEW_TAB',
+        qortalLink: `qortal://${service}/${name}`
+      })
 }

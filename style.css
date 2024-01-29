@@ -71,6 +71,11 @@ th, td {
     border: 1px solid #4c5154;
 }
 
+td.clickable-name {
+    color: #008fd5;
+    cursor: pointer;
+}
+
 th {
     background-color: #0f1a2e;
 }
