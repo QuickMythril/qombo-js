@@ -72,6 +72,12 @@ th, td {
     vertical-align: middle;
 }
 
+th.clickable-name {
+    color: #008fd5;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
 td.clickable-name {
     color: #008fd5;
     cursor: pointer;

@@ -11,20 +11,17 @@ document.getElementById('search-input').addEventListener('keypress', function (e
 });
 
 function fetchBlockHeight(callback) {
-    let tableHtml = '<table><tr><th>Current Block Height</th>';
     fetch('/blocks/height')
         .then(response => response.text())
         .then(data => {
-            tableHtml += `<td>${data}</td></tr></table>`;
-            document.getElementById('info-table').innerHTML = tableHtml;
+            document.getElementById('block-height').textContent = data;
             if (callback) {
                 callback(data);
             }
         })
         .catch(error => {
             console.error('Error fetching block height:', error);
-            tableHtml += `<td>Error: ${error}</td></tr></table>`;
-            document.getElementById('info-table').innerHTML = tableHtml;
+            document.getElementById('block-height').textContent = `Error: ${error}`;
         });
 }
 
@@ -35,7 +32,11 @@ function fetchAndDisplayBlocks(height) {
             const tableBody = document.getElementById('blocks-table').getElementsByTagName('tbody')[0];
             blocks.reverse().forEach(block => {
                 let row = document.createElement('tr');
-                row.insertCell(0).textContent = block.height;
+                let th = document.createElement('td');
+                th.className = "clickable-name";
+                th.setAttribute('data-name', block.height);
+                th.textContent = block.height;
+                row.appendChild(th);
                 let shortenedSignature = block.signature.substring(0, 4) + '...' + block.signature.substring(block.signature.length - 4);
                 row.insertCell(1).textContent = shortenedSignature;
                 row.insertCell(2).textContent = block.transactionCount;
@@ -44,16 +45,24 @@ function fetchAndDisplayBlocks(height) {
                 row.insertCell(4).textContent = formattedTimestamp;                
                 tableBody.appendChild(row);
             });
+            document.querySelectorAll('.clickable-name').forEach(element => {
+                element.addEventListener('click', function() {
+                    document.body.scrollTop = document.documentElement.scrollTop = 0;
+                    let target = this.getAttribute('data-name');
+                    searchByBlock(target);
+                });
+            });
         })
         .catch(error => console.error('Error fetching blocks:', error));
 }
 
 function handleSearch() {
     const currentBlockHeight = parseInt(document.getElementById('block-height').textContent);
-    const searchQuery = document.getElementById('search-input').value;
-    if (!searchQuery) return;
-    if (+searchQuery >= 1 && +searchQuery <= +currentBlockHeight) {
-        searchByBlock(+searchQuery);
+    const searchQuery = document.getElementById('search-input').value.trim();
+    const searchNumber = parseInt(searchQuery, 10);
+    if (!searchQuery || isNaN(searchNumber)) return;
+    if (searchNumber >= 1 && searchNumber <= currentBlockHeight) {
+        searchByBlock(searchNumber);
     } else {
         document.getElementById('block-details').innerHTML = `<p>Invalid search: ${searchQuery}</p>`;
         return;
@@ -66,16 +75,18 @@ function searchByBlock(height) {
         .then(response => response.json())
         .then(result => {
             if (result) {
-                let resultHtml = '';
-                result => {
-                    let shortenedSignature = result.signature.substring(0, 4) + '...' + result.signature.substring(result.signature.length - 4);
-                    resultHtml += `
-                        <p>${result.height} - ${shortenedSignature} - ${result.transactionCount} Txs - ${result.onlineAccountsCount} Minters - ${new Date(result.timestamp).toLocaleString()}</p>
-                    `;
-                    if (result.transactionCount > 0) {
-                        fetchAndDisplayTxs(result.signature);
+                let resultHtml = '<table><tr>';
+                let shortenedSignature = result.signature.substring(0, 4) + '...' + result.signature.substring(result.signature.length - 4);
+                resultHtml += `<th>${result.height}</th><td>${shortenedSignature}</td><td>${result.transactionCount} Txs</td>
+                <td>${result.onlineAccountsCount} Minters</td><td>${new Date(result.timestamp).toLocaleString()}</td></tr></table>`;
+                if (result.transactionCount > 0) {
+                    fetchAndDisplayTxs(result.signature);
+                } else {
+                    const tableBody = document.getElementById('txs-table').getElementsByTagName('tbody')[0];
+                    while (tableBody.firstChild) {
+                        tableBody.removeChild(tableBody.firstChild);
                     }
-                };
+                }
                 document.getElementById('block-details').innerHTML = resultHtml;
             } else {
                 document.getElementById('block-details').innerHTML = `<p>Block ${height} not found.</p>`;
@@ -92,8 +103,11 @@ async function fetchAndDisplayTxs(signature) {
         const response = await fetch(`/transactions/block/${signature}`);
         const txs = await response.json();
         const tableBody = document.getElementById('txs-table').getElementsByTagName('tbody')[0];
+        while (tableBody.firstChild) {
+            tableBody.removeChild(tableBody.firstChild);
+        }
         txs.sort((a, b) => b.timestamp - a.timestamp);
-        txs.forEach(async tx => {
+        for (const tx of txs) {
             let row = document.createElement('tr');
             row.insertCell(0).textContent = tx.blockHeight;
             let shortenedSignature = tx.signature.substring(0, 4) + '...' + tx.signature.substring(tx.signature.length - 4);
@@ -105,7 +119,7 @@ async function fetchAndDisplayTxs(signature) {
             let formattedTimestamp = new Date(tx.timestamp).toLocaleString();
             row.insertCell(5).textContent = formattedTimestamp;                
             tableBody.appendChild(row);
-        });
+        }
     } catch (error) {
         console.error('Error fetching transactions:', error);
     }
