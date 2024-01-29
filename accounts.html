@@ -18,12 +18,11 @@
         </section>
         
         <section id="blockchain-info">
-            <h2>Blockchain Information</h2>
-            <p>Current Block Height: <span id="block-height">Loading...</span></p>
-            <p>Current Block Reward: <span id="block-reward">Loading...</span></p>
-            <p>Number of Blocks in the Past Day: <span id="blocks-past-day">Loading...</span></p>
-            <p>Current Total Supply: <span id="total-supply">Loading...</span></p>
-            <p>QORT Minted Per Day (Estimated): <span id="qort-per-day">Loading...</span></p>
+            <h2>Current Blockchain Information</h2>
+            <table id="info-table">
+                <tr><th>Block Height</th><th>Block Reward</th><th>Blocks/Day</th><th>Total Supply</th><th>QORT Minted/Day (Estimate)</th></tr>
+                <tr><td id="block-height"></td><td id="block-reward"></td><td id="blocks-past-day"></td><td id="total-supply"></td><td id="qort-per-day"></td></tr>
+            </table>
         </section>
 
         <section id="account-search">
