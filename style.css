@@ -80,6 +80,10 @@ th {
     background-color: #0f1a2e;
 }
 
+tr:nth-child(odd) {
+    background-color: #3d4452;
+}
+
 footer {
     text-align: center;
     padding: 20px;
