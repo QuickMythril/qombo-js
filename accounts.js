@@ -142,8 +142,10 @@ function fetchAddressDetails(address) {
                 <td>Blocks Minted</td>
                 <td>
                     ${addressDetails.blocksMinted}
-                    ${addressDetails.blocksMintedAdjustment > 0 ? ` (+${addressDetails.blocksMintedAdjustment})` : ''}
-                    ${addressDetails.blocksMintedPenalty > 0 ? ` (-${addressDetails.blocksMintedPenalty})` : ''}
+                    ${addressDetails.blocksMintedAdjustment > 0 ? ` +${addressDetails.blocksMintedAdjustment}` : ''}
+                    ${addressDetails.blocksMintedPenalty < 0 ? ` ${addressDetails.blocksMintedPenalty}` : ''}
+                    ${addressDetails.blocksMintedAdjustment > 0 || addressDetails.blocksMintedPenalty < 0 ?
+                    ` (Total: ${addressDetails.blocksMinted+addressDetails.blocksMintedAdjustment+addressDetails.blocksMintedPenalty})` : ''}
                 </td>
             </tr>
             <tr><td>Balance</td><td>${parseFloat(balance).toFixed(8)} QORT</td></tr>
