@@ -75,6 +75,7 @@ th, td {
 td.clickable-name {
     color: #008fd5;
     cursor: pointer;
+    text-decoration: underline;
 }
 
 th {
