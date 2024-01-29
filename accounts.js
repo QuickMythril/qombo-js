@@ -132,7 +132,8 @@ function fetchAddressDetails(address) {
     ]).then(([addressDetails, balance, names]) => {
         let tableHtml = '<table>';
         if (names.length > 0) {
-            tableHtml += `<tr><th>Registered Name</th><th>${names[0].name}</th></tr>`;
+            tableHtml += `<tr><th>Registered Name</th><th><img src="/arbitrary/THUMBNAIL/${names[0].name}/qortal_avatar"
+            style="float:left;width:48px;height:48px;">${names[0].name}</th></tr>`;
         }
         tableHtml += `
             <tr><th>Address</th><th>${address}</th></tr>
@@ -175,7 +176,8 @@ function searchByName(name) {
                     tableHtml += `
                         <tr>
                             <td>${result.owner}</td>
-                            <td>${result.name}</td>
+                            <td><img src="/arbitrary/THUMBNAIL/${result.name}/qortal_avatar"
+                            style="float:left;width:24px;height:24px;">${result.name}</td>
                             <td>${result.isForSale ? 'YES' : '-'}</td>
                             <td>${result.data}</td>
                             <td>${new Date(result.registered).toLocaleString()}</td>

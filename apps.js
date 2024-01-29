@@ -103,8 +103,8 @@ function searchByName(name) {
                 tableHtml += `
                     <tr>
                         <td class="clickable-name" data-name="${result.name}">
-                        <img src="/arbitrary/THUMBNAIL/${result.name}/qortal_avatar" width="24" height="24">
-                        ${result.name}</td>
+                        <img src="/arbitrary/THUMBNAIL/${result.name}/qortal_avatar"
+                        style="float:left;width:24px;height:24px;">${result.name}</td>
                         <td>${sizeString}</td>
                         <td>${createdString}</td>
                         <td>${updatedString}</td>
