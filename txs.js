@@ -31,12 +31,12 @@ function fetchUnconfirmedTransactions() {
                 transactionTypes[type] = (transactionTypes[type] || 0) + 1;
             });
             const totalUnconfirmed = data.length;
-            let tableHtmlUpper = '<table><tr><th>Total Unconfirmed</th>';
+            let tableHtmlUpper = '<table><tr><th>Tx Type:</th>';
             Object.keys(transactionTypes).forEach(type => {
                 tableHtmlUpper += `<th>${type}</th>`;
             });
             tableHtmlUpper += '</tr>';
-            let tableHtmlLower = `<tr><th>${totalUnconfirmed}</th>`;
+            let tableHtmlLower = `<tr><th>Total: ${totalUnconfirmed}</th>`;
             Object.keys(transactionTypes).forEach(type => {
                 tableHtmlLower += `<td>${transactionTypes[type]}</td>`;
             });

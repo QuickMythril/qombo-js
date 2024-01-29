@@ -96,17 +96,15 @@ function calculateDailyQort() {
 }
 
 function fetchOnlineAccounts() {
+    let totalCount = 0;
     fetch('/addresses/online/levels')
         .then(response => response.json())
         .then(data => {
-            const tableBody = document.getElementById('accounts-table').getElementsByTagName('tbody')[0];
             data.forEach(account => {
-                const row = tableBody.insertRow();
-                const cell1 = row.insertCell(0);
-                const cell2 = row.insertCell(1);
-                cell1.textContent = `${account.level == 10 ? '10/F' : account.level}`;
-                cell2.textContent = account.count;
+                totalCount += account.count;
+                document.getElementById(`level-${account.level}-count`).textContent = account.count;
             });
+            document.getElementById(`total-count`).textContent = `Total: ${totalCount}`;
         })
         .catch(error => console.error('Error fetching online accounts:', error));
 }
@@ -121,12 +119,12 @@ function fetchUnconfirmedTransactions() {
                 transactionTypes[type] = (transactionTypes[type] || 0) + 1;
             });
             const totalUnconfirmed = data.length;
-            let tableHtmlUpper = '<table><tr><th>Total Unconfirmed</th>';
+            let tableHtmlUpper = '<table><tr><th>Tx Type:</th>';
             Object.keys(transactionTypes).forEach(type => {
                 tableHtmlUpper += `<th>${type}</th>`;
             });
             tableHtmlUpper += '</tr>';
-            let tableHtmlLower = `<tr><th>${totalUnconfirmed}</th>`;
+            let tableHtmlLower = `<tr><th>Total: ${totalUnconfirmed}</th>`;
             Object.keys(transactionTypes).forEach(type => {
                 tableHtmlLower += `<td>${transactionTypes[type]}</td>`;
             });
