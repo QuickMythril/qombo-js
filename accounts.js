@@ -133,7 +133,7 @@ function fetchAddressDetails(address) {
         let tableHtml = '<table>';
         if (names.length > 0) {
             tableHtml += `<tr><th>Registered Name</th><th><img src="/arbitrary/THUMBNAIL/${names[0].name}/qortal_avatar"
-            style="vertical-align:middle;width:48px;height:48px;"
+            style="width:48px;height:48px;"
             onerror="this.style.display='none'"
             >${names[0].name}</th></tr>`;
         }
@@ -178,8 +178,8 @@ function searchByName(name) {
                     tableHtml += `
                         <tr>
                             <td>${result.owner}</td>
-                            <td><img src="/arbitrary/THUMBNAIL/${result.name}/qortal_avatar"
-                            style="vertical-align:middle;width:24px;height:24px;"
+                            <td class="clickable-name" data-name="${result.owner}"><img src="/arbitrary/THUMBNAIL/${result.name}/qortal_avatar"
+                            style="width:24px;height:24px;"
                             onerror="this.src='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'"
                             >${result.name}</td>
                             <td>${result.isForSale ? 'YES' : '-'}</td>
@@ -190,6 +190,12 @@ function searchByName(name) {
                 });
                 tableHtml += '</table>';
                 document.getElementById('account-results').innerHTML = tableHtml;
+                document.querySelectorAll('.clickable-name').forEach(element => {
+                    element.addEventListener('click', function() {
+                        let target = this.getAttribute('data-name');
+                        fetchAddressDetails(target);
+                    });
+                });
                 const exactMatch = results.find(r => r.name.toLowerCase() === name.toLowerCase());
                 if (exactMatch) {
                     fetchAddressDetails(exactMatch.owner);

@@ -99,23 +99,26 @@ footer {
 button {
     background-color: #008fd5;
     color: #c9d2d9;
-    padding: 10px 20px;
+    padding: 10px 10px;
     border: none;
     cursor: pointer;
     border-radius: 15px;
+    vertical-align: middle;
 }
 
 select {
     background-color: #008fd5;
     color: #c9d2d9;
-    padding: 5px 10px;
+    padding: 5px 5px;
     border: none;
     cursor: pointer;
     border-radius: 10px;
+    vertical-align: middle;
 }
 
 img {
     margin-right: 15px;
+    vertical-align: middle;
 }
 
 #menu-list {
