@@ -76,9 +76,9 @@ async function fetchAndDisplayTrades(start, coin) {
             let row = document.createElement('tr');
             row.insertCell(0).textContent = trade.qortAmount;
             let fromNameOrAddress = await displayNameOrAddress(trade.sellerAddress);
-            row.insertCell(1).textContent = fromNameOrAddress;
+            row.insertCell(1).innerHTML = fromNameOrAddress;
             let toNameOrAddress = await displayNameOrAddress(trade.buyerReceivingAddress);
-            row.insertCell(2).textContent = toNameOrAddress;
+            row.insertCell(2).innerHTML = toNameOrAddress;
             row.insertCell(3).textContent = trade.foreignAmount;
             row.insertCell(4).textContent = (trade.foreignAmount / trade.qortAmount).toFixed(8);
             let formattedTimestamp = new Date(trade.tradeTimestamp).toLocaleString();
@@ -96,7 +96,10 @@ async function displayNameOrAddress(address) {
         const response = await fetch(`/names/address/${address}`);
         const names = await response.json();
         if (names[0]) {
-            return `${names[0].name}`;
+            return `<img src="/arbitrary/THUMBNAIL/${names[0].name}/qortal_avatar"
+            style="width:24px;height:24px;"
+            onerror="this.src='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'"
+            >${names[0].name}`;
         } else {
             return `(${shortenedAddress})`;
         }

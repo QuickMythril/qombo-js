@@ -60,7 +60,7 @@ async function fetchAndDisplayTxs(height) {
             row.insertCell(1).textContent = shortenedSignature;
             row.insertCell(2).textContent = tx.type;
             let nameOrAddress = await displayNameOrAddress(tx.creatorAddress);
-            row.insertCell(3).textContent = nameOrAddress;
+            row.insertCell(3).innerHTML = nameOrAddress;
             row.insertCell(4).textContent = tx.fee;
             let formattedTimestamp = new Date(tx.timestamp).toLocaleString();
             row.insertCell(5).textContent = formattedTimestamp;
@@ -77,7 +77,10 @@ async function displayNameOrAddress(address) {
         const response = await fetch(`/names/address/${address}`);
         const names = await response.json();
         if (names[0]) {
-            return `${names[0].name}`;
+            return `<img src="/arbitrary/THUMBNAIL/${names[0].name}/qortal_avatar"
+            style="width:24px;height:24px;"
+            onerror="this.src='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'"
+            >${names[0].name}`;
         } else {
             return `(${shortenedAddress})`;
         }
