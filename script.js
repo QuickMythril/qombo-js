@@ -38,7 +38,7 @@ function fetchBlockReward(currentHeight) {
     if (currentHeight > decreaseInterval) {
         reward -= Math.floor((currentHeight - 1) / decreaseInterval) * 0.25;
     }
-    document.getElementById('block-reward').textContent = reward.toFixed(2);
+    document.getElementById('block-reward').textContent = `${reward.toFixed(2)} QORT`;
 }
 
 function fetchCirculatingSupply() {
@@ -46,7 +46,7 @@ function fetchCirculatingSupply() {
     return fetch('/stats/supply/circulating')
         .then(response => response.text())
         .then(data => {
-            document.getElementById('total-supply').textContent = parseFloat(data).toFixed(2);
+            document.getElementById('total-supply').textContent = `${parseFloat(data).toFixed(2)} QORT`;
             return parseFloat(data);
         })
         .catch(error => {
@@ -57,7 +57,7 @@ function fetchCirculatingSupply() {
 }
 
 function fetchDailyBlocks() {
-    document.getElementById('blocks-past-day').textContent = 'Loading...';
+    document.getElementById('block-time').textContent = 'Loading...';
     return fetch('/blocks/height')
         .then(response => response.text())
         .then(currentBlockHeight => {
@@ -74,6 +74,8 @@ function fetchDailyBlocks() {
                         .then(data => {
                             const oneDayAgoBlockHeight = data.height;
                             const blocksInPastDay = currentBlockHeight - oneDayAgoBlockHeight;
+                            const blockTime = Math.floor(24*60*60/blocksInPastDay);
+                            document.getElementById('block-time').textContent = `${blockTime} seconds`;
                             document.getElementById('blocks-past-day').textContent = blocksInPastDay;
                             return blocksInPastDay;
                         });
@@ -100,9 +102,27 @@ function fetchOnlineAccounts() {
     fetch('/addresses/online/levels')
         .then(response => response.json())
         .then(data => {
+            const qortPerDayString = document.getElementById('qort-per-day').textContent;
+            const qortPerDay = parseFloat(qortPerDayString.match(/\d+/)[0]);
+            const tierCounts = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
             data.forEach(account => {
                 totalCount += account.count;
                 document.getElementById(`level-${account.level}-count`).textContent = account.count;
+                if ([1, 2].includes(account.level)) tierCounts[1] += account.count;
+                else if ([3, 4].includes(account.level)) tierCounts[2] += account.count;
+                else if ([5, 6].includes(account.level)) tierCounts[3] += account.count;
+                else if ([7, 8].includes(account.level)) tierCounts[4] += account.count;
+                // This will need updated when 30 accounts reach Level 9:
+                else if (account.level === 10) tierCounts[5] += account.count;
+            });
+            const percentages = [6, 13, 19, 26, 35];
+            percentages.forEach((percent, index) => {
+                const tierReward = (qortPerDay * (percent / 100)) / tierCounts[index + 1];
+                for (let level = index * 2 + 1; level <= index * 2 + 2; level++) {
+                    if (level !== 8 && level !== 9) {
+                        document.getElementById(`level-${level}-reward`).textContent = tierReward.toFixed(4);
+                    }
+                }
             });
             document.getElementById(`total-count`).textContent = `Total: ${totalCount}`;
         })

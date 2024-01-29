@@ -20,13 +20,13 @@
         <section id="blockchain-info">
             <h2>Current Blockchain Information</h2>
             <table id="info-table">
-                <tr><th>Block Height</th><th>Block Reward</th><th>Blocks/Day</th><th>Total Supply</th><th>QORT Minted/Day (Estimate)</th></tr>
-                <tr><td id="block-height"></td><td id="block-reward"></td><td id="blocks-past-day"></td><td id="total-supply"></td><td id="qort-per-day"></td></tr>
+                <tr><th>Block Height</th><th>Block Reward</th><th>Avg Block Time</th><th>Blocks/Day</th><th>Total Supply</th><th>QORT Minted/Day (Estimate)</th></tr>
+                <tr><td id="block-height"></td><td id="block-reward"></td><td id="block-time"></td><td id="blocks-past-day"></td><td id="total-supply"></td><td id="qort-per-day"></td></tr>
             </table>
         </section>
 
         <section id="transaction-info">
-            <h2>Unconfirmed Transactions</h2>
+            <h3>Unconfirmed Transactions</h3>
             <table id="transaction-table">
                 <tr><th>Total Unconfirmed</th></tr>
                 <tr><th>Loading...</th></tr>
@@ -34,13 +34,16 @@
         </section>
 
         <section id="online-accounts">
-            <h2>Online Accounts</h2>
+            <h3>Online Accounts</h3>
             <table id="accounts-table">
                 <thead>
                     <tr><th>Level:</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>F/10</th></tr>
                     <tr><th id="total-count">Total:</th><td id="level-0-count"></td><td id="level-1-count"></td><td id="level-2-count"></td>
                     <td id="level-3-count"></td><td id="level-4-count"></td><td id="level-5-count"></td><td id="level-6-count"></td>
                     <td id="level-7-count"></td><td id="level-8-count"></td><td id="level-9-count"></td><td id="level-10-count"></td></tr>
+                    <tr><th>QORT/Minter/1000</th><td>0</td><td id="level-1-reward"></td><td id="level-2-reward"></td>
+                    <td id="level-3-reward"></td><td id="level-4-reward"></td><td id="level-5-reward"></td><td id="level-6-reward"></td>
+                    <td id="level-7-reward"></td><td id="level-8-reward">0</td><td id="level-9-reward">0</td><td id="level-10-reward"></td></tr>
                 </thead>
                 <tbody>
                 </tbody>
