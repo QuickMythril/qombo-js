@@ -60,8 +60,8 @@ async function fetchAndDisplayTxs(height) {
             let nameOrAddress = await displayNameOrAddress(tx.creatorAddress);
             row.insertCell(3).textContent = nameOrAddress;
             row.insertCell(4).textContent = tx.fee;
-            let formattedTimestamp = formatTimestamp(tx.timestamp);
-            row.insertCell(5).textContent = formattedTimestamp;                
+            let formattedTimestamp = new Date(tx.timestamp).toLocaleString();
+            row.insertCell(5).textContent = formattedTimestamp;
             tableBody.appendChild(row);
         });
     } catch (error) {
@@ -95,8 +95,3 @@ document.getElementById('load-more').addEventListener('click', function() {
         console.error('No rows in the table.');
     }
 });
-
-function formatTimestamp(timestamp) {
-    const date = new Date(timestamp);
-    return date.toGMTString();
-}

@@ -40,7 +40,7 @@ function fetchAndDisplayBlocks(height) {
                 row.insertCell(1).textContent = shortenedSignature;
                 row.insertCell(2).textContent = block.transactionCount;
                 row.insertCell(3).textContent = block.onlineAccountsCount;
-                let formattedTimestamp = formatTimestamp(block.timestamp);
+                let formattedTimestamp = new Date(block.timestamp).toLocaleString();
                 row.insertCell(4).textContent = formattedTimestamp;                
                 tableBody.appendChild(row);
             });
@@ -102,7 +102,7 @@ async function fetchAndDisplayTxs(signature) {
             let nameOrAddress = await displayNameOrAddress(tx.creatorAddress);
             row.insertCell(3).textContent = nameOrAddress;
             row.insertCell(4).textContent = tx.fee;
-            let formattedTimestamp = formatTimestamp(tx.timestamp);
+            let formattedTimestamp = new Date(tx.timestamp).toLocaleString();
             row.insertCell(5).textContent = formattedTimestamp;                
             tableBody.appendChild(row);
         });
@@ -137,8 +137,3 @@ document.getElementById('load-more').addEventListener('click', function() {
         console.error('No rows in the table.');
     }
 });
-
-function formatTimestamp(timestamp) {
-    const date = new Date(timestamp);
-    return date.toGMTString();
-}

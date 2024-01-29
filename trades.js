@@ -81,8 +81,8 @@ async function fetchAndDisplayTrades(start, coin) {
             row.insertCell(2).textContent = toNameOrAddress;
             row.insertCell(3).textContent = trade.foreignAmount;
             row.insertCell(4).textContent = (trade.foreignAmount / trade.qortAmount).toFixed(8);
-            let formattedTimestamp = formatTimestamp(trade.tradeTimestamp);
-            row.insertCell(5).textContent = formattedTimestamp;                
+            let formattedTimestamp = new Date(trade.tradeTimestamp).toLocaleString();
+            row.insertCell(5).textContent = formattedTimestamp;
             tableBody.appendChild(row);
         });
     } catch (error) {
@@ -124,8 +124,3 @@ document.getElementById('coin-dropdown').addEventListener('change', function() {
     let dayAgoTimestamp = (Date.now() - (24 * 60 * 60 * 1000));
     fetchAndDisplayTrades(dayAgoTimestamp, selectedCoin);
 });
-
-function formatTimestamp(timestamp) {
-    const date = new Date(timestamp);
-    return date.toGMTString();
-}
