@@ -121,6 +121,11 @@ img {
     vertical-align: middle;
 }
 
+#volume-table td {
+    text-align: right;
+    font-family: monospace
+}
+
 #menu-list {
     text-align: center;
 }

@@ -27,14 +27,12 @@
             </table>
             <div id="daily-volumes">
                 <h3>Daily Volume</h3>
-                <ul>
-                    <li>LTC: <span id="litecoin-volume">Loading...</span></li>
-                    <li>BTC: <span id="bitcoin-volume">Loading...</span></li>
-                    <li>DOGE: <span id="dogecoin-volume">Loading...</span></li>
-                    <li>RVN: <span id="ravencoin-volume">Loading...</span></li>
-                    <li>DGB: <span id="digibyte-volume">Loading...</span></li>
-                    <li>ARRR: <span id="piratechain-volume">Loading...</span></li>
-                </ul>
+                <table id="volume-table">
+                    <tr><th>Chain</th><th>LTC</th><th>BTC</th><th>DOGE</th><th>DGB</th><th>RVN</th><th>ARRR</th></tr>
+                    <tr><th>Coin Spent</th><td id="litecoin-spent"></td><td id="bitcoin-spent"></td><td id="dogecoin-spent"></td><td id="digibyte-spent"></td><td id="ravencoin-spent"></td><td id="piratechain-spent"></td></tr>
+                    <tr><th>QORT Bought</th><td id="litecoin-bought"></td><td id="bitcoin-bought"></td><td id="dogecoin-bought"></td><td id="digibyte-bought"></td><td id="ravencoin-bought"></td><td id="piratechain-bought"></td></tr>
+                    <tr><th>Avg Cost / QORT</th><td id="litecoin-price"></td><td id="bitcoin-price"></td><td id="dogecoin-price"></td><td id="digibyte-price"></td><td id="ravencoin-price"></td><td id="piratechain-price"></td></tr>
+                </table>
             </div>            
         </section>
 

@@ -40,11 +40,11 @@ function fetchBlockHeight(callback) {
 async function fetchDailyVolumes(timestamp) {
     const coins = ['LITECOIN', 'BITCOIN', 'DOGECOIN', 'RAVENCOIN', 'DIGIBYTE', 'PIRATECHAIN'];
     for (const coin of coins) {
+        document.getElementById(`${coin.toLowerCase()}-spent`).textContent = 'Loading...';
         try {
             const response = await fetch(`/crosschain/trades?foreignBlockchain=${coin}&minimumTimestamp=${timestamp}`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
-                document.getElementById(`${coin.toLowerCase()}-volume`).textContent = `HTTP error! status: ${response.status}`;
             }
             const trades = await response.json();
             let dailyQort = 0;
@@ -55,12 +55,15 @@ async function fetchDailyVolumes(timestamp) {
             });
             if (trades.length > 0) {
                 const avgPerQort = dailyForeign / dailyQort;
-                document.getElementById(`${coin.toLowerCase()}-volume`).textContent = `${dailyForeign.toFixed(8)}, QORT: ${dailyQort}, 1 QORT = ${avgPerQort.toFixed(8)} ${coin}`;
+                document.getElementById(`${coin.toLowerCase()}-spent`).textContent = `${dailyForeign.toFixed(8)}`;
+                document.getElementById(`${coin.toLowerCase()}-bought`).textContent = `${dailyQort.toFixed(8)}`;
+                document.getElementById(`${coin.toLowerCase()}-price`).textContent = `${avgPerQort.toFixed(8)}`;
             } else {
-                document.getElementById(`${coin.toLowerCase()}-volume`).textContent = `N/A`;
+                document.getElementById(`${coin.toLowerCase()}-spent`).textContent = `0`;
+                document.getElementById(`${coin.toLowerCase()}-bought`).textContent = `0`;
+                document.getElementById(`${coin.toLowerCase()}-price`).textContent = `-`;
             }
         } catch (error) {
-            document.getElementById(`${coin.toLowerCase()}-volume`).textContent = `Error fetching daily volume: ${error}`;
             console.error(`Error fetching ${coin} daily volume: ${error}`);
         }
     }
