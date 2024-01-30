@@ -124,12 +124,13 @@ function validateAddress(address) {
 }
 
 function fetchAddressDetails(address) {
-    document.getElementById('account-details').innerHTML = '';
+    document.getElementById('account-details').innerHTML = '<p>Loading...</p>';
     Promise.all([
         fetch('/addresses/' + address).then(response => response.json()),
         fetch('/addresses/balance/' + address).then(response => response.text()),
-        fetch('/names/address/' + address).then(response => response.json())
-    ]).then(([addressDetails, balance, names]) => {
+        fetch('/names/address/' + address).then(response => response.json()),
+        fetch('/addresses/rewardshares?involving=' + address).then(response => response.json())
+    ]).then(async ([addressDetails, balance, names, rewardShares]) => {
         let tableHtml = '<table>';
         if (names.length > 0) {
             tableHtml += `<tr><th>Registered Name</th><th><img src="/arbitrary/THUMBNAIL/${names[0].name}/qortal_avatar"
@@ -141,25 +142,34 @@ function fetchAddressDetails(address) {
             <tr><th>Address</th><th>${address}</th></tr>
             <tr><td>Public Key</td><td>${addressDetails.publicKey}</td></tr>
             <tr><td>Level</td><td>${addressDetails.level}${addressDetails.flags === 1 ? ' (Founder)' : ''}</td></tr>
-            <tr>
-                <td>Blocks Minted</td>
+            <tr><td>Blocks Minted</td>
                 <td>
                     ${addressDetails.blocksMinted}
                     ${addressDetails.blocksMintedAdjustment > 0 ? ` +${addressDetails.blocksMintedAdjustment}` : ''}
                     ${addressDetails.blocksMintedPenalty < 0 ? ` ${addressDetails.blocksMintedPenalty}` : ''}
                     ${addressDetails.blocksMintedAdjustment > 0 || addressDetails.blocksMintedPenalty < 0 ?
                     ` (Total: ${addressDetails.blocksMinted+addressDetails.blocksMintedAdjustment+addressDetails.blocksMintedPenalty})` : ''}
-                </td>
-            </tr>
-            <tr><td>Balance</td><td>${parseFloat(balance).toFixed(8)} QORT</td></tr>
-        `;
-        tableHtml += '</table>';
+                </td></tr>
+            <tr><td>Balance</td><td>${parseFloat(balance).toFixed(8)} QORT</td></tr><tr><td>Active Rewardshares</td><td>`;
+        let selfShare = '';
+        let shareList = [];
+        for (const share of rewardShares) {
+            if (share.recipient === share.mintingAccount) {
+                selfShare = await displayNameOrAddress(share.recipient);
+            } else {
+                shareList.push(await displayNameOrAddress(share.recipient));
+            }
+        }
+        tableHtml += `${shareList[0]
+            ? (selfShare ? selfShare + ' | ' + shareList.join(' | ') : shareList.join(' | '))
+            : (selfShare ? selfShare : '')}`;
+        tableHtml += '</td></tr></table>';
         document.getElementById('account-details').innerHTML = tableHtml;
     }).catch(error => console.error('Error fetching address details:', error));
 }
 
 function searchByName(name) {
-    document.getElementById('account-results').innerHTML = '';
+    document.getElementById('account-results').innerHTML = '<p>Loading...</p>';
     fetch('/names/search?query=' + name)
         .then(response => response.json())
         .then(results => {
@@ -192,6 +202,7 @@ function searchByName(name) {
                 document.getElementById('account-results').innerHTML = tableHtml;
                 document.querySelectorAll('.clickable-name').forEach(element => {
                     element.addEventListener('click', function() {
+                        document.body.scrollTop = document.documentElement.scrollTop = 0;
                         let target = this.getAttribute('data-name');
                         fetchAddressDetails(target);
                     });
@@ -205,4 +216,23 @@ function searchByName(name) {
             }
         })
         .catch(error => console.error('Error searching by name:', error));
+}
+
+async function displayNameOrAddress(address) {
+    let shortenedAddress = address.substring(0, 4) + '...' + address.substring(address.length - 4);
+    try {
+        const response = await fetch(`/names/address/${address}`);
+        const names = await response.json();
+        if (names[0]) {
+            return `<img src="/arbitrary/THUMBNAIL/${names[0].name}/qortal_avatar"
+            style="width:24px;height:24px;"
+            onerror="this.src='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'"
+            >${names[0].name}`;
+        } else {
+            return `(${shortenedAddress})`;
+        }
+    } catch (error) {
+        console.error('Error fetching name:', error);
+        return `(${shortenedAddress})`;
+    }
 }
