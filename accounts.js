@@ -168,7 +168,7 @@ function fetchAddressDetails(address) {
                 shareList.push(shareElement);
             }
         }
-        shareHtml = (selfShare ? selfShare + ' | ' : '') + shareList.join(' | ');
+        shareHtml = (selfShare ? (shareList[0] ? `${selfShare} | ` : selfShare) : '') + shareList.join(' | ');
         tableHtml += `<tr><td>Active Rewardshares</td><td>${shareHtml}</td></tr></table>`;
         document.getElementById('account-details').innerHTML = tableHtml;
         document.querySelectorAll('.clickable-name').forEach(element => {
@@ -201,6 +201,7 @@ async function displayNameOrAddress(address) {
 }
 
 function searchByName(name) {
+    document.getElementById('account-details').innerHTML = '<p>Loading...</p>';
     document.getElementById('account-results').innerHTML = '<p>Loading...</p>';
     fetch('/names/search?query=' + name)
         .then(response => response.json())
@@ -242,6 +243,8 @@ function searchByName(name) {
                 const exactMatch = results.find(r => r.name.toLowerCase() === name.toLowerCase());
                 if (exactMatch) {
                     fetchAddressDetails(exactMatch.owner);
+                } else {
+                    document.getElementById('account-details').innerHTML = '<p>No exact match found.</p>';
                 }
             } else {
                 document.getElementById('account-results').innerHTML = '<p>No results found.</p>';
