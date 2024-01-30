@@ -166,6 +166,29 @@ img {
     text-align: center;
 }
 
+/* Styles for tablets (screen width 768px or less) */
+/* Styles for mobile phones (screen width 480px or less) */
+/*
+@media screen and (max-width: 768px) {
+    main {
+        width: 95%;
+        padding: 10px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    body {
+        font-size: 14px;
+    }
+
+    main {
+        width: 100%;
+        margin: 10px 0;
+        padding: 5px;
+    }
+}
+*/
+
 /* Pirate Theme */
 /*
 #bb9645-#f2de99 = Gold

@@ -17,6 +17,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 });
 
+/*
+function uiOnly() {
+    if (typeof qortalRequest === "function") {
+        // qortalRequest is available
+    } else {
+        // qortalRequest not available
+    }
+}
+*/
+
 function fetchBlockHeight() {
     document.getElementById('block-height').textContent = 'Loading...';
     return fetch('/blocks/height')
