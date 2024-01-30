@@ -84,6 +84,12 @@ td.clickable-name {
     text-decoration: underline;
 }
 
+span.clickable-name {
+    color: #008fd5;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
 th {
     background-color: #0f1a2e;
 }

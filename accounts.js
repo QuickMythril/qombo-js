@@ -150,22 +150,54 @@ function fetchAddressDetails(address) {
                     ${addressDetails.blocksMintedAdjustment > 0 || addressDetails.blocksMintedPenalty < 0 ?
                     ` (Total: ${addressDetails.blocksMinted+addressDetails.blocksMintedAdjustment+addressDetails.blocksMintedPenalty})` : ''}
                 </td></tr>
-            <tr><td>Balance</td><td>${parseFloat(balance).toFixed(8)} QORT</td></tr><tr><td>Active Rewardshares</td><td>`;
+            <tr><td>Balance</td><td>${parseFloat(balance).toFixed(8)} QORT</td></tr>`;
         let selfShare = '';
         let shareList = [];
+        let shareHtml = '';
         for (const share of rewardShares) {
             if (share.recipient === share.mintingAccount) {
-                selfShare = await displayNameOrAddress(share.recipient);
-            } else {
-                shareList.push(await displayNameOrAddress(share.recipient));
+                let displayName = await displayNameOrAddress(share.recipient);
+                selfShare = displayName;
+            } else if (address === share.mintingAccount) {
+                let displayName = await displayNameOrAddress(share.recipient);
+                let shareElement = `<span class="clickable-name" data-name="${share.recipient}">${displayName}</span>`;
+                shareList.push(shareElement);
+            } else if (address === share.recipient) {
+                let displayName = await displayNameOrAddress(share.mintingAccount);
+                let shareElement = `(from <span class="clickable-name" data-name="${share.mintingAccount}">${displayName}</span>)`;
+                shareList.push(shareElement);
             }
         }
-        tableHtml += `${shareList[0]
-            ? (selfShare ? selfShare + ' | ' + shareList.join(' | ') : shareList.join(' | '))
-            : (selfShare ? selfShare : '')}`;
-        tableHtml += '</td></tr></table>';
+        shareHtml = (selfShare ? selfShare + ' | ' : '') + shareList.join(' | ');
+        tableHtml += `<tr><td>Active Rewardshares</td><td>${shareHtml}</td></tr></table>`;
         document.getElementById('account-details').innerHTML = tableHtml;
+        document.querySelectorAll('.clickable-name').forEach(element => {
+            element.addEventListener('click', function() {
+                document.body.scrollTop = document.documentElement.scrollTop = 0;
+                let target = this.getAttribute('data-name');
+                fetchAddressDetails(target);
+            });
+        });
     }).catch(error => console.error('Error fetching address details:', error));
+}
+
+async function displayNameOrAddress(address) {
+    let shortenedAddress = address.substring(0, 4) + '...' + address.substring(address.length - 4);
+    try {
+        const response = await fetch(`/names/address/${address}`);
+        const names = await response.json();
+        if (names[0]) {
+            return `<img src="/arbitrary/THUMBNAIL/${names[0].name}/qortal_avatar"
+            style="width:24px;height:24px;"
+            onerror="this.style='display:none'"
+            >${names[0].name}`;
+        } else {
+            return `(${shortenedAddress})`;
+        }
+    } catch (error) {
+        console.error('Error fetching name:', error);
+        return `(${shortenedAddress})`;
+    }
 }
 
 function searchByName(name) {
@@ -216,23 +248,4 @@ function searchByName(name) {
             }
         })
         .catch(error => console.error('Error searching by name:', error));
-}
-
-async function displayNameOrAddress(address) {
-    let shortenedAddress = address.substring(0, 4) + '...' + address.substring(address.length - 4);
-    try {
-        const response = await fetch(`/names/address/${address}`);
-        const names = await response.json();
-        if (names[0]) {
-            return `<img src="/arbitrary/THUMBNAIL/${names[0].name}/qortal_avatar"
-            style="width:24px;height:24px;"
-            onerror="this.style='display:none'"
-            >${names[0].name}`;
-        } else {
-            return `(${shortenedAddress})`;
-        }
-    } catch (error) {
-        console.error('Error fetching name:', error);
-        return `(${shortenedAddress})`;
-    }
 }
