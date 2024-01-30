@@ -79,7 +79,7 @@ async function displayNameOrAddress(address) {
         if (names[0]) {
             return `<img src="/arbitrary/THUMBNAIL/${names[0].name}/qortal_avatar"
             style="width:24px;height:24px;"
-            onerror="this.src='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'"
+            onerror="this.style='display:none'"
             >${names[0].name}`;
         } else {
             return `(${shortenedAddress})`;

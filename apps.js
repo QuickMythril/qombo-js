@@ -102,7 +102,7 @@ function searchByName(name) {
                         <td class="clickable-name" data-name="${result.name}">
                         <img src="/arbitrary/THUMBNAIL/${result.name}/qortal_avatar"
                         style="width:24px;height:24px;"
-                        onerror="this.src='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'"
+                        onerror="this.style='display:none'"
                         >${result.name}</td>
                         <td>${sizeString}</td>
                         <td>${createdString}</td>
