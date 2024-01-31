@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qombo: Data Navigator - v1.4.0</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Qombo: Data Navigator - v1.4.0</h1>
+    </header>
+    <main>
+        <section id="menu-bar">
+            <div id="menu-list">
+                <p><span id="menu-test"><a href="index.html">Home</a> | <a href="blocks.html">Blocks</a> | <a href="txs.html">Transactions</a> | <a href="trades.html">Trades</a> | <a href="accounts.html">Accounts</a> | <a href="apps.html">Apps</a> | <a href="websites.html">Websites</a> | <a href="polls.html">Polls</a></span></p>
+            </div>
+        </section>
+        
+        <section id="test-info">
+            <h3>Test Page - For Development Purposes</h3>
+            <div id="test-div"></div>
+            <table><tr><th>Current Block</th><td id="block-height"></td><th>Current Timestamp</th><td id="current-timestamp"></td></tr>
+                <tr><th>Blocks/Day</th><td id="blocks-past-day"></td><th>Seconds/Block</th><td id="block-time"></td></tr>
+            </table>
+        </section>
+        
+        <section id="trigger-info">
+            <h3>Feature Triggers</h3>
+            <table>
+                <tr><th>disableTransferPrivsTimestamp</th><td>1706745000000</td><td id="date-disable"></td><td id="until-disable"></td></tr>
+                <tr><th>selfSponsorshipAlgoV2SnapshotTimestamp</th><td>1706745600000</td><td id="date-snapshot"></td><td id="until-snapshot"></td></tr>
+                <tr><th>penaltyFixHeight = 1589200</th><td id="timestamp-fix"></td><td id="date-fix"></td><td id="until-fix"></td></tr>
+                <tr><th>enableTransferPrivsTimestamp</th><td>1709251200000</td><td id="date-enable"></td><td id="until-enable"></td></tr>
+            </table>
+        </section>
+    </main>
+
+    <script src="test.js"></script>
+</body>
+</html>
