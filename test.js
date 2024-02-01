@@ -71,22 +71,28 @@ function calculateFeatures() {
 }
 
 function formatDuration(duration) {
+    let negative = false;
+    if (duration < 0) {
+        negative = true;
+        duration = duration * -1;
+    }
     const seconds = Math.floor((duration / 1000) % 60);
     const minutes = Math.floor((duration / (1000 * 60)) % 60);
     const hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
     const days = Math.floor(duration / (1000 * 60 * 60 * 24));
     let readableFormat = '';
     if (days > 0) {
-        readableFormat += `${days} days `;
+        readableFormat += `${days} day${days>1?'s':''}${hours>0?', ':''}`;
     }
     if (hours > 0) {
-        readableFormat += `${hours} hours `;
+        readableFormat += `${hours} hour${hours>1?'s':''}${days<1&&minutes>0?', ':''}`;
     }
     if ((minutes > 0) && (days < 1)) {
-        readableFormat += `${minutes} minutes `;
+        readableFormat += `${minutes} minute${minutes>1?'s':''}${hours<1&&seconds>0?', ':''}`;
     }
     if ((seconds > 0) && (hours < 1)) {
-        readableFormat += `${seconds} seconds `;
+        readableFormat += `${seconds} second${seconds>1?'s':''} `;
     }
+    readableFormat = `${negative?'':'in '}${readableFormat}${negative?' ago': ''}`;
     return readableFormat.trim();
 }
