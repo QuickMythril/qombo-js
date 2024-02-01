@@ -10,35 +10,141 @@
 <body>
     <header>
         <h1>Qombo: Data Navigator - v1.4.3</h1>
+        <nav id="menu-bar">
+            <button aria-label="Home" onclick="showSection('home-page')">Home</button>
+            <button aria-label="Blocks" onclick="showSection('blocks-page')">Blocks</button>
+            <button aria-label="Transactions" onclick="showSection('txs-page')">Transactions</button>
+            <button aria-label="Trades" onclick="showSection('trades-page')">Trades</button>
+            <button aria-label="Accounts" onclick="showSection('accounts-page')">Accounts</button>
+            <button aria-label="Apps" onclick="showSection('apps-page')">Apps</button>
+            <button aria-label="Websites" onclick="showSection('websites-page')">Websites</button>
+            <button aria-label="Polls" onclick="showSection('polls-page')">Polls</button>
+            <button aria-label="TEST" onclick="showSection('test-page')">TEST</button>
+        </nav>
     </header>
     <main>
-        <section id="menu-bar">
-            <div id="menu-list">
-                <p><span id="menu-home">Home | <a href="blocks.html">Blocks</a> | <a href="txs.html">Transactions</a> | <a href="trades.html">Trades</a> | <a href="accounts.html">Accounts</a> | <a href="apps.html">Apps</a> | <a href="websites.html">Websites</a> | <a href="polls.html">Polls</a> | <a href="extra.html">Extra</a></span></p>
-            </div>
+        <section id="home-page" class="content-section">
+            <h2>Home</h2>
+            <table id="info-table">
+                <caption>Current Blockchain Information</caption><thead>
+                <tr><th scope="col">Block Height</th><th scope="col">Block Reward</th><th scope="col">Seconds/Block</th><th scope="col">Blocks/Day</th><th scope="col">Total Supply</th><th scope="col">QORT Minted/Day (Estimate)</th><th scope="col">Current Timestamp</th></tr></thead>
+                <tbody><tr><td id="block-height"></td><td id="block-reward"></td><td id="block-time"></td><td id="blocks-past-day"></td><td id="total-supply"></td><td id="qort-per-day"></td><td id="current-timestamp"></td></tr></tbody>
+            </table>
         </section>
         
-        <section id="blockchain-info">
-            <h2>Current Blockchain Information</h2>
-            <table id="info-table">
-                <tr><th>Block Height</th><th>Block Reward</th><th>Avg Block Time</th><th>Blocks/Day</th><th>Total Supply</th><th>QORT Minted/Day (Estimate)</th></tr>
-                <tr><td id="block-height"></td><td id="block-reward"></td><td id="block-time"></td><td id="blocks-past-day"></td><td id="total-supply"></td><td id="qort-per-day"></td></tr>
-            </table>
-        </section>
-
-        <section id="transaction-info">
-            <h3>Unconfirmed Transactions</h3>
-            <table id="transaction-table">
-                <tr><th>Total Unconfirmed</th></tr>
-                <tr><th>Loading...</th></tr>
-            </table>
-        </section>
-
-        <section id="online-accounts">
-            <h3>Online Accounts</h3>
-            <table id="accounts-table">
+        <section id="blocks-page" class="content-section">
+            <h2>Blocks</h2>
+            <form class="search-blocks">
+                <button aria-label="Search" id="search-blocks-button" type="submit">Search</button>
+                <label for="search-blocks-input">Find Transactions:</label>
+                <input type="text" id="search-blocks-input" placeholder="Enter block height">
+            </form>            
+            <div id="block-details"></div>
+            <table id="block-txs-table">
+                <caption>Block Transactions</caption>
                 <thead>
-                    <tr><th>Level:</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>F/10</th></tr>
+                    <tr>
+                        <th scope="col">Height</th>
+                        <th scope="col">Signature</th>
+                        <th scope="col">TX Type</th>
+                        <th scope="col">Creator</th>
+                        <th scope="col">Fee Paid</th>
+                        <th scope="col">Time</th>
+                    </tr>
+                </thead>
+                <tbody><tr><td>Loading...</td>
+                    <td></td><td></td><td></td><td></td><td></td></tr></tbody>
+            </table>
+            <table id="blocks-table">
+                <caption>Recent Blocks</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Height</th>
+                        <th scope="col">Signature</th>
+                        <th scope="col">TX Count</th>
+                        <th scope="col">Minters</th>
+                        <th scope="col">Time</th>
+                    </tr>
+                </thead>
+                <tbody><tr><td>Loading...</td>
+                    <td></td><td></td><td></td><td></td></tr></tbody>
+            </table>
+            <button aria-label="See More" id="load-more-blocks">See More</button>
+        </section>
+        
+        <section id="txs-page" class="content-section">
+            <h2>Transactions</h2>
+            <table id="transaction-table">
+                <caption>Unconfirmed Transactions</caption>
+                <thead><tr><th scope="col">Total Unconfirmed</th></tr></thead>
+                <tbody><tr><td>Loading...</td></tr></tbody>
+            </table>
+            <table id="recent-txs-table">
+                <caption>Recent Transactions</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Height</th>
+                        <th scope="col">Signature</th>
+                        <th scope="col">TX Type</th>
+                        <th scope="col">Creator</th>
+                        <th scope="col">Fee Paid</th>
+                        <th scope="col">Time</th>
+                    </tr>
+                </thead>
+                <tbody><tr><td>Loading...</td>
+                    <td></td><td></td><td></td><td></td><td></td></tr></tbody>
+            </table>
+            <button aria-label="See More" id="load-more-txs">See More</button>
+        </section>
+        
+        <section id="trades-page" class="content-section">
+            <h2>Trades</h2>
+            <table id="volume-table">
+                <caption>Daily Volume</caption>
+                <thead><tr><th scope="col">Chain</th><th scope="col">LTC</th><th scope="col">BTC</th><th scope="col">DOGE</th><th scope="col">DGB</th><th scope="col">RVN</th><th scope="col">ARRR</th></tr></thead>
+                <tbody><tr><th>Coin Spent</th><td id="litecoin-spent"></td><td id="bitcoin-spent"></td><td id="dogecoin-spent"></td><td id="digibyte-spent"></td><td id="ravencoin-spent"></td><td id="piratechain-spent"></td></tr>
+                <tr><th>QORT Bought</th><td id="litecoin-bought"></td><td id="bitcoin-bought"></td><td id="dogecoin-bought"></td><td id="digibyte-bought"></td><td id="ravencoin-bought"></td><td id="piratechain-bought"></td></tr>
+                <tr><th>Avg Cost / QORT</th><td id="litecoin-price"></td><td id="bitcoin-price"></td><td id="dogecoin-price"></td><td id="digibyte-price"></td><td id="ravencoin-price"></td><td id="piratechain-price"></td></tr>
+                </tbody></table>
+            <h3>Available Trades</h3>
+            <p>Total Available Trades: <span id="total-trades">Loading... (not working yet)</span></p>
+            <div id="trade-data">
+            </div>
+            <div id="coin-selector">
+                <label for="coin-dropdown">Coin</label>
+                <select id="coin-dropdown">
+                    <option value="LITECOIN">LTC</option>
+                    <option value="BITCOIN">BTC</option>
+                    <option value="DOGECOIN">DOGE</option>
+                    <option value="RAVENCOIN">RVN</option>
+                    <option value="DIGIBYTE">DGB</option>
+                    <option value="PIRATECHAIN">ARRR</option>
+                </select>
+            </div>
+            <table id="trades-table">
+                <caption>Recent Trades</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">QORT Amount</th>
+                        <th scope="col">Traded From</th>
+                        <th scope="col">Traded To</th>
+                        <th scope="col">"COIN" Amount</th>
+                        <th scope="col">Avg. COIN/QORT</th>
+                        <th scope="col">Time</th>
+                    </tr>
+                </thead>
+                <tbody><tr><td>Loading...</td>
+                    <td></td><td></td><td></td><td></td><td></td></tr></tbody>
+            </table>
+            <button aria-label="See More" id="load-more-trades">See More</button>
+        </section>
+        
+        <section id="accounts-page" class="content-section">
+            <h2>Accounts</h2>
+            <table id="accounts-table">
+                <caption>Online Accounts</caption>
+                <thead>
+                    <tr><th scope="col">Level:</th><th scope="col">0</th><th scope="col">1</th><th scope="col">2</th><th scope="col">3</th><th scope="col">4</th><th scope="col">5</th><th scope="col">6</th><th scope="col">7</th><th scope="col">8</th><th scope="col">9</th><th scope="col">F/10</th></tr>
                     <tr><th id="total-count">Total:</th><td id="level-0-count"></td><td id="level-1-count"></td><td id="level-2-count"></td>
                     <td id="level-3-count"></td><td id="level-4-count"></td><td id="level-5-count"></td><td id="level-6-count"></td>
                     <td id="level-7-count"></td><td id="level-8-count"></td><td id="level-9-count"></td><td id="level-10-count"></td></tr>
@@ -46,12 +152,68 @@
                     <td id="level-3-reward"></td><td id="level-4-reward"></td><td id="level-5-reward"></td><td id="level-6-reward"></td>
                     <td id="level-7-reward"></td><td id="level-8-reward">0</td><td id="level-9-reward">0</td><td id="level-10-reward"></td></tr>
                 </thead>
-                <tbody>
-                </tbody>
+                <tbody><tr><td>Loading...</td>
+                    <td></td><td></td><td></td><td></td><td></td><td></td>
+                    <td></td><td></td><td></td><td></td><td></td></tr></tbody>
+            </table>
+            <form class="account-info">
+                <button aria-label="Search" id="search-accounts-button" type="submit">Search</button>
+                <label for="search-accounts-input">Find Accounts:</label>
+                <input type="text" id="search-accounts-input" placeholder="Enter address or name">
+            </form>
+            <h3>Search Results</h3>
+            <div id="account-results">
+            </div>
+        </section>
+
+        <section id="apps-page" class="content-section">
+            <h2>Apps</h2>
+            <form class="app-info">
+                <button aria-label="Search" id="search-apps-button" type="submit">Search</button>
+                <label for="search-apps-input">Find Apps:</label>
+                <input type="text" id="search-apps-input" placeholder="Enter address or name">
+            </form>
+            <div id="app-details">
+            </div>
+            <h3>Search Results</h3>
+            <div id="app-results">
+            </div>
+        </section>
+
+        <section id="websites-page" class="content-section">
+            <h2>Websites</h2>
+            <form class="website-info">
+                <button aria-label="Search" id="search-websites-button" type="submit">Search</button>
+                <label for="search-websites-input">Find Apps:</label>
+                <input type="text" id="search-websites-input" placeholder="Enter address or name">
+            </form>
+            <div id="website-details">
+            </div>
+            <h3>Search Results</h3>
+            <div id="website-results">
+            </div>
+        </section>
+
+        <section id="polls-page" class="content-section">
+            <h2>Polls</h2>
+            <div id="poll-details">
+            </div>
+            <h3>Search Results</h3>
+            <div id="poll-results">
+            </div>
+        </section>
+        
+        <section id="test-page" class="content-section">
+            <h2>Test Page - For Development Purposes</h2>
+            <table>
+                <caption>Feature Triggers</caption>
+                <tr><th scope="row">disableTransferPrivsTimestamp</th><td>1706745000000</td><td id="date-disable"></td><td id="until-disable"></td></tr>
+                <tr><th scope="row">selfSponsorshipAlgoV2SnapshotTimestamp</th><td>1706745600000</td><td id="date-snapshot"></td><td id="until-snapshot"></td></tr>
+                <tr><th scope="row">penaltyFixHeight = 1589200</th><td id="timestamp-fix"></td><td id="date-fix"></td><td id="until-fix"></td></tr>
+                <tr><th scope="row">enableTransferPrivsTimestamp</th><td>1709251200000</td><td id="date-enable"></td><td id="until-enable"></td></tr>
             </table>
         </section>
     </main>
-
-    <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
