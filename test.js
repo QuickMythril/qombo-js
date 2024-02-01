@@ -42,7 +42,25 @@ function fetchDailyBlocks() {
 
 function calculateFeatures() {
     const currentTimestamp = Date.now();
+    const currentBlockHeight = parseInt(document.getElementById('block-height').textContent);
+    const currentBlockTime = parseFloat(document.getElementById('block-time').textContent);
 
+    const heightReward = Math.ceil(currentBlockHeight / 1000) * 1000
+    document.getElementById('height-reward').textContent =
+        `Next Block Reward = ${heightReward}`;
+    const blocksUntilReward = heightReward - currentBlockHeight;
+    const untilReward = currentBlockTime * blocksUntilReward * 1000;
+    document.getElementById('until-reward').textContent = formatDuration(untilReward);
+    const timestampReward = currentTimestamp + untilReward;
+    document.getElementById('timestamp-reward').textContent = timestampReward;
+    const dateReward = new Date(timestampReward).toLocaleString();
+    document.getElementById('date-reward').textContent = dateReward;
+
+    const dateEnable =  new Date(1709251200000).toLocaleString();
+    document.getElementById('date-enable').textContent = dateEnable;
+    const untilEnable = 1709251200000 - currentTimestamp;
+    document.getElementById('until-enable').textContent = formatDuration(untilEnable);
+    
     const dateDisable =  new Date(1706745000000).toLocaleString();
     document.getElementById('date-disable').textContent = dateDisable;
     const untilDisable = 1706745000000 - currentTimestamp;
@@ -53,15 +71,7 @@ function calculateFeatures() {
     const untilSnapshot = 1706745600000 - currentTimestamp;
     document.getElementById('until-snapshot').textContent = formatDuration(untilSnapshot);
 
-    const dateEnable =  new Date(1709251200000).toLocaleString();
-    document.getElementById('date-enable').textContent = dateEnable;
-    const untilEnable = 1709251200000 - currentTimestamp;
-    document.getElementById('until-enable').textContent = formatDuration(untilEnable);
-    
-    const currentBlockHeight = parseInt(document.getElementById('block-height').textContent);
-    const currentBlockTime = parseFloat(document.getElementById('block-time').textContent);
     const blocksUntilFix = 1589200 - currentBlockHeight;
-
     const untilFix = currentBlockTime * blocksUntilFix * 1000;
     document.getElementById('until-fix').textContent = formatDuration(untilFix);
     const timestampFix = currentTimestamp + untilFix;
