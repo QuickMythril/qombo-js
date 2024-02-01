@@ -46,9 +46,9 @@ function calculateFeatures() {
     const currentBlockTime = parseFloat(document.getElementById('block-time').textContent);
 
     const heightReward = Math.ceil(currentBlockHeight / 1000) * 1000
-    document.getElementById('height-reward').textContent =
-        `Next Block Reward = ${heightReward}`;
     const blocksUntilReward = heightReward - currentBlockHeight;
+    document.getElementById('height-reward').textContent =
+        `Next Reward = ${heightReward} (in ${blocksUntilReward} block${blocksUntilReward==1?'':'s'})`;
     const untilReward = currentBlockTime * blocksUntilReward * 1000;
     document.getElementById('until-reward').textContent = formatDuration(untilReward);
     const timestampReward = currentTimestamp + untilReward;
