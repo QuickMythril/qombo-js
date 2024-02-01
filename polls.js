@@ -96,11 +96,27 @@ async function fetchPoll(pollName) {
             let percentage = (option.voteCount/voteData.totalVotes*100).toFixed(2);
             htmlContent += `<td>${option.voteCount} (${percentage}%)</td>`;
         });
+
+        /* Uncomment below after next core update */
+        /* //
         htmlContent += `</tr><tr><th>Vote Weights (Total: ${voteData.totalWeight})</th>`;
         pollData.pollOptions.forEach(option => {
             let percentage = (option.voteWeight/voteData.totalWeight*100).toFixed(2);
             htmlContent += `<td>${option.voteWeight} (${percentage}%)</td>`;
         });
+        */ //
+        /* Uncomment above after next core update */
+
+        /* Remove below after next core update */
+        /* */
+        htmlContent += `</tr><tr><th>Vote Weights</th>`;
+        pollData.pollOptions.forEach(option => {
+            let percentage = (option.voteWeight/voteData.totalWeight*100).toFixed(2);
+            htmlContent += `<td>(Pending Core Update)</td>`;
+        });
+        /* */
+        /* Remove above after next core update */
+
         htmlContent += `</tr></table>`;
         document.getElementById('poll-details').innerHTML = htmlContent;
     } catch (error) {
