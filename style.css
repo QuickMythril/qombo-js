@@ -20,6 +20,7 @@ header {
 }
 
 header h1 {
+    color: #c9d2d9;
     margin: 0;
 }
 
@@ -41,6 +42,7 @@ section h2 {
     color: #c9d2d9;
     padding: 5px;
     border-radius: 15px;
+    text-align: center;
 }
 
 section caption {
@@ -166,6 +168,46 @@ img {
 
 .content-section {
     display: none;
+}
+
+/* Sidebar styles */
+.sidebar {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: #070d19;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;
+}
+
+.sidebar a, .sidebar button {
+    padding: 10px 15px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #c9d2d9;
+    display: block;
+    transition: 0.3s;
+}
+
+.sidebar a:hover, .sidebar button:hover {
+    color: #008fd5;
+    text-decoration: underline;
+}
+
+/* Main content style when sidebar is opened */
+.main-shift {
+    margin-left: 250px;
+}
+
+#menu-toggle {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2;
 }
 
 /* Styles for tablets (screen width 768px or less) */

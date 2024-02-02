@@ -8,20 +8,21 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <button id="menu-toggle" onclick="toggleSidebar()">☰ Menu</button>
+    <div id="sidebar" class="sidebar">
+        <h1>Qombo v2.0.0<br>Data Navigator</h1>
+        <a href="#" onclick="showSection('home-page')">Home</a>
+        <a href="#" onclick="showSection('blocks-page')">Blocks</a>
+        <a href="#" onclick="showSection('txs-page')">Transactions</a>
+        <a href="#" onclick="showSection('trades-page')">Trades</a>
+        <a href="#" onclick="showSection('accounts-page')">Accounts</a>
+        <a href="#" onclick="showSection('apps-page')">Apps</a>
+        <a href="#" onclick="showSection('websites-page')">Websites</a>
+        <a href="#" onclick="showSection('polls-page')">Polls</a>
+    </div>
     <header>
-        <h1>Qombo: Data Navigator - v2.0.0</h1>
-        <nav id="menu-bar">
-            <button aria-label="Home" onclick="showSection('home-page')">Home</button>
-            <button aria-label="Blocks" onclick="showSection('blocks-page')">Blocks</button>
-            <button aria-label="Transactions" onclick="showSection('txs-page')">Transactions</button>
-            <button aria-label="Trades" onclick="showSection('trades-page')">Trades</button>
-            <button aria-label="Accounts" onclick="showSection('accounts-page')">Accounts</button>
-            <button aria-label="Apps" onclick="showSection('apps-page')">Apps</button>
-            <button aria-label="Websites" onclick="showSection('websites-page')">Websites</button>
-            <button aria-label="Polls" onclick="showSection('polls-page')">Polls</button>
-        </nav>
     </header>
-    <main>
+    <main id="main-content">
         <section id="home-page" class="content-section">
             <h2>Home</h2>
         </section>
