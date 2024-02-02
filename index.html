@@ -8,20 +8,32 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <button id="menu-toggle" onclick="toggleSidebar()">☰ Menu</button>
-    <div id="sidebar" class="sidebar">
-        <h1>Qombo v2.0.0<br>Data Navigator</h1>
-        <a href="#" onclick="showSection('home-page')">Home</a>
-        <a href="#" onclick="showSection('blocks-page')">Blocks</a>
-        <a href="#" onclick="showSection('txs-page')">Transactions</a>
-        <a href="#" onclick="showSection('trades-page')">Trades</a>
-        <a href="#" onclick="showSection('accounts-page')">Accounts</a>
-        <a href="#" onclick="showSection('apps-page')">Apps</a>
-        <a href="#" onclick="showSection('websites-page')">Websites</a>
-        <a href="#" onclick="showSection('polls-page')">Polls</a>
-    </div>
     <header>
+    <button id="menu-button" onclick="toggleSidebar()">☰</button>
+    <button id="login-button">Login</button>
+    <div id="qombo-logo">Qombo Data<br>Navigator v2.0.0</div>
+    <table class="top-bar"><tr>
+        <td class="topbar-item" id="node-status">- Disconnected</td>
+        <td class="topbar-item" id="node-address"></td>
+        <td class="topbar-item" id="node-peers"></td>
+        <td class="topbar-item" id="node-something"></td>
+    </tr><tr>
+        <td class="topbar-item" id="user-status">- Not Logged In</td>
+        <td class="topbar-item" id="user-account"></td>
+        <td class="topbar-item" id="user-blocks"></td>
+        <td class="topbar-item" id="user-something"></td>
+    </tr></table>
     </header>
+    <div id="sidebar" class="sidebar">
+        <a class="menu-item" id="menu-home" href="#" onclick="showSection('home')">Home</a>
+        <a class="menu-item" id="menu-blocks" href="#" onclick="showSection('blocks')">Blocks</a>
+        <a class="menu-item" id="menu-txs" href="#" onclick="showSection('txs')">Transactions</a>
+        <a class="menu-item" id="menu-trades" href="#" onclick="showSection('trades')">Trades</a>
+        <a class="menu-item" id="menu-accounts" href="#" onclick="showSection('accounts')">Accounts</a>
+        <a class="menu-item" id="menu-apps" href="#" onclick="showSection('apps')">Apps</a>
+        <a class="menu-item" id="menu-websites" href="#" onclick="showSection('websites')">Websites</a>
+        <a class="menu-item" id="menu-polls" href="#" onclick="showSection('polls')">Polls</a>
+    </div>
     <main id="main-content">
         <section id="home-page" class="content-section">
             <h2>Home</h2>
