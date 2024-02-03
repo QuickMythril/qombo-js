@@ -97,14 +97,24 @@ function searchByName(name) {
                 } else {
                     sizeString = result.size + ' b'
                 }
-                tableHtml += `
-                    <tr>
+                if (typeof qortalRequest === 'function') {
+                    tableHtml += `<tr>
                         <td class="clickable-name" data-name="${result.name}">
                         <img src="/arbitrary/THUMBNAIL/${result.name}/qortal_avatar"
                         style="width:24px;height:24px;"
                         onerror="this.style='display:none'"
                         >${result.name}</td>
-                        <td>${sizeString}</td>
+                    `;
+                } else {
+                    tableHtml += `<tr>
+                        <td><a href="/app/${result.name}">
+                        <img src="/arbitrary/THUMBNAIL/${result.name}/qortal_avatar"
+                        style="width:24px;height:24px;"
+                        onerror="this.style='display:none'"
+                        >${result.name}</a></td>
+                    `;
+                }
+                tableHtml += `<td>${sizeString}</td>
                         <td>${createdString}</td>
                         <td>${updatedString}</td>
                     </tr>
