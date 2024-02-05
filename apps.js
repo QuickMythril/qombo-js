@@ -99,7 +99,7 @@ function searchByName(name) {
                 }
                 if (_qdnContext === 'gateway') {
                     tableHtml += `<tr>
-                        <td><a href="/app/${result.name}">
+                        <td><a target="_blank" href="/app/${result.name}">
                         <img src="/arbitrary/THUMBNAIL/${result.name}/qortal_avatar"
                         style="width:24px;height:24px;"
                         onerror="this.style='display:none'"
