@@ -97,21 +97,21 @@ function searchByName(name) {
                 } else {
                     sizeString = result.size + ' b'
                 }
-                if (typeof qortalRequest === 'function') {
-                    tableHtml += `<tr>
-                        <td class="clickable-name" data-name="${result.name}">
-                        <img src="/arbitrary/THUMBNAIL/${result.name}/qortal_avatar"
-                        style="width:24px;height:24px;"
-                        onerror="this.style='display:none'"
-                        >${result.name}</td>
-                    `;
-                } else {
+                if (_qdnContext === 'gateway') {
                     tableHtml += `<tr>
                         <td><a href="/app/${result.name}">
                         <img src="/arbitrary/THUMBNAIL/${result.name}/qortal_avatar"
                         style="width:24px;height:24px;"
                         onerror="this.style='display:none'"
                         >${result.name}</a></td>
+                    `;
+                } else {
+                    tableHtml += `<tr>
+                        <td class="clickable-name" data-name="${result.name}">
+                        <img src="/arbitrary/THUMBNAIL/${result.name}/qortal_avatar"
+                        style="width:24px;height:24px;"
+                        onerror="this.style='display:none'"
+                        >${result.name}</td>
                     `;
                 }
                 tableHtml += `<td>${sizeString}</td>
