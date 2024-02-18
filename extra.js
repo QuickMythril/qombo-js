@@ -112,11 +112,6 @@ function calculateFeatures() {
     const untilDisable = 1706745000000 - currentTimestamp;
     document.getElementById('until-disable').textContent = formatDuration(untilDisable);
 
-    const dateSnapshot =  new Date(1706745600000).toLocaleString();
-    document.getElementById('date-snapshot2').textContent = dateSnapshot;
-    const untilSnapshot = 1706745600000 - currentTimestamp;
-    document.getElementById('until-snapshot2').textContent = formatDuration(untilSnapshot);
-
     const blocksUntilFix = 1589200 - currentBlockHeight;
     const untilFix = currentBlockTime * blocksUntilFix * 1000;
     document.getElementById('until-fix').textContent = formatDuration(untilFix);
@@ -125,18 +120,36 @@ function calculateFeatures() {
     const dateFix = new Date(timestampFix).toLocaleString();
     document.getElementById('date-fix').textContent = dateFix;
 
-    const dateEnable =  new Date(1709251200000).toLocaleString();
-    document.getElementById('date-enable').textContent = dateEnable;
-    const untilEnable = 1709251200000 - currentTimestamp;
-    document.getElementById('until-enable').textContent = formatDuration(untilEnable);
+    const dateSnapshot2 =  new Date(1708360200000).toLocaleString();
+    document.getElementById('date-snapshot2').textContent = dateSnapshot2;
+    const untilSnapshot2 = 1708360200000 - currentTimestamp;
+    document.getElementById('until-snapshot2').textContent = formatDuration(untilSnapshot2);
     
-    const blocksUntilAlgo2 = 9999999 - currentBlockHeight;
+    const blocksUntilAlgo2 = 1611200 - currentBlockHeight;
     const untilAlgo2 = currentBlockTime * blocksUntilAlgo2 * 1000;
     document.getElementById('until-algo2').textContent = formatDuration(untilAlgo2);
     const timestampAlgo2 = currentTimestamp + untilAlgo2;
     document.getElementById('timestamp-algo2').textContent = timestampAlgo2;
     const dateAlgo2 = new Date(timestampAlgo2).toLocaleString();
     document.getElementById('date-algo2').textContent = dateAlgo2;
+
+    const dateSnapshot3 =  new Date(1708432200000).toLocaleString();
+    document.getElementById('date-snapshot3').textContent = dateSnapshot3;
+    const untilSnapshot3 = 1708432200000 - currentTimestamp;
+    document.getElementById('until-snapshot3').textContent = formatDuration(untilSnapshot3);
+    
+    const blocksUntilAlgo3 = 1612200 - currentBlockHeight;
+    const untilAlgo3 = currentBlockTime * blocksUntilAlgo3 * 1000;
+    document.getElementById('until-algo3').textContent = formatDuration(untilAlgo3);
+    const timestampAlgo3 = currentTimestamp + untilAlgo3;
+    document.getElementById('timestamp-algo3').textContent = timestampAlgo3;
+    const dateAlgo3 = new Date(timestampAlgo3).toLocaleString();
+    document.getElementById('date-algo3').textContent = dateAlgo3;
+
+    const dateEnable =  new Date(1709251200000).toLocaleString();
+    document.getElementById('date-enable').textContent = dateEnable;
+    const untilEnable = 1709251200000 - currentTimestamp;
+    document.getElementById('until-enable').textContent = formatDuration(untilEnable);
 }
 
 function formatDuration(duration) {
