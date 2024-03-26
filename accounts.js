@@ -169,7 +169,22 @@ function fetchAddressDetails(address) {
             }
         }
         shareHtml = (selfShare ? (shareList[0] ? `${selfShare} | ` : selfShare) : '') + shareList.join(' | ');
-        tableHtml += `<tr><td>Active Rewardshares</td><td>${shareHtml}</td></tr></table>`;
+        tableHtml += `<tr><td>Active Rewardshares</td><td>${shareHtml}</td></tr>`;
+        if (names.length > 0) {
+            const response = await fetch(`/arbitrary/resources/search?name=${names[0].name}&includemetadata=true&exactmatchnames=true&mode=ALL`);
+            const results = await response.json();
+            if (results.length > 0) {
+                let totalFiles = 0;
+                let totalSize = 0;
+                results.forEach(result => {
+                    totalFiles += 1;
+                    totalSize += result.size;
+                });
+                let totalSizeString = formatSize(totalSize);
+                tableHtml += `<tr><th>QDN Content</th><th>${totalFiles} Files</th></tr><tr><td>Total Size</td><td>${totalSizeString}</td></tr>`;
+            }
+        }
+        tableHtml += `</table>`;
         document.getElementById('account-details').innerHTML = tableHtml;
         document.querySelectorAll('.clickable-name').forEach(element => {
             element.addEventListener('click', function() {
@@ -180,6 +195,37 @@ function fetchAddressDetails(address) {
         });
     }).catch(error => console.error('Error fetching address details:', error));
 }
+
+/*
+async function fetchContent(name) {
+    try {
+        document.getElementById('account-details').innerHTML += '<p>Loading QDN...</p>';
+        const response = await fetch(`/arbitrary/resources/search?name=${name}&includemetadata=true&exactmatchnames=true&mode=ALL`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const results = response.json();
+        if (results.length > 0) {
+            let totalFiles = 0;
+            let totalSize = 0;
+            results.forEach(result => {
+                totalFiles += 1;
+                totalSize += result.size;
+                let sizeString = formatSize(result.size);
+            });
+            let totalSizeString = formatSize(totalSize);
+        }
+        let tableHtml = `<table>
+            <tr><th>QDN Content</th><th>${totalFiles} Files</th></tr>
+            <tr><td>Total Size</td><td>${totalSizeString}</td></tr>
+        </table>`;
+        document.getElementById('account-details').innerHTML += tableHtml;
+    } catch (error) {
+        console.error('Error fetching content:', error);
+    }
+}
+*/
 
 async function displayNameOrAddress(address) {
     let shortenedAddress = address.substring(0, 4) + '...' + address.substring(address.length - 4);
@@ -251,4 +297,18 @@ function searchByName(name) {
             }
         })
         .catch(error => console.error('Error searching by name:', error));
+}
+
+function formatSize(size) {
+    if (size > (1024*1024*1024*1024)) {
+        return (size / (1024*1024*1024*1024)).toFixed(2) + ' TB';
+    } else if (size > (1024*1024*1024)) {
+        return (size / (1024*1024*1024)).toFixed(2) + ' GB';
+    } else if (size > (1024*1024)) {
+        return (size / (1024*1024)).toFixed(2) + ' MB';
+    } else if (size > 1024) {
+        return (size / 1024).toFixed(2) + ' KB';
+    } else {
+        return size + ' B';
+    }
 }
