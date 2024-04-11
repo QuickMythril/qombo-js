@@ -129,7 +129,7 @@ function fetchOnlineAccounts() {
             percentages.forEach((percent, index) => {
                 const tierReward = (qortPerDay * (percent / 100)) / tierCounts[index + 1];
                 for (let level = index * 2 + 1; level <= index * 2 + 2; level++) {
-                    if (level !== 8 && level !== 9) {
+                    if (level !== 9) {
                         document.getElementById(`level-${level}-reward`).textContent = tierReward.toFixed(4);
                     }
                 }
