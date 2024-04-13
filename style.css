@@ -39,7 +39,7 @@ header h1 {
 main {
     width: 90%;
     margin: 20px auto;
-    padding: 20px;
+    padding: 1px 20px 1px 20px;
     background-color: #2d3749;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     border-radius: 25px;
@@ -66,6 +66,16 @@ button {
     cursor: pointer;
     border-radius: 15px;
     vertical-align: middle;
+}
+
+main button {
+    padding: 5px 10px;
+    border-radius: 10px;
+    margin-left: 10px;
+}
+
+input {
+    margin-left: 10px;
 }
 
 button:hover {
@@ -208,12 +218,6 @@ img {
 
 #menu-list {
     text-align: center;
-}
-
-#search-button {
-    padding: 5px 10px;
-    border-radius: 10px;
-    margin-right: 10px;
 }
 
 #user-info {

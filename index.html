@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Qombo: Data Navigator - v2.0.0</title>
+    <title>Qombo: Data Navigator - v1.9.9</title>
     <link rel="icon" type="image/png" href="qombo-favicon.png">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -11,7 +11,7 @@
     <header>
     <button id="menu-button" onclick="toggleSidebar()">☰</button>
     <button id="login-button">Login</button>
-    <div id="qombo-logo">Qombo Data<br>Navigator v2.0.0</div>
+    <div id="qombo-logo">Qombo Data<br>Navigator v1.9.9</div>
     <table class="top-bar"><tr>
         <td class="topbar-item" id="node-status">Disconnected</td>
         <td class="topbar-item" id="node-height">Height: N/A</td>
@@ -30,41 +30,214 @@
         <a class="menu-item" id="menu-txs" href="#" onclick="showSection('txs')">Transactions</a>
         <a class="menu-item" id="menu-trades" href="#" onclick="showSection('trades')">Trades</a>
         <a class="menu-item" id="menu-accounts" href="#" onclick="showSection('accounts')">Accounts</a>
-        <a class="menu-item" id="menu-apps" href="#" onclick="showSection('apps')">Apps</a>
         <a class="menu-item" id="menu-websites" href="#" onclick="showSection('websites')">Websites</a>
+        <a class="menu-item" id="menu-apps" href="#" onclick="showSection('apps')">Apps</a>
         <a class="menu-item" id="menu-polls" href="#" onclick="showSection('polls')">Polls</a>
+        <a class="menu-item" id="menu-assets" href="#" onclick="showSection('assets')">Assets</a>
+        <a class="menu-item" id="menu-extras" href="#" onclick="showSection('extras')">Extras</a>
     </div>
     <main id="main-content">
         <section id="home-page" class="content-section">
             <h2>Home</h2>
+            <h3>Details<button id="home-button">Refresh</button></h3>
+            <table id="home-details">
+                <tr><th>Block Height</th><th>Block Reward</th><th>Avg Block Time</th><th>Blocks/Day</th><th>Total Supply</th><th>QORT Minted/Day (Estimate)</th></tr>
+                <tr><td id="home-blockheight"></td><td id="home-blockreward"></td><td id="home-blocktime"></td><td id="home-blocksperday"></td><td id="home-totalsupply"></td><td id="home-qortperday"></td></tr>
+            </table>
+            <h3>Online Accounts</h3>
+            <table id="home-accounts">
+                <thead>
+                    <tr><th>Level:</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>F/10</th></tr>
+                    <tr><th id="total-count">Total:</th><td id="level-0-count"></td><td id="level-1-count"></td><td id="level-2-count"></td>
+                    <td id="level-3-count"></td><td id="level-4-count"></td><td id="level-5-count"></td><td id="level-6-count"></td>
+                    <td id="level-7-count"></td><td id="level-8-count"></td><td id="level-9-count"></td><td id="level-10-count"></td></tr>
+                    <tr><th>QORT/Minter/1000</th><td>0</td><td id="level-1-reward"></td><td id="level-2-reward"></td>
+                    <td id="level-3-reward"></td><td id="level-4-reward"></td><td id="level-5-reward"></td><td id="level-6-reward"></td>
+                    <td id="level-7-reward"></td><td id="level-8-reward"></td><td id="level-9-reward">0</td><td id="level-10-reward"></td></tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
         </section>
         
         <section id="blocks-page" class="content-section">
             <h2>Blocks</h2>
+            <h3>Details<button id="block-button">Search</button><input type="text" id="block-input" placeholder="Enter block height"></h3>
+            <div id="block-details"></div>
+            <h3>Block Transactions</h3>
+            <table id="block-txs">
+                <thead>
+                    <tr>
+                        <th>Height</th>
+                        <th>Signature</th>
+                        <th>TX Type</th>
+                        <th>Creator</th>
+                        <th>Fee Paid</th>
+                        <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            <h3>Recent Blocks</h3>
+            <table id="blocks-table">
+                <thead>
+                    <tr>
+                        <th>Height</th>
+                        <th>Signature</th>
+                        <th>TX Count</th>
+                        <th>Minters</th>
+                        <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            <button id="blocks-more">See 10 More Blocks</button>
         </section>
         
         <section id="txs-page" class="content-section">
             <h2>Transactions</h2>
+            <h3>Details<button id="txs-button">Refresh</button></h3>
+            <table><tr><th>Current QDN Size</th><td id="qdn-size"></td></tr></table>
+            <h3>Unconfirmed Transactions</h3>
+            <table id="txs-stats">
+                <tr><th>Total</th></tr>
+                <tr><th>Unconfirmed</th></tr>
+            </table>
+            <h3>Recent Transactions</h3>
+            <table id="txs-recent">
+                <thead>
+                    <tr>
+                        <th>Height</th>
+                        <th>Signature</th>
+                        <th>TX Type</th>
+                        <th>Creator</th>
+                        <th>Data</th>
+                        <th>Fee</th>
+                        <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            <button id="txs-more">See 100 More Blocks</button>
         </section>
         
         <section id="trades-page" class="content-section">
             <h2>Trades</h2>
+            <h3>Daily Volume<button id="volume-button">Refresh</button></h3>
+            <table id="volume-table">
+                <tr><th>Chain</th><th>LTC</th><th>BTC</th><th>DOGE</th><th>DGB</th><th>RVN</th><th>ARRR</th></tr>
+                <tr><th>Coin Spent</th><td id="litecoin-spent"></td><td id="bitcoin-spent"></td><td id="dogecoin-spent"></td><td id="digibyte-spent"></td><td id="ravencoin-spent"></td><td id="piratechain-spent"></td></tr>
+                <tr><th>QORT Bought</th><td id="litecoin-bought"></td><td id="bitcoin-bought"></td><td id="dogecoin-bought"></td><td id="digibyte-bought"></td><td id="ravencoin-bought"></td><td id="piratechain-bought"></td></tr>
+                <tr><th>Avg Cost / QORT</th><td id="litecoin-price"></td><td id="bitcoin-price"></td><td id="dogecoin-price"></td><td id="digibyte-price"></td><td id="ravencoin-price"></td><td id="piratechain-price"></td></tr>
+            </table>
+            <h3>Available Trades</h3>
+            <p>Total Available Trades: <span id="total-trades">Loading... (not working yet)</span></p>
+            <div id="trade-data">
+            </div>
+            <h2><div id="coin-selector">
+                <label for="coin-dropdown">Recent Trades -</label>
+                <select id="coin-dropdown">
+                    <option value="LITECOIN">LTC</option>
+                    <option value="BITCOIN">BTC</option>
+                    <option value="DOGECOIN">DOGE</option>
+                    <option value="RAVENCOIN">RVN</option>
+                    <option value="DIGIBYTE">DGB</option>
+                    <option value="PIRATECHAIN">ARRR</option>
+                </select>
+            </div></h2>
+            <table id="trades-table">
+                <thead>
+                    <tr>
+                        <th>QORT Amount</th>
+                        <th>Traded From</th>
+                        <th>Traded To</th>
+                        <th>"COIN" Amount</th>
+                        <th>Avg. COIN/QORT</th>
+                        <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            <button id="trades-more">See More Trades</button>
         </section>
         
         <section id="accounts-page" class="content-section">
             <h2>Accounts</h2>
-        </section>
-
-        <section id="apps-page" class="content-section">
-            <h2>Apps</h2>
+            <h3>Details<button id="account-button">Search</button><input type="text" id="account-input" placeholder="Enter address or name"></h3>
+            <div id="account-details">
+            </div>
+            <h3>Search Results</h3>
+            <div id="account-results">
+            </div>
         </section>
 
         <section id="websites-page" class="content-section">
             <h2>Websites</h2>
+            <h3>Details<button id="website-button">Search</button><input type="text" id="website-input" placeholder="Show all Websites"></h3>
+            <div id="website-details">
+            </div>
+            <h3>Search Results</h3>
+            <div id="website-results">
+            </div>
+        </section>
+
+        <section id="apps-page" class="content-section">
+            <h2>Apps</h2>
+            <h3>Details<button id="app-button">Search</button><input type="text" id="app-input" placeholder="Show all Apps"></h3>
+            <div id="app-details">
+            </div>
+            <h3>Search Results</h3>
+            <div id="app-results">
+            </div>
         </section>
 
         <section id="polls-page" class="content-section">
             <h2>Polls</h2>
+            <h3>Details<button id="poll-button">Search</button></h3>
+            <div id="poll-details">
+            </div>
+            <h3>Search Results</h3>
+            <div id="poll-results">
+            </div>
+        </section>
+
+        <section id="assets-page" class="content-section">
+            <h2>Assets</h2>
+            <h3>Details<button id="asset-button">Search</button></h3>
+            <div id="asset-details">
+            </div>
+        </section>
+
+        <section id="extras-page" class="content-section">
+            <h2>Extras</h2>
+            <table>
+                <tr><th>Current Block</th><td id="extras-height"></td><th>Current Timestamp</th><td id="extras-currenttime"></td></tr>
+                <tr><th>Blocks/Day</th><td id="extras-blocksperday"></td><th>Seconds/Block</th><td id="extras-blocktime"></td></tr>
+                <tr><th id="height-reward">Next Reward = </th><td id="timestamp-reward"></td><td id="date-reward"></td><td id="until-reward"></td></tr>
+            </table>
+            <h3>Feature Triggers<button id="extra-button">Refresh</button></h3>
+            <table>
+                <tr><th>genesisBlockTimestamp</th><td>1593450000000</td><td id="date-genesis"></td><td id="until-genesis"></td></tr>
+                <tr><th>nameFee 0.001 -> 5</th><td>1645372800000</td><td id="date-name-fee1"></td><td id="until-name-fee1"></td></tr>
+                <tr><th>nameFee 5 -> 1.25</th><td>1651420800000</td><td id="date-name-fee2"></td><td id="until-name-fee2"></td></tr>
+                <tr><th>rewardShares 6 -> 3</th><td>1657382400000</td><td id="date-reward-shares1"></td><td id="until-reward-shares1"></td></tr>
+                <tr><th>selfSponsorshipAlgoV1SnapshotTimestamp</th><td>1670230000000</td><td id="date-snapshot1"></td><td id="until-snapshot1"></td></tr>
+                <tr><th>selfSponsorshipAlgoV1Height = 1092400</th><td id="timestamp-algo1"></td><td id="date-algo1"></td><td id="until-algo1"></td></tr>
+                <tr><th>unitFee 0.001 -> 0.01</th><td>1692118800000</td><td id="date-unit-fee"></td><td id="until-unit-fee"></td></tr>
+                <tr><th>rewardShares 3 -> 2</th><td>1698508800000</td><td id="date-reward-shares2"></td><td id="until-reward-shares2"></td></tr>
+                <tr><th>blockRewardBatchStartHeight = 1508000</th><td id="timestamp-batch"></td><td id="date-batch"></td><td id="until-batch"></td></tr>
+                <tr><th>disableTransferPrivsTimestamp</th><td>1706745000000</td><td id="date-disable"></td><td id="until-disable"></td></tr>
+                <tr><th>penaltyFixHeight = 1589200</th><td id="timestamp-fix"></td><td id="date-fix"></td><td id="until-fix"></td></tr>
+                <tr><th>selfSponsorshipAlgoV2SnapshotTimestamp</th><td>1708360200000</td><td id="date-snapshot2"></td><td id="until-snapshot2"></td></tr>
+                <tr><th>selfSponsorshipAlgoV2Height = 1611200</th><td id="timestamp-algo2"></td><td id="date-algo2"></td><td id="until-algo2"></td></tr>
+                <tr><th>selfSponsorshipAlgoV3SnapshotTimestamp</th><td>1708432200000</td><td id="date-snapshot3"></td><td id="until-snapshot3"></td></tr>
+                <tr><th>selfSponsorshipAlgoV3Height = 1612200</th><td id="timestamp-algo3"></td><td id="date-algo3"></td><td id="until-algo3"></td></tr>
+                <tr><th>enableTransferPrivsTimestamp</th><td>1709251200000</td><td id="date-enable"></td><td id="until-enable"></td></tr>
+            </table>
         </section>
     </main>
 <script src="script.js"></script>
