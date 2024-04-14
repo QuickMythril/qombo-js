@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     initApplication();
-    initHomePage();
+    // initHomePage();
 });
 
 document.getElementById('home-button').addEventListener('click', function() {
@@ -92,27 +92,18 @@ document.getElementById('extra-button').addEventListener('click', function() {
 });
 
 function initApplication() {
-    let localTesting = false;
-    // Disable before release
-    //localTesting = true; // Disable before release
-    // Disable before release
-
     document.getElementById('home-page').style.display = 'block';
     document.getElementById('menu-home').classList.add('active-menu');
     document.getElementById('menu-button').addEventListener('mouseover', showOverlay);
     document.getElementById('main-content').addEventListener('mouseover', hideOverlay);
-    if ((typeof qortalRequest === 'function') || localTesting === true) {
-        document.getElementById('login-button').addEventListener('click', getUserAccount);
-    } else {
+    if ((typeof qortalRequest === 'undefined') || (_qdnContext === 'gateway')) {
         document.getElementById('login-button').innerHTML =
         `<a href='https://qortal.dev' target='blank'>Download</a>`;
+    } else {
+        document.getElementById('login-button').addEventListener('click', getUserAccount);
     }
     getNodeStatus();
     getNodeInfo();
-
-    if (localTesting === true) {
-        document.getElementById('node-status').textContent = '- Testing';
-    }
 }
 
 function getNodeStatus() {
