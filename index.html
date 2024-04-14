@@ -29,16 +29,16 @@
     <table class="login-info"><tr><td id="login-address"></td><td id="login-pubkey"></td></tr></table>
     </header>
     <div id="sidebar" class="sidebar">
-        <a class="menu-item" id="menu-home" href="#" onclick="showSection('home')">Home</a>
-        <a class="menu-item" id="menu-blocks" href="#" onclick="showSection('blocks')">Blocks</a>
-        <a class="menu-item" id="menu-txs" href="#" onclick="showSection('txs')">Transactions</a>
-        <a class="menu-item" id="menu-trades" href="#" onclick="showSection('trades')">Trades</a>
-        <a class="menu-item" id="menu-accounts" href="#" onclick="showSection('accounts')">Accounts</a>
-        <a class="menu-item" id="menu-websites" href="#" onclick="showSection('websites')">Websites</a>
-        <a class="menu-item" id="menu-apps" href="#" onclick="showSection('apps')">Apps</a>
-        <a class="menu-item" id="menu-polls" href="#" onclick="showSection('polls')">Polls</a>
-        <a class="menu-item" id="menu-assets" href="#" onclick="showSection('assets')">Assets</a>
-        <a class="menu-item" id="menu-extras" href="#" onclick="showSection('extras')">Extras</a>
+        <a class="menu-item" id="menu-home" onclick="showSection('home', event)">Home</a>
+        <a class="menu-item" id="menu-blocks" onclick="showSection('blocks', event)">Blocks</a>
+        <a class="menu-item" id="menu-txs" onclick="showSection('txs', event)">Transactions</a>
+        <a class="menu-item" id="menu-trades" onclick="showSection('trades', event)">Trades</a>
+        <a class="menu-item" id="menu-accounts" onclick="showSection('accounts', event)">Accounts</a>
+        <a class="menu-item" id="menu-websites" onclick="showSection('websites', event)">Websites</a>
+        <a class="menu-item" id="menu-apps" onclick="showSection('apps', event)">Apps</a>
+        <a class="menu-item" id="menu-polls" onclick="showSection('polls', event)">Polls</a>
+        <a class="menu-item" id="menu-assets" onclick="showSection('assets', event)">Assets</a>
+        <a class="menu-item" id="menu-extras" onclick="showSection('extras', event)">Extras</a>
     </div>
     <main id="main-content">
         <section id="home-page" class="content-section">

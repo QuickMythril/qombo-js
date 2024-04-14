@@ -1046,7 +1046,7 @@ fetch('/arbitrary/resources/search?service=WEBSITE&name=' + name)
                 let createdString = new Date(result.created).toLocaleString()
 */
 
-function showSection(sectionId) {
+function showSection(sectionId, event) {
     var sections = document.querySelectorAll('.content-section');
     sections.forEach(function(section) {
         section.style.display = 'none';
@@ -1057,6 +1057,7 @@ function showSection(sectionId) {
     });
     document.getElementById(`${sectionId}-page`).style.display = 'block';
     document.getElementById(`menu-${sectionId}`).classList.add('active-menu');
+    event.preventDefault();
     switch (sectionId) {
         case 'home':
             initHomePage();
