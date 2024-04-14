@@ -31,6 +31,10 @@ header {
     /*white-space: nowrap;*/
 }
 
+.login-info {
+    display: none;
+}
+
 header h1 {
     color: #c9d2d9;
     margin: 0;

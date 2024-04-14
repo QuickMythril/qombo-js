@@ -914,11 +914,15 @@ async function voteOnPoll(pollName, optionId) {
 async function getUserAccount() {
     let userStatus = document.getElementById('user-status');
     let userAddress = document.getElementById('user-address');
+    let loginAddress = document.getElementById('login-address');
+    let loginPubkey = document.getElementById('login-pubkey');
     let userBlocks = document.getElementById('user-blocks');
     let userQort = document.getElementById('user-qort');
     let loginButton = document.getElementById('login-button');
     if (userStatus.textContent !== 'Not Logged In') {
         userAddress.textContent = '';
+        loginAddress.textContent = '';
+        loginPubkey.textContent = '';
         userBlocks.textContent = '';
         userQort.textContent = '';
         userStatus.textContent = 'Not Logged In';
@@ -930,7 +934,10 @@ async function getUserAccount() {
             action: "GET_USER_ACCOUNT",
         });
         let addressResponse = accountResponse.address;
+        let pubkeyResponse = accountResponse.publicKey;
         userAddress.textContent = shortString(addressResponse);
+        loginAddress.textContent = addressResponse;
+        loginPubkey.textContent = pubkeyResponse;
         loginButton.textContent = 'Logout';
         userStatus.textContent = 'Loading...';
         userBlocks.textContent = 'Loading...';
