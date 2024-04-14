@@ -13,7 +13,10 @@
     <button id="login-button">Login</button>
     <div id="qombo-logo">Qombo Data<br>Navigator v1.9.9</div>
     <table class="top-bar"><tr>
-        <td class="topbar-item" id="node-status">Disconnected</td>
+        <td class="topbar-item"><span id="node-status">Disconnected</span>
+            <button id="node-button" onclick="refreshNode()">Refresh</button>
+            <input type="checkbox" id="node-checkbox"></input>
+        </td>
         <td class="topbar-item" id="node-height">Height: N/A</td>
         <td class="topbar-item" id="node-peers">Peers: N/A</td>
         <td class="topbar-item" id="node-version">Version: N/A</td>

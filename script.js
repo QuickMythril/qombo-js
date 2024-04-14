@@ -1,7 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
     initApplication();
-    // initHomePage();
+    showSection('home');
 });
+
+document.getElementById('node-checkbox').addEventListener('change', changeRefreshSetting, false);
 
 document.getElementById('home-button').addEventListener('click', function() {
     fetchBlockHeight()
@@ -102,6 +104,31 @@ function initApplication() {
     } else {
         document.getElementById('login-button').addEventListener('click', getUserAccount);
     }
+    getNodeStatus();
+    getNodeInfo();
+}
+
+let autoRefreshInterval;
+
+function changeRefreshSetting(event) {
+    var refreshing = event.target.checked;
+    if (refreshing) {
+        startNodeRefreshing();
+    } else {
+        stopNodeRefreshing();
+    }
+}
+
+function startNodeRefreshing() {
+    refreshNode();
+    autoRefreshInterval = setInterval(refreshNode, 15000);
+}
+    
+function stopNodeRefreshing() {
+    clearInterval(autoRefreshInterval);
+}
+
+function refreshNode() {
     getNodeStatus();
     getNodeInfo();
 }

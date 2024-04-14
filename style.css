@@ -108,6 +108,17 @@ button:active {
     z-index: 2;
 }
 
+#node-button {
+    padding: 0 5px;
+    font-size: 12px;
+}
+
+#node-checkbox {
+    margin-left: 0;
+    padding: 0 5px;
+    font-size: 12px;
+}
+
 #qombo-logo {
     position: fixed;
     top: 6px;
