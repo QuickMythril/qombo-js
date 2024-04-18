@@ -82,6 +82,12 @@ input {
     margin-left: 10px;
 }
 
+#poll-details input {
+    margin: 5px 0 10px 0;
+    padding: 5px;
+    width: 50%;
+}
+
 button:hover {
     border-radius: 10px;
     transition: 0.5s;

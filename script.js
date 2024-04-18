@@ -78,8 +78,11 @@ document.getElementById('app-input').addEventListener('keypress', function (e) {
     }
 });
 
-document.getElementById('poll-button').addEventListener('click', function() {
+document.getElementById('poll-search-button').addEventListener('click', function() {
     searchPolls();
+});
+document.getElementById('poll-create-button').addEventListener('click', function() {
+    createPoll();
 });
 
 document.getElementById('asset-button').addEventListener('click', function() {
@@ -926,6 +929,57 @@ async function voteOnPoll(pollName, optionId) {
         });
     } catch (error) {
         console.error('Error voting on poll:', error);
+    }
+}
+
+async function createPoll() {
+    let userStatus = document.getElementById('user-status');
+    let pollDetails = document.getElementById('poll-details');
+    if (userStatus.textContent === 'Not Logged In') {
+        pollDetails.innerHTML = '<p>Please login to create a poll.</p>';
+        return;
+    }
+    let loginAddress = document.getElementById('login-address');
+    let form = pollDetails.querySelector('form');
+    if (!form) {
+        let formHtml = `
+            <h3>Create Poll</h3>
+            <form>
+                <label for="poll-name">Name:</label><br>
+                <input type="text" id="poll-name" required placeholder="Example: Most Popular Q-Apps"><br>
+                <label for="poll-description">Description:</label><br>
+                <input type="text" id="poll-description" required placeholder="Choose which Q-App you use the most."><br>
+                <label for="poll-options">Options (comma-separated):</label><br>
+                <input type="text" id="poll-options" required placeholder="Q-Blog,Q-Tube,Q-Mail,None of the above"><br>
+                <button type="submit">Submit</button>
+            </form>
+        `;
+        pollDetails.innerHTML = formHtml;
+        form = pollDetails.querySelector('form');
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            let pollName = document.getElementById('poll-name').value;
+            let description = document.getElementById('poll-description').value;
+            let inputString = document.getElementById('poll-options').value;
+            let inputArray = inputString.split(',').map(option => option.trim());
+            let optionsString = inputArray.join(', ');
+            let optionsArray = [optionsString];
+            try {
+                await qortalRequest({
+                    action: "CREATE_POLL",
+                    pollName: pollName,
+                    pollDescription: description,
+                    pollOptions: optionsArray,
+                    pollOwnerAddress: loginAddress.textContent
+                });
+                pollDetails.innerHTML += '<p>Poll created successfully!</p>';
+            } catch (error) {
+                console.error('Error creating poll:', error);
+                pollDetails.innerHTML += `<p>Error creating poll: ${error}</p>`;
+            }
+        });
+    } else {
+        document.getElementById('poll-name').focus();
     }
 }
 
