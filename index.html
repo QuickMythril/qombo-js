@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Qombo: Data Navigator - v1.9.9</title>
+    <title>Qombo: Data Navigator - v1.9.9a</title>
     <link rel="icon" type="image/png" href="qombo-favicon.png">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -11,7 +11,7 @@
     <header>
     <button id="menu-button" onclick="toggleSidebar()">☰</button>
     <button id="login-button">Login</button>
-    <div id="qombo-logo">Qombo Data<br>Navigator v1.9.9</div>
+    <div id="qombo-logo">Qombo Data<br>Navigator v1.9.9a</div>
     <table class="top-bar"><tr>
         <td class="topbar-item"><span id="node-status">Disconnected</span>
             <button id="node-button" onclick="refreshNode()">Refresh</button>
@@ -38,11 +38,13 @@
         <a class="menu-item" id="menu-apps" onclick="showSection('apps', event)">Apps</a>
         <a class="menu-item" id="menu-polls" onclick="showSection('polls', event)">Polls</a>
         <a class="menu-item" id="menu-assets" onclick="showSection('assets', event)">Assets</a>
+        <a class="menu-item" id="menu-taxes" onclick="showSection('taxes', event)">Taxes</a>
         <a class="menu-item" id="menu-extras" onclick="showSection('extras', event)">Extras</a>
     </div>
     <main id="main-content">
         <section id="home-page" class="content-section">
             <h2>Home</h2>
+            <p>Switch to <a href="home.html">Old</a> Version</p>
             <h3>Details<button id="home-button">Refresh</button></h3>
             <table id="home-details">
                 <tr><th>Block Height</th><th>Block Reward</th><th>Avg Block Time</th><th>Blocks/Day</th><th>Total Supply</th><th>QORT Minted/Day (Estimate)</th></tr>
@@ -213,6 +215,29 @@
             <h2>Assets</h2>
             <h3>Details<button id="asset-button">Search</button></h3>
             <div id="asset-details">
+            </div>
+        </section>
+
+        <section id="taxes-page" class="content-section">
+            <h2>Taxes</h2>
+            <h3>Extra Minting Accounts</h3>
+            <table>
+                <tr><th>crowetic's Accounts: crowetic</th><th>QiNKXRfnX9mTodSed1yRQexhL1HA42RHHo</th><th>Level 7</th><th>1595893 Blocks</th></tr>
+                <tr><td>'Extra' Founder Account</td><td>QZMzF4iTBV93LP5Vkv7Ka3Q2xjdUwcUhcV</td><td>Level 6</td><td>1408725 Blocks</td></tr>
+                <tr><td>DevFund</td><td>QWfYVQfuz2rVskYkpkVvLxL3kUPmBgKhHV</td><td>Level 4</td><td>429478 Blocks</td></tr>
+                <tr><th>AlphaX's Accounts: AlphaX</th><th>QiTygNmENd8bjyiaK1WwgeX9EF1H8Kapfq</th><th>Level 6</th><th>1015054 Blocks</th></tr>
+                <tr><td>Public Node 1 / AlphaX-LIN</td><td>Qb5rprTsoSoKaMcdwLFL7jP3eyhK3LGqNm</td><td>Level 4</td><td>586120 Blocks</td></tr>
+                <tr><td>Public Node 2 / AlphaX-WIN</td><td>QZm6GbBJuLJnTbftJAaJtw2ZJqXiDTu2pD</td><td>Level 4</td><td>552370 Blocks</td></tr>
+                <tr><td>Public Node 3 / AlphaX-PI</td><td>QScfgds57u1zEPWyjL3GyKsZQ6PRbuVv2G</td><td>Level 4</td><td>600341 Blocks</td></tr>
+                <tr><td>Public Node 4 / AlphaX-MAC</td><td>QWXnwCZit9gfz6zeaRuEF9cZUFDxP6f2Uw</td><td>Level 3</td><td>280567 Blocks</td></tr>
+                <tr><td>Public Node 5 / AlphaX-M1</td><td>QicHThpzJcEJu3cF3enHCgNA6DzmzGx6AR</td><td>Level 3</td><td>311438 Blocks</td></tr>
+                <tr><td>AlphaX-DEV</td><td>QLkPjoq3Af2WD1XqW1VCktwwMXiaJ5oWbF</td><td>Level 3</td><td>282181 Blocks</td></tr>
+                <tr><td>AlphaX-TAB</td><td>Qb6w36ryjQv3chCmjrk6EjUeqk1TZ889Me</td><td>Level 3</td><td>241513 Blocks</td></tr>
+                <tr><td>AlphaX-LTD</td><td>QVioPMcFpTa73gwqckZwE49sSr9KdR1RZF</td><td>Level 2</td><td>184441 Blocks</td></tr>
+                <tr><td>AlphaX-APT</td><td>Qc9yhHdtaHYdVMkUXyyfprht4SeX21FFch</td><td>Level 2</td><td>135270 Blocks</td></tr>
+                <tr><td>AlphaX-ARRR</td><td>QMBTvH7ytNJunQVFUMRAGNviSbVnyLxKzg</td><td>Level 2</td><td>116500 Blocks</td></tr>
+            </table>
+            <div id="taxes-details">
             </div>
         </section>
 
