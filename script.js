@@ -270,23 +270,37 @@ function fetchOnlineAccounts() {
         .then(data => {
             const qortPerDayString = document.getElementById('home-qortperday').textContent;
             const qortPerDay = parseFloat(qortPerDayString.match(/\d+/)[0]);
-            const tierCounts = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
+            const levelCounts = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0};
             data.forEach(account => {
                 totalCount += account.count;
                 document.getElementById(`level-${account.level}-count`).textContent = account.count;
-                if ([1, 2].includes(account.level)) tierCounts[1] += account.count;
-                else if ([3, 4].includes(account.level)) tierCounts[2] += account.count;
-                else if ([5, 6].includes(account.level)) tierCounts[3] += account.count;
-                else if ([7, 8].includes(account.level)) tierCounts[4] += account.count;
-                // This will need updated when 30 accounts reach Level 9:
-                else if (account.level === 10) tierCounts[5] += account.count;
+                levelCounts[account.level] += account.count;
             });
-            const percentages = [6, 13, 19, 26, 35];
+            const percentages = [6, 13, 19, 26, 32, 3];
             percentages.forEach((percent, index) => {
-                const tierReward = (qortPerDay * (percent / 100)) / tierCounts[index + 1];
+                const tierCount = levelCounts[(index*2)+1] + levelCounts[(index*2)+2]
+                const tierReward = (qortPerDay * (percent / 100)) / tierCount;
                 for (let level = index * 2 + 1; level <= index * 2 + 2; level++) {
-                    if (level !== 9) {
-                        document.getElementById(`level-${level}-reward`).textContent = tierReward.toFixed(4);
+                    if (levelCounts[11] === 0) {
+                        if ((level === 9) && (levelCounts[9] < 30)) {
+                            document.getElementById(`level-${level}-reward`).textContent = '0';
+                        } else if ((level === 10) && (levelCounts[9] < 30)) {
+                            document.getElementById(`level-${level}-reward`).textContent = ((tierReward/32)*(32+3)).toFixed(3);
+                        } else if (level === 10) {
+                            document.getElementById(`level-${level}-reward`).textContent = ((tierReward/32)*(3)).toFixed(3);
+                        } else if (level === 11) {
+                            document.getElementById(`level-${level}-reward`).textContent = '<- F';
+                        } else if (level < 11) {
+                            document.getElementById(`level-${level}-reward`).textContent = tierReward.toFixed(3);
+                        }
+                    } else {
+                        if ((level === 9 || level === 10) && (levelCounts[9]+levelCounts[10] < 30)) {
+                            document.getElementById(`level-${level}-reward`).textContent = '0';
+                        } else if ((level === 11) && (levelCounts[9]+levelCounts[10] < 30)) {
+                            document.getElementById(`level-${level}-reward`).textContent = ((tierReward/3)*(32+3)).toFixed(3);
+                        } else if (level < 12) {
+                            document.getElementById(`level-${level}-reward`).textContent = tierReward.toFixed(3);
+                        }
                     }
                 }
             });
