@@ -270,6 +270,8 @@ function fetchOnlineAccounts() {
         .then(data => {
             const qortPerDayString = document.getElementById('home-qortperday').textContent;
             const qortPerDay = parseFloat(qortPerDayString.match(/\d+/)[0]);
+            const blocksInPastDay = parseInt(document.getElementById('home-blocksperday').textContent);
+            const qortPerThousandBlocks = (qortPerDay/blocksInPastDay)*1000;
             const levelCounts = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0};
             data.forEach(account => {
                 totalCount += account.count;
@@ -279,7 +281,7 @@ function fetchOnlineAccounts() {
             const percentages = [6, 13, 19, 26, 32, 3];
             percentages.forEach((percent, index) => {
                 const tierCount = levelCounts[(index*2)+1] + levelCounts[(index*2)+2]
-                const tierReward = (qortPerDay * (percent / 100)) / tierCount;
+                const tierReward = (qortPerThousandBlocks * (percent / 100)) / tierCount;
                 for (let level = index * 2 + 1; level <= index * 2 + 2; level++) {
                     if (levelCounts[11] === 0) {
                         if ((level === 9) && (levelCounts[9] < 30)) {
