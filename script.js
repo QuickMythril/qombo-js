@@ -638,18 +638,39 @@ async function fetchPoll(pollName) {
             let percentage = (option.voteCount/voteData.totalVotes*100).toFixed(2);
             htmlContent += `<td>${option.voteCount} (${percentage}%)</td>`;
         });
-
         htmlContent += `</tr><tr><th>Vote Weights (Total: ${voteData.totalWeight})</th>`;
         pollData.pollOptions.forEach(option => {
             let percentage = (option.voteWeight/voteData.totalWeight*100).toFixed(2);
             htmlContent += `<td>${option.voteWeight} (${percentage}%)</td>`;
         });
-
         htmlContent += `</tr></table>`;
+        htmlContent += `<button onclick="showVotes('${pollData.pollName}')">Show Votes</button>`;
+        htmlContent += `<div id="voter-info"></div>`;
         document.getElementById('poll-details').innerHTML = htmlContent;
     } catch (error) {
         console.error('Error fetching poll:', error);
         document.getElementById('poll-details').innerHTML = `Error: ${error}`;
+    }
+}
+
+async function showVotes(pollName) {
+    try {
+        const voteResponse = await fetch('/polls/votes/' + encodeURIComponent(pollName));
+        const voteData = await voteResponse.json();
+
+        let voterInfoHtml = '<table><tr><th>Voter</th><th>Option</th></tr>';
+        for (const vote of voteData.votes) {
+            let voterAddress = await pubkeyToAddress(vote.voterPublicKey);
+            let voterDisplayName = await displayNameOrAddress(voterAddress);
+            let optionName = vote.optionIndex;
+            voterInfoHtml += `<tr><td>${voterDisplayName}</td><td>${optionName}</td></tr>`;
+        }
+        voterInfoHtml += '</table>';
+
+        document.getElementById('voter-info').innerHTML = voterInfoHtml;
+    } catch (error) {
+        console.error('Error fetching voter information:', error);
+        document.getElementById('voter-info').innerHTML = `Error: ${error}`;
     }
 }
 
@@ -1220,6 +1241,17 @@ async function displayNameOrAddress(address) {
     } catch (error) {
         console.error('Error fetching name:', error);
         return `(${shortString(address)})`;
+    }
+}
+
+async function pubkeyToAddress(pubkey) {
+    try {
+        const response = await fetch(`/addresses/convert/${pubkey}`);
+        const address = await response.text();
+        return address;
+    } catch (error) {
+        console.error('Error fetching address:', error);
+        return pubkey;
     }
 }
 
