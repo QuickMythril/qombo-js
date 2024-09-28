@@ -584,11 +584,12 @@ async function searchPolls() {
                 let publishedString = new Date(result.published).toLocaleString();
                 let pollOptionsString = result.pollOptions.map(option => option.optionName).join(', ');
                 let displayName = await displayNameOrAddress(result.owner);
+                let creatorLevel = await fetchAccountLevel(result.owner);
                 tableHtml += `
                     <tr>
                         <td class="clickable-name" data-name="${result.pollName}">${result.pollName}</td>
                         <td>${result.description}</td>
-                        <td>${displayName}</td>
+                        <td>${displayName} (Lv.${creatorLevel})</td>
                         <td>${pollOptionsString}</td>
                         <td>${publishedString}</td>
                     </tr>
@@ -946,6 +947,16 @@ function fetchAddressDetails(address) {
             });
         });
     }).catch(error => console.error('Error fetching address details:', error));
+}
+
+async function fetchAccountLevel(address) {
+    try {
+        const response = await fetch(`/addresses/${address}`);
+        const accountInfo = await response.json();
+        return accountInfo.level;
+    } catch (error) {
+        console.error('Error fetching account level:', error);
+    }
 }
 
 /* qortalRequest Functions */
