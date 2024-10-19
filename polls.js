@@ -1,3 +1,10 @@
+// Caches to store fetched data and reduce network requests
+const nameCache = {};
+const hiddenPollsCache = {};
+const displayNameCache = {};
+const accountLevelCache = {};
+const pubkeyCache = {};
+
 document.addEventListener('DOMContentLoaded', function() {
     fetchBlockHeight()
         .then(() => {
@@ -23,51 +30,118 @@ function fetchBlockHeight() {
 
 async function searchPolls() {
     document.getElementById('poll-results').innerHTML = '<p>Searching...</p>';
+
+    // Start building the table header
+    let tableHtml = `
+        <table>
+            <tr>
+                <th>Poll Name</th>
+                <th>Description</th>
+                <th>Owner</th>
+                <th>Poll Options</th>
+                <th>Published</th>
+            </tr>
+        </table>
+        <p id="loading-indicator">Loading...</p>
+    `;
+
+    // Insert the initial table structure and loading indicator
+    document.getElementById('poll-results').innerHTML = tableHtml;
+
+    // Counters for shown and hidden polls
+    let shownPollsCount = 0;
+    let hiddenPollsCount = 0;
+
     try {
         const response = await fetch('/polls');
         const results = await response.json();
+
         if (results && results.length > 0) {
-            let tableHtml = '<table>';
-            tableHtml += `
-                <tr>
-                    <th>Poll Name</th>
-                    <th>Description</th>
-                    <th>Owner</th>
-                    <th>Poll Options</th>
-                    <th>Published</th>
-                </tr>
-            `;
+            // Sort the results by published date descending
             results.sort((a, b) => b.published - a.published);
+
+            // Process each poll sequentially
             for (const result of results) {
-                let publishedString = new Date(result.published).toLocaleString();
-                let pollOptionsString = result.pollOptions.map(option => option.optionName).join(', ');
-                let displayName = await displayNameOrAddress(result.owner);
-                let creatorLevel = await fetchAccountLevel(result.owner);
-                tableHtml += `
-                    <tr>
-                        <td class="clickable-name" data-name="${result.pollName}">${result.pollName}</td>
+                const [isHidden, displayName, creatorLevel] = await Promise.all([
+                    checkHiddenPolls(result.owner, result.pollName),
+                    displayNameOrAddress(result.owner),
+                    fetchAccountLevel(result.owner)
+                ]);
+
+                // Update counters based on poll visibility
+                if (isHidden) {
+                    hiddenPollsCount++;
+                } else {
+                    shownPollsCount++;
+
+                    let publishedString = new Date(result.published).toLocaleString();
+                    let pollOptionsString = result.pollOptions.map(option => option.optionName).join(', ');
+
+                    // Construct row HTML for this poll
+                    let rowHtml = `
+                        <tr>
+                            <td><span class="clickable-name" data-name="${result.pollName}">${result.pollName}</span>`;
+                    rowHtml += `</td>
                         <td>${result.description}</td>
                         <td>${displayName} (Lv.${creatorLevel})</td>
                         <td>${pollOptionsString}</td>
                         <td>${publishedString}</td>
-                    </tr>
-                `;
+                        </tr>
+                    `;
+
+                    // Append the row to the table
+                    document.querySelector('#poll-results table').insertAdjacentHTML('beforeend', rowHtml);
+
+                    // Attach click listener for the clickable poll name
+                    const clickableElement = document.querySelector(`.clickable-name[data-name="${result.pollName}"]`);
+                    if (clickableElement) {
+                        clickableElement.addEventListener('click', function() {
+                            document.body.scrollTop = document.documentElement.scrollTop = 0;
+                            let target = this.getAttribute('data-name');
+                            fetchPoll(target);
+                        });
+                    } else {
+                        console.error(`Element not found for pollName: ${result.pollName}`);
+                    }
+                }
+                // Optional: Small delay to yield control back to the main thread
+                //await new Promise(resolve => setTimeout(resolve, 0));
+
             }
-            tableHtml += '</table>';
-            document.getElementById('poll-results').innerHTML = tableHtml;
-            document.querySelectorAll('.clickable-name').forEach(element => {
-                element.addEventListener('click', function() {
-                    document.body.scrollTop = document.documentElement.scrollTop = 0;
-                    let target = this.getAttribute('data-name');
-                    fetchPoll(target);
-                });
-            });            
+            // Update the loading indicator after processing all polls
+            document.getElementById('loading-indicator').innerHTML = `${shownPollsCount} Polls Shown, ${hiddenPollsCount} Polls Hidden`;
         } else {
             document.getElementById('poll-results').innerHTML = '<p>No results found.</p>';
         }
     } catch (error) {
         console.error('Error searching polls:', error);
         document.getElementById('poll-results').innerHTML = `<p>Error: ${error}</p>`;
+    }
+}
+
+async function checkHiddenPolls(address, poll) {
+    const cacheKey = `${address}_${poll}`;
+    if (hiddenPollsCache[cacheKey] !== undefined) {
+        return hiddenPollsCache[cacheKey];
+    }
+    let name = await fetchName(address);
+    if (name === '') {
+        hiddenPollsCache[cacheKey] = false;
+        return false;
+    }
+    try {
+        const response = await fetch(`/arbitrary/resources/search?name=${name}&identifier=qomboHidePoll${poll}&mode=ALL&service=CHAIN_DATA`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const results = await response.json();
+        const isHidden = results.length > 0;
+        hiddenPollsCache[cacheKey] = isHidden;
+        return isHidden;
+    } catch (error) {
+        console.error('Error checking hidden polls:', error);
+        hiddenPollsCache[cacheKey] = false;
+        return false;
     }
 }
 
@@ -145,29 +219,56 @@ async function voteOnPoll(pollName, optionId) {
     }
 }
 
+async function fetchName(address) {
+    if (nameCache[address]) {
+        return nameCache[address];
+    }
+    try {
+        const response = await fetch(`/names/address/${address}`);
+        const names = await response.json();
+        const name = names[0] ? names[0].name : '';
+        nameCache[address] = name;
+        return name;
+    } catch (error) {
+        console.error('Error fetching name:', error);
+        return '';
+    }
+}
+
 async function displayNameOrAddress(address) {
+    if (displayNameCache[address]) {
+        return displayNameCache[address];
+    }
     let shortenedAddress = address.substring(0, 4) + '...' + address.substring(address.length - 4);
     try {
         const response = await fetch(`/names/address/${address}`);
         const names = await response.json();
         if (names[0]) {
-            return `<img src="/arbitrary/THUMBNAIL/${names[0].name}/qortal_avatar"
+            const displayName = `<img src="/arbitrary/THUMBNAIL/${names[0].name}/qortal_avatar"
             style="width:24px;height:24px;"
             onerror="this.style='display:none'"
             >${names[0].name}`;
+            displayNameCache[address] = displayName;
+            return displayName;
         } else {
+            displayNameCache[address] = `(${shortenedAddress})`;
             return `(${shortenedAddress})`;
         }
     } catch (error) {
         console.error('Error fetching name:', error);
+        displayNameCache[address] = `(${shortenedAddress})`;
         return `(${shortenedAddress})`;
     }
 }
 
 async function pubkeyToAddress(pubkey) {
+    if (pubkeyCache[pubkey]) {
+        return pubkeyCache[pubkey];
+    }
     try {
         const response = await fetch(`/addresses/convert/${pubkey}`);
         const address = await response.text();
+        pubkeyCache[pubkey] = address;
         return address;
     } catch (error) {
         console.error('Error fetching address:', error);
@@ -176,9 +277,13 @@ async function pubkeyToAddress(pubkey) {
 }
 
 async function fetchAccountLevel(address) {
+    if (accountLevelCache[address]) {
+        return accountLevelCache[address];
+    }
     try {
         const response = await fetch(`/addresses/${address}`);
         const accountInfo = await response.json();
+        accountLevelCache[address] = accountInfo.level;
         return accountInfo.level;
     } catch (error) {
         console.error('Error fetching account level:', error);

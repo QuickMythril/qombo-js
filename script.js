@@ -1,3 +1,10 @@
+// Caches to store fetched data and reduce network requests
+const nameCache = {};
+const hiddenPollsCache = {};
+const displayNameCache = {};
+const accountLevelCache = {};
+const pubkeyCache = {};
+
 document.addEventListener('DOMContentLoaded', function() {
     initApplication();
     showSection('home');
@@ -47,8 +54,12 @@ document.getElementById('blocks-more').addEventListener('click', function() {
 document.getElementById('volume-button').addEventListener('click', function() {
     fetchDailyVolumes(Date.now() - (24 * 60 * 60 * 1000));
 });
-document.getElementById('coin-dropdown').addEventListener('change', function() {
+const coinDropdown = document.getElementById('coin-dropdown');
+coinDropdown.addEventListener('change', function() {
     fetchAndDisplayTrades(Date.now() - (24 * 60 * 60 * 1000), this.value);
+});
+document.getElementById('trades-more').addEventListener('click', function() {
+    fetchAndDisplayTrades(Date.now() - (24 * 60 * 60 * 1000), coinDropdown.value);
 });
 
 document.getElementById('account-button').addEventListener('click', function() {
@@ -565,45 +576,90 @@ async function fetchAndDisplayTrades(start, coin) {
 
 async function searchPolls() {
     document.getElementById('poll-results').innerHTML = '<p>Searching...</p>';
+    let userAddress = document.getElementById('user-address');
+
+    // Start building the table header
+    let tableHtml = `
+        <table>
+            <tr>
+                <th>Poll Name</th>
+                <th>Description</th>
+                <th>Owner</th>
+                <th>Poll Options</th>
+                <th>Published</th>
+            </tr>
+        </table>
+        <p id="loading-indicator">Loading...</p>
+    `;
+
+    // Insert the initial table structure and loading indicator
+    document.getElementById('poll-results').innerHTML = tableHtml;
+
+    // Counters for shown and hidden polls
+    let shownPollsCount = 0;
+    let hiddenPollsCount = 0;
+
     try {
         const response = await fetch('/polls');
         const results = await response.json();
+
         if (results && results.length > 0) {
-            let tableHtml = '<table>';
-            tableHtml += `
-                <tr>
-                    <th>Poll Name</th>
-                    <th>Description</th>
-                    <th>Owner</th>
-                    <th>Poll Options</th>
-                    <th>Published</th>
-                </tr>
-            `;
+            // Sort the results by published date descending
             results.sort((a, b) => b.published - a.published);
+
+            // Process each poll sequentially
             for (const result of results) {
-                let publishedString = new Date(result.published).toLocaleString();
-                let pollOptionsString = result.pollOptions.map(option => option.optionName).join(', ');
-                let displayName = await displayNameOrAddress(result.owner);
-                let creatorLevel = await fetchAccountLevel(result.owner);
-                tableHtml += `
-                    <tr>
-                        <td class="clickable-name" data-name="${result.pollName}">${result.pollName}</td>
+                const [isHidden, displayName, creatorLevel] = await Promise.all([
+                    checkHiddenPolls(result.owner, result.pollName),
+                    displayNameOrAddress(result.owner),
+                    fetchAccountLevel(result.owner)
+                ]);
+
+                // Update counters based on poll visibility
+                if (isHidden) {
+                    hiddenPollsCount++;
+                } else {
+                    shownPollsCount++;
+
+                    let publishedString = new Date(result.published).toLocaleString();
+                    let pollOptionsString = result.pollOptions.map(option => option.optionName).join(', ');
+
+                    // Construct row HTML for this poll
+                    let rowHtml = `
+                        <tr>
+                            <td><span class="clickable-name" data-name="${result.pollName}">${result.pollName}</span>`;
+                    if (userAddress.textContent === shortString(result.owner)) {
+                        rowHtml += `<br><button onclick="hidePoll('${result.pollName}')">Hide from Qombo</button>`;
+                    }
+                    rowHtml += `</td>
                         <td>${result.description}</td>
                         <td>${displayName} (Lv.${creatorLevel})</td>
                         <td>${pollOptionsString}</td>
                         <td>${publishedString}</td>
-                    </tr>
-                `;
+                        </tr>
+                    `;
+
+                    // Append the row to the table
+                    document.querySelector('#poll-results table').insertAdjacentHTML('beforeend', rowHtml);
+
+                    // Attach click listener for the clickable poll name
+                    const clickableElement = document.querySelector(`.clickable-name[data-name="${result.pollName}"]`);
+                    if (clickableElement) {
+                        clickableElement.addEventListener('click', function() {
+                            document.body.scrollTop = document.documentElement.scrollTop = 0;
+                            let target = this.getAttribute('data-name');
+                            fetchPoll(target);
+                        });
+                    } else {
+                        console.error(`Element not found for pollName: ${result.pollName}`);
+                    }
+                }
+                // Optional: Small delay to yield control back to the main thread
+                //await new Promise(resolve => setTimeout(resolve, 0));
+
             }
-            tableHtml += '</table>';
-            document.getElementById('poll-results').innerHTML = tableHtml;
-            document.querySelectorAll('.clickable-name').forEach(element => {
-                element.addEventListener('click', function() {
-                    document.body.scrollTop = document.documentElement.scrollTop = 0;
-                    let target = this.getAttribute('data-name');
-                    fetchPoll(target);
-                });
-            });            
+            // Update the loading indicator after processing all polls
+            document.getElementById('loading-indicator').innerHTML = `${shownPollsCount} Polls Shown, ${hiddenPollsCount} Polls Hidden`;
         } else {
             document.getElementById('poll-results').innerHTML = '<p>No results found.</p>';
         }
@@ -950,9 +1006,13 @@ function fetchAddressDetails(address) {
 }
 
 async function fetchAccountLevel(address) {
+    if (accountLevelCache[address]) {
+        return accountLevelCache[address];
+    }
     try {
         const response = await fetch(`/addresses/${address}`);
         const accountInfo = await response.json();
+        accountLevelCache[address] = accountInfo.level;
         return accountInfo.level;
     } catch (error) {
         console.error('Error fetching account level:', error);
@@ -1028,6 +1088,50 @@ async function createPoll() {
         });
     } else {
         document.getElementById('poll-name').focus();
+    }
+}
+
+async function hidePoll(pollName) {
+    let userName = document.getElementById('user-status');
+    try {
+        const pollToHide = 'qomboHidePoll' + pollName;
+        const emptyFile = new Blob([], { type: 'application/octet-stream' });
+        await qortalRequest({
+            action: "PUBLISH_QDN_RESOURCE",
+            name: userName.textContent,
+            service: "CHAIN_DATA",
+            identifier: pollToHide,
+            file: emptyFile
+        });
+        console.log('Poll hidden successfully');
+    } catch (error) {
+        console.error('Error hiding poll:', error);
+    }
+}
+
+async function checkHiddenPolls(address, poll) {
+    const cacheKey = `${address}_${poll}`;
+    if (hiddenPollsCache[cacheKey] !== undefined) {
+        return hiddenPollsCache[cacheKey];
+    }
+    let name = await fetchName(address);
+    if (name === '') {
+        hiddenPollsCache[cacheKey] = false;
+        return false;
+    }
+    try {
+        const response = await fetch(`/arbitrary/resources/search?name=${name}&identifier=qomboHidePoll${poll}&mode=ALL&service=CHAIN_DATA`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const results = await response.json();
+        const isHidden = results.length > 0;
+        hiddenPollsCache[cacheKey] = isHidden;
+        return isHidden;
+    } catch (error) {
+        console.error('Error checking hidden polls:', error);
+        hiddenPollsCache[cacheKey] = false;
+        return false;
     }
 }
 
@@ -1237,28 +1341,58 @@ function hideOverlay() {
     }
 }
 
+async function fetchName(address) {
+    if (nameCache[address]) {
+        return nameCache[address];
+    }
+    try {
+        const response = await fetch(`/names/address/${address}`);
+        const names = await response.json();
+        const name = names[0] ? names[0].name : '';
+        nameCache[address] = name;
+        return name;
+    } catch (error) {
+        console.error('Error fetching name:', error);
+        return '';
+    }
+}
+
 async function displayNameOrAddress(address) {
+    if (displayNameCache[address]) {
+        return displayNameCache[address];
+    }
+    let shortenedAddress = address.substring(0, 4) + '...' + address.substring(address.length - 4);
     try {
         const response = await fetch(`/names/address/${address}`);
         const names = await response.json();
         if (names[0]) {
-            return `<img src="/arbitrary/THUMBNAIL/${names[0].name}/qortal_avatar"
+            const displayName = `<img src="/arbitrary/THUMBNAIL/${names[0].name}/qortal_avatar"
             style="width:24px;height:24px;"
             onerror="this.style='display:none'"
             >${names[0].name}`;
+            displayNameCache[address] = displayName;
+            return displayName;
         } else {
-            return `(${shortString(address)})`;
+            displayNameCache[address] = `(${shortenedAddress})`;
+            return `(${shortenedAddress})`;
         }
     } catch (error) {
         console.error('Error fetching name:', error);
-        return `(${shortString(address)})`;
+        displayNameCache[address] = `(${shortenedAddress})`;
+        return `(${shortenedAddress})`;
     }
 }
 
+
+
 async function pubkeyToAddress(pubkey) {
+    if (pubkeyCache[pubkey]) {
+        return pubkeyCache[pubkey];
+    }
     try {
         const response = await fetch(`/addresses/convert/${pubkey}`);
         const address = await response.text();
+        pubkeyCache[pubkey] = address;
         return address;
     } catch (error) {
         console.error('Error fetching address:', error);
@@ -1435,6 +1569,11 @@ function calculateFeatures() {
     const dateAlgo1 = new Date(timestampAlgo1).toLocaleString();
     document.getElementById('date-algo1').textContent = dateAlgo1;
     
+    const dateCancel =  new Date(1676986362069).toLocaleString();
+    document.getElementById('date-cancel').textContent = dateCancel;
+    const untilCancel = 1676986362069 - currentTimestamp;
+    document.getElementById('until-cancel').textContent = formatDuration(untilCancel);
+    
     const dateUnitFee =  new Date(1692118800000).toLocaleString();
     document.getElementById('date-unit-fee').textContent = dateUnitFee;
     const untilUnitFee = 1692118800000 - currentTimestamp;
@@ -1453,10 +1592,10 @@ function calculateFeatures() {
     const dateBatch = new Date(timestampBatch).toLocaleString();
     document.getElementById('date-batch').textContent = dateBatch;
     
-    const dateDisable =  new Date(1706745000000).toLocaleString();
-    document.getElementById('date-disable').textContent = dateDisable;
-    const untilDisable = 1706745000000 - currentTimestamp;
-    document.getElementById('until-disable').textContent = formatDuration(untilDisable);
+    const dateDisable1 =  new Date(1706745000000).toLocaleString();
+    document.getElementById('date-disable1').textContent = dateDisable1;
+    const untilDisable1 = 1706745000000 - currentTimestamp;
+    document.getElementById('until-disable1').textContent = formatDuration(untilDisable1);
 
     const blocksUntilFix = 1589200 - currentBlockHeight;
     const untilFix = currentBlockTime * blocksUntilFix * 1000;
@@ -1492,8 +1631,40 @@ function calculateFeatures() {
     const dateAlgo3 = new Date(timestampAlgo3).toLocaleString();
     document.getElementById('date-algo3').textContent = dateAlgo3;
 
-    const dateEnable =  new Date(1709251200000).toLocaleString();
-    document.getElementById('date-enable').textContent = dateEnable;
-    const untilEnable = 1709251200000 - currentTimestamp;
-    document.getElementById('until-enable').textContent = formatDuration(untilEnable);
+    const dateEnable1 =  new Date(1709251200000).toLocaleString();
+    document.getElementById('date-enable1').textContent = dateEnable1;
+    const untilEnable1 = 1709251200000 - currentTimestamp;
+    document.getElementById('until-enable1').textContent = formatDuration(untilEnable1);
+    
+    const blocksUntilDisable2 = 1899100 - currentBlockHeight;
+    const untilDisable2 = currentBlockTime * blocksUntilDisable2 * 1000;
+    document.getElementById('until-disable2').textContent = formatDuration(untilDisable2);
+    const timestampDisable2 = currentTimestamp + untilDisable2;
+    document.getElementById('timestamp-disable2').textContent = timestampDisable2;
+    const dateDisable2 = new Date(timestampDisable2).toLocaleString();
+    document.getElementById('date-disable2').textContent = dateDisable2;
+    
+    const blocksUntilName = 1900300 - currentBlockHeight;
+    const untilName = currentBlockTime * blocksUntilName * 1000;
+    document.getElementById('until-name').textContent = formatDuration(untilName);
+    const timestampName = currentTimestamp + untilName;
+    document.getElementById('timestamp-name').textContent = timestampName;
+    const dateName = new Date(timestampName).toLocaleString();
+    document.getElementById('date-name').textContent = dateName;
+    
+    const blocksUntilGroup = 1902700 - currentBlockHeight;
+    const untilGroup = currentBlockTime * blocksUntilGroup * 1000;
+    document.getElementById('until-group').textContent = formatDuration(untilGroup);
+    const timestampGroup = currentTimestamp + untilGroup;
+    document.getElementById('timestamp-group').textContent = timestampGroup;
+    const dateGroup = new Date(timestampGroup).toLocaleString();
+    document.getElementById('date-group').textContent = dateGroup;
+    
+    const blocksUntilEnable2 = 1905100 - currentBlockHeight;
+    const untilEnable2 = currentBlockTime * blocksUntilEnable2 * 1000;
+    document.getElementById('until-enable2').textContent = formatDuration(untilEnable2);
+    const timestampEnable2 = currentTimestamp + untilEnable2;
+    document.getElementById('timestamp-enable2').textContent = timestampEnable2;
+    const dateEnable2 = new Date(timestampEnable2).toLocaleString();
+    document.getElementById('date-enable2').textContent = dateEnable2;
 }

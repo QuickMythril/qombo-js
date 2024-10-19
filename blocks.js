@@ -1,3 +1,5 @@
+const displayNameCache = {};
+
 document.addEventListener('DOMContentLoaded', function() {
     fetchBlockHeight(fetchAndDisplayBlocks);
     fetchBlockHeight(searchByBlock);
@@ -126,20 +128,27 @@ async function fetchAndDisplayTxs(signature) {
 }
 
 async function displayNameOrAddress(address) {
+    if (displayNameCache[address]) {
+        return displayNameCache[address];
+    }
     let shortenedAddress = address.substring(0, 4) + '...' + address.substring(address.length - 4);
     try {
         const response = await fetch(`/names/address/${address}`);
         const names = await response.json();
         if (names[0]) {
-            return `<img src="/arbitrary/THUMBNAIL/${names[0].name}/qortal_avatar"
+            const displayName = `<img src="/arbitrary/THUMBNAIL/${names[0].name}/qortal_avatar"
             style="width:24px;height:24px;"
             onerror="this.style='display:none'"
             >${names[0].name}`;
+            displayNameCache[address] = displayName;
+            return displayName;
         } else {
+            displayNameCache[address] = `(${shortenedAddress})`;
             return `(${shortenedAddress})`;
         }
     } catch (error) {
         console.error('Error fetching name:', error);
+        displayNameCache[address] = `(${shortenedAddress})`;
         return `(${shortenedAddress})`;
     }
 }

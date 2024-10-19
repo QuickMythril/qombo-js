@@ -89,6 +89,11 @@ function calculateFeatures() {
     const dateAlgo1 = new Date(timestampAlgo1).toLocaleString();
     document.getElementById('date-algo1').textContent = dateAlgo1;
     
+    const dateCancel =  new Date(1676986362069).toLocaleString();
+    document.getElementById('date-cancel').textContent = dateCancel;
+    const untilCancel = 1676986362069 - currentTimestamp;
+    document.getElementById('until-cancel').textContent = formatDuration(untilCancel);
+    
     const dateUnitFee =  new Date(1692118800000).toLocaleString();
     document.getElementById('date-unit-fee').textContent = dateUnitFee;
     const untilUnitFee = 1692118800000 - currentTimestamp;
@@ -107,10 +112,10 @@ function calculateFeatures() {
     const dateBatch = new Date(timestampBatch).toLocaleString();
     document.getElementById('date-batch').textContent = dateBatch;
     
-    const dateDisable =  new Date(1706745000000).toLocaleString();
-    document.getElementById('date-disable').textContent = dateDisable;
-    const untilDisable = 1706745000000 - currentTimestamp;
-    document.getElementById('until-disable').textContent = formatDuration(untilDisable);
+    const dateDisable1 =  new Date(1706745000000).toLocaleString();
+    document.getElementById('date-disable1').textContent = dateDisable1;
+    const untilDisable1 = 1706745000000 - currentTimestamp;
+    document.getElementById('until-disable1').textContent = formatDuration(untilDisable1);
 
     const blocksUntilFix = 1589200 - currentBlockHeight;
     const untilFix = currentBlockTime * blocksUntilFix * 1000;
@@ -146,10 +151,42 @@ function calculateFeatures() {
     const dateAlgo3 = new Date(timestampAlgo3).toLocaleString();
     document.getElementById('date-algo3').textContent = dateAlgo3;
 
-    const dateEnable =  new Date(1709251200000).toLocaleString();
-    document.getElementById('date-enable').textContent = dateEnable;
-    const untilEnable = 1709251200000 - currentTimestamp;
-    document.getElementById('until-enable').textContent = formatDuration(untilEnable);
+    const dateEnable1 =  new Date(1709251200000).toLocaleString();
+    document.getElementById('date-enable1').textContent = dateEnable1;
+    const untilEnable1 = 1709251200000 - currentTimestamp;
+    document.getElementById('until-enable1').textContent = formatDuration(untilEnable1);
+    
+    const blocksUntilDisable2 = 1899100 - currentBlockHeight;
+    const untilDisable2 = currentBlockTime * blocksUntilDisable2 * 1000;
+    document.getElementById('until-disable2').textContent = formatDuration(untilDisable2);
+    const timestampDisable2 = currentTimestamp + untilDisable2;
+    document.getElementById('timestamp-disable2').textContent = timestampDisable2;
+    const dateDisable2 = new Date(timestampDisable2).toLocaleString();
+    document.getElementById('date-disable2').textContent = dateDisable2;
+    
+    const blocksUntilName = 1900300 - currentBlockHeight;
+    const untilName = currentBlockTime * blocksUntilName * 1000;
+    document.getElementById('until-name').textContent = formatDuration(untilName);
+    const timestampName = currentTimestamp + untilName;
+    document.getElementById('timestamp-name').textContent = timestampName;
+    const dateName = new Date(timestampName).toLocaleString();
+    document.getElementById('date-name').textContent = dateName;
+    
+    const blocksUntilGroup = 1902700 - currentBlockHeight;
+    const untilGroup = currentBlockTime * blocksUntilGroup * 1000;
+    document.getElementById('until-group').textContent = formatDuration(untilGroup);
+    const timestampGroup = currentTimestamp + untilGroup;
+    document.getElementById('timestamp-group').textContent = timestampGroup;
+    const dateGroup = new Date(timestampGroup).toLocaleString();
+    document.getElementById('date-group').textContent = dateGroup;
+    
+    const blocksUntilEnable2 = 1905100 - currentBlockHeight;
+    const untilEnable2 = currentBlockTime * blocksUntilEnable2 * 1000;
+    document.getElementById('until-enable2').textContent = formatDuration(untilEnable2);
+    const timestampEnable2 = currentTimestamp + untilEnable2;
+    document.getElementById('timestamp-enable2').textContent = timestampEnable2;
+    const dateEnable2 = new Date(timestampEnable2).toLocaleString();
+    document.getElementById('date-enable2').textContent = dateEnable2;
 }
 
 function formatDuration(duration) {
