@@ -802,20 +802,21 @@ function searchByAddress(address, searchType) {
     }).catch(error => console.error('Error fetching address details:', error));
 }
 
-function searchByName(name, type) {
+async function searchByName(name, type) {
     if (type === 'account') {
         searchAccounts(name);
         return;
     }
     const service = type.toUpperCase();
     document.getElementById(`${type}-results`).innerHTML = '<p>Searching...</p>';
-    fetch(`/arbitrary/resources/search?service=${service}&name=${name}`)
-    .then(response => response.json())
-    .then(results => {
+    try {
+        const response = await fetch(`/arbitrary/resources/search?service=${service}&name=${name}`);
+        const results = await response.json();
         if (results.length > 0) {
             let tableHtml = '<table>';
             tableHtml += `
                 <tr>
+                    <th>Rating</th>
                     <th>Name</th>
                     <th>Size</th>
                     <th>Created</th>
@@ -823,35 +824,94 @@ function searchByName(name, type) {
                 </tr>
             `;
             results.sort((a, b) => (b.updated || b.created) - (a.updated || a.created));
-            results.forEach(result => {
-                let createdString = new Date(result.created).toLocaleString()
-                let updatedString = new Date(result.updated).toLocaleString()
+            const ratingPromises = results.map(async (result) => {
+                const appName = result.name;
+                const pollName = `app-library-${service}-rating-${appName}`;
+                let ratingInfo = {
+                    ratingText: '',
+                    ratingValue: null,
+                    ratingCount: null
+                };
+                try {
+                    // Fetch poll details and votes
+                    const pollVotesResponse = await fetch(`/polls/votes/${pollName}`);
+                    if (pollVotesResponse.ok) {
+                        const pollVotesData = await pollVotesResponse.json();
+                        const voteCounts = pollVotesData.voteCounts;
+                        let totalRating = 0;
+                        let ratingCount = 0;
+                        for (let i = 0; i < voteCounts.length; i++) {
+                            const count = voteCounts[i].voteCount;
+                            const optionName = voteCounts[i].optionName;
+                            if (optionName.startsWith('initialValue-')) {
+                                const initialValueMatch = optionName.match(/initialValue-(\d+)/);
+                                if (initialValueMatch) {
+                                    const initialRating = parseInt(initialValueMatch[1]);
+                                    totalRating += initialRating;
+                                    ratingCount += 1; // Count initial value only once
+                                }
+                            } else if (['1', '2', '3', '4', '5'].includes(optionName)) {
+                                const ratingValue = parseInt(optionName);
+                                totalRating += ratingValue * count;
+                                ratingCount += count;
+                            }
+                        }
+                        if (ratingCount > 0) {
+                            const averageRating = (totalRating / ratingCount).toFixed(2);
+                            ratingInfo.ratingText = `${averageRating} (${ratingCount} ratings)`;
+                            ratingInfo.ratingValue = averageRating;
+                            ratingInfo.ratingCount = ratingCount;
+                        } else {
+                            ratingInfo.ratingText = 'No ratings';
+                        }
+                    } else {
+                        ratingInfo.ratingText = `Rate this ${service}`;
+                    }
+                } catch (error) {
+                    console.error(`Error fetching poll for ${appName}:`, error);
+                    ratingInfo.ratingText = `Rate this ${service}`;
+                }
+                return ratingInfo;
+            });
+            const ratings = await Promise.all(ratingPromises);
+            results.forEach((result, index) => {
+                const ratingInfo = ratings[index];
+                const appName = result.name;
+                let createdString = new Date(result.created).toLocaleString();
+                let updatedString = new Date(result.updated).toLocaleString();
                 if (updatedString === 'Invalid Date') {
-                    updatedString = 'Never'
+                    updatedString = 'Never';
                 }
                 let sizeString = formatSize(result.size);
+                let ratingCell = '';
+                if (ratingInfo.ratingValue) {
+                    ratingCell = `<span class="rating-text clickable-rating" data-app-name="${appName}">${ratingInfo.ratingText}</span>`;
+                } else {
+                    ratingCell = `<span class="rate-app clickable-rating" data-app-name="${appName}">Rate this app</span>`;
+                }
+                let rowHtml = '<tr>';
+                rowHtml += `<td>${ratingCell}</td>`;
                 if (_qdnContext === 'gateway') {
-                    tableHtml += `<tr>
-                        <td><a target="_blank" href="/${type}/${result.name}">
-                        <img src="/arbitrary/THUMBNAIL/${result.name}/qortal_avatar"
+                    rowHtml += `<td><a target="_blank" href="/${type}/${appName}">
+                        <img src="/arbitrary/THUMBNAIL/${appName}/qortal_avatar"
                         style="width:24px;height:24px;"
                         onerror="this.style='display:none'"
-                        >${result.name}</a></td>
+                        >${appName}</a></td>
                     `;
                 } else {
-                    tableHtml += `<tr>
-                        <td class="clickable-name" data-name="${result.name}">
-                        <img src="/arbitrary/THUMBNAIL/${result.name}/qortal_avatar"
+                    rowHtml += `<td class="clickable-name" data-name="${appName}">
+                        <img src="/arbitrary/THUMBNAIL/${appName}/qortal_avatar"
                         style="width:24px;height:24px;"
                         onerror="this.style='display:none'"
-                        >${result.name}</td>
+                        >${appName}</td>
                     `;
                 }
-                tableHtml += `<td>${sizeString}</td>
-                        <td>${createdString}</td>
-                        <td>${updatedString}</td>
-                    </tr>
+                rowHtml += `<td>${sizeString}</td>
+                            <td>${createdString}</td>
+                            <td>${updatedString}</td>
+                        </tr>
                 `;
+                tableHtml += rowHtml;
             });
             tableHtml += '</table>';
             document.getElementById(`${type}-results`).innerHTML = tableHtml;
@@ -861,19 +921,118 @@ function searchByName(name, type) {
                     openNewTab(target, service);
                 });
             });
-            //const exactMatch = results.find(r => r.name.toLowerCase() === name.toLowerCase());
-            //if (exactMatch) {
-                // TODO - Display specific website/app info.
-                // fetchAddressDetails(exactMatch.owner);
-            //}
+            document.querySelectorAll('.clickable-rating').forEach(element => {
+                element.addEventListener('click', function() {
+                    let appName = this.getAttribute('data-app-name');
+                    openRatingModal(appName, type);
+                });
+            });
         } else {
             document.getElementById(`${type}-results`).innerHTML = '<p>No results found.</p>';
         }
-    })
-    .catch(error => {
+    } catch (error) {
         console.error('Error searching by name:', error);
-        document.getElementById(`${type}-results`).innerHTML = `<p>Error: ${error}</p>`;
-    })
+        document.getElementById('app-results').innerHTML = `<p>Error: ${error}</p>`;
+    }
+}
+
+function openRatingModal(appName, type) {
+    const service = type.toUpperCase();
+    let modal = document.createElement('div');
+    modal.classList.add('modal');
+    let modalContent = document.createElement('div');
+    modalContent.classList.add('modal-content');
+    let closeButton = document.createElement('span');
+    closeButton.classList.add('close-button');
+    closeButton.innerHTML = '&times;';
+    closeButton.onclick = () => {
+        document.body.removeChild(modal);
+    };
+    let title = document.createElement('h2');
+    title.textContent = `Rate ${appName}`;
+    let ratingForm = document.createElement('form');
+    ratingForm.id = 'rating-form';
+    let ratingOptions = document.createElement('div');
+    ratingOptions.classList.add('rating-options');
+    for (let i = 1; i <= 5; i++) {
+        let label = document.createElement('label');
+        label.innerHTML = `<input type="radio" name="rating" value="${i}"> ${i} Star${i > 1 ? 's' : ''}`;
+        ratingOptions.appendChild(label);
+    }
+    let removeLabel = document.createElement('label');
+    removeLabel.innerHTML = `<input type="radio" name="rating" value="remove"> Remove Rating`;
+    ratingOptions.appendChild(removeLabel);
+    let submitButton = document.createElement('button');
+    submitButton.type = 'button';
+    submitButton.textContent = 'Submit Rating';
+    submitButton.onclick = () => {
+        submitRating(appName, service);
+    };
+    ratingForm.appendChild(ratingOptions);
+    ratingForm.appendChild(submitButton);
+    modalContent.appendChild(closeButton);
+    modalContent.appendChild(title);
+    modalContent.appendChild(ratingForm);
+    modal.appendChild(modalContent);
+    document.body.appendChild(modal);
+}
+
+async function submitRating(appName, service) {
+    const form = document.getElementById('rating-form');
+    const selectedOption = form.querySelector('input[name="rating"]:checked');
+    if (!selectedOption) {
+        alert('Please select a rating.');
+        return;
+    }
+    const ratingValue = selectedOption.value;
+    const pollName = `app-library-${service}-rating-${appName}`;
+    try {
+        const pollResponse = await fetch(`/polls/${pollName}`);
+        if (pollResponse.status === 404) {
+            const initialValueOption = `initialValue-${ratingValue}`;
+            let pollCreatorAddress = '';
+            let userStatus = document.getElementById('user-status');
+            let loginAddress = document.getElementById('login-address');
+            if (userStatus.textContent === 'Not Logged In') {
+                const pollOwnerResponse = await qortalRequest({
+                    action: 'GET_USER_ACCOUNT',
+                });
+                pollCreatorAddress = pollOwnerResponse.address;
+            } else {
+                pollCreatorAddress = loginAddress.textContent;
+            }
+            
+            // Create the poll with the required format for pollOptions
+            await qortalRequest({
+                action: "CREATE_POLL",
+                pollName: pollName,
+                pollDescription: `Rating for ${service} ${appName}`,
+                pollOptions: [`1, 2, 3, 4, 5, ${initialValueOption}`],
+                pollOwnerAddress: pollCreatorAddress
+            });
+            alert('Poll created and initial rating submitted.');
+        } else {
+            let optionIndex;
+            if (ratingValue === 'remove') {
+                optionIndex = 5;
+            } else {
+                optionIndex = parseInt(ratingValue) - 1;
+            }
+            // Vote on the existing poll
+            await qortalRequest({
+                action: "VOTE_ON_POLL",
+                pollName: pollName,
+                optionIndex: optionIndex
+            });
+            alert('Rating submitted.');
+        }
+        // Clean up the UI and refresh data
+        document.querySelector('.modal').remove();
+        handleSearch();
+    } catch (error) {
+        console.error('Error submitting rating:', error);
+        alert('Error submitting rating. Please try again.');
+    }
 }
 
 function searchAccounts(name) {
@@ -1025,7 +1184,7 @@ async function openNewTab(name, service) {
     const response = await qortalRequest({
         action: 'OPEN_NEW_TAB',
         qortalLink: `qortal://${service}/${name}`
-      })
+    })
 }
 
 async function voteOnPoll(pollName, optionId) {
