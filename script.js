@@ -5,6 +5,17 @@ const displayNameCache = {};
 const accountLevelCache = {};
 const pubkeyCache = {};
 
+let appResultsMap = {};
+let currentSortColumnMap = {};
+let sortDirectionMap = {};
+const sortDirectionsDefault = {
+    'Rating': -1,       // Descending
+    'Name': 1,          // Ascending
+    'Size': -1,         // Descending
+    'Created': -1,      // Descending
+    'Last Updated': -1  // Descending
+};
+
 document.addEventListener('DOMContentLoaded', function() {
     initApplication();
     showSection('home');
@@ -813,21 +824,13 @@ async function searchByName(name, type) {
         const response = await fetch(`/arbitrary/resources/search?service=${service}&name=${name}`);
         const results = await response.json();
         if (results.length > 0) {
-            let tableHtml = '<table>';
-            tableHtml += `
-                <tr>
-                    <th>Rating</th>
-                    <th>Name</th>
-                    <th>Size</th>
-                    <th>Created</th>
-                    <th>Last Updated</th>
-                </tr>
-            `;
-            results.sort((a, b) => (b.updated || b.created) - (a.updated || a.created));
-            const ratingPromises = results.map(async (result) => {
+            appResultsMap[type] = results;
+            // Fetch ratings and attach to appResultsMap
+            const ratingPromises = appResultsMap[type].map(async (result) => {
                 const appName = result.name;
                 const pollName = `app-library-${service}-rating-${appName}`;
                 let ratingInfo = {
+                    appName: appName,
                     ratingText: '',
                     ratingValue: null,
                     ratingCount: null
@@ -873,66 +876,172 @@ async function searchByName(name, type) {
                 }
                 return ratingInfo;
             });
-            const ratings = await Promise.all(ratingPromises);
-            results.forEach((result, index) => {
-                const ratingInfo = ratings[index];
+            const ratingsArray = await Promise.all(ratingPromises);
+            const ratingMap = {};
+            ratingsArray.forEach((ratingInfo) => {
+                ratingMap[ratingInfo.appName] = ratingInfo;
+            });
+            appResultsMap[type].forEach((result) => {
                 const appName = result.name;
-                let createdString = new Date(result.created).toLocaleString();
-                let updatedString = new Date(result.updated).toLocaleString();
-                if (updatedString === 'Invalid Date') {
-                    updatedString = 'Never';
-                }
-                let sizeString = formatSize(result.size);
-                let ratingCell = '';
-                if (ratingInfo.ratingValue) {
-                    ratingCell = `<span class="rating-text clickable-rating" data-app-name="${appName}">${ratingInfo.ratingText}</span>`;
-                } else {
-                    ratingCell = `<span class="rate-app clickable-rating" data-app-name="${appName}">Rate this app</span>`;
-                }
-                let rowHtml = '<tr>';
-                rowHtml += `<td>${ratingCell}</td>`;
-                if (_qdnContext === 'gateway') {
-                    rowHtml += `<td><a target="_blank" href="/${type}/${appName}">
-                        <img src="/arbitrary/THUMBNAIL/${appName}/qortal_avatar"
-                        style="width:24px;height:24px;"
-                        onerror="this.style='display:none'"
-                        >${appName}</a></td>
-                    `;
-                } else {
-                    rowHtml += `<td class="clickable-name" data-name="${appName}">
-                        <img src="/arbitrary/THUMBNAIL/${appName}/qortal_avatar"
-                        style="width:24px;height:24px;"
-                        onerror="this.style='display:none'"
-                        >${appName}</td>
-                    `;
-                }
-                rowHtml += `<td>${sizeString}</td>
-                            <td>${createdString}</td>
-                            <td>${updatedString}</td>
-                        </tr>
-                `;
-                tableHtml += rowHtml;
+                const ratingInfo = ratingMap[appName];
+                result.ratingInfo = ratingInfo;
             });
-            tableHtml += '</table>';
-            document.getElementById(`${type}-results`).innerHTML = tableHtml;
-            document.querySelectorAll('.clickable-name').forEach(element => {
-                element.addEventListener('click', function() {
-                    let target = this.getAttribute('data-name');
-                    openNewTab(target, service);
-                });
-            });
-            document.querySelectorAll('.clickable-rating').forEach(element => {
-                element.addEventListener('click', function() {
-                    let appName = this.getAttribute('data-app-name');
-                    openRatingModal(appName, type);
-                });
-            });
+            renderTable(type);
         } else {
             document.getElementById(`${type}-results`).innerHTML = '<p>No results found.</p>';
         }
     } catch (error) {
         console.error('Error searching by name:', error);
-        document.getElementById('app-results').innerHTML = `<p>Error: ${error}</p>`;
+        document.getElementById(`${type}-results`).innerHTML = `<p>Error: ${error}</p>`;
+    }
+}
+
+function renderTable(type) {
+    const appResults = appResultsMap[type];
+    if (appResults && appResults.length > 0) {
+        // Initialize sorting state if not set
+        if (!currentSortColumnMap[type]) {
+            currentSortColumnMap[type] = 'Last Updated';
+        }
+        if (sortDirectionMap[type] == null) {
+            sortDirectionMap[type] = sortDirectionsDefault[currentSortColumnMap[type]];
+        }
+        // Build table headers with sortable columns
+        let tableHtml = '<table>';
+        tableHtml += `
+            <tr>
+                <th class="sortable" data-column="Rating">Rating</th>
+                <th class="sortable" data-column="Name">Name</th>
+                <th class="sortable" data-column="Size">Size</th>
+                <th class="sortable" data-column="Created">Created</th>
+                <th class="sortable" data-column="Last Updated">Last Updated</th>
+            </tr>
+        `;
+        // Sort the appResults array
+        appResults.sort((a, b) => compareFunction(a, b, type));
+        // Build table rows
+        appResults.forEach((result) => {
+            const appName = result.name;
+            const ratingInfo = result.ratingInfo;
+            let createdString = new Date(result.created).toLocaleString();
+            let updatedString = new Date(result.updated).toLocaleString();
+            if (updatedString === 'Invalid Date') {
+                updatedString = 'Never';
+            }
+            // Size formatting
+            let sizeString = '';
+            if (result.size >= (1024 ** 3)) {
+                sizeString = (result.size / (1024 ** 3)).toFixed(2) + ' GB';
+            } else if (result.size >= (1024 ** 2)) {
+                sizeString = (result.size / (1024 ** 2)).toFixed(2) + ' MB';
+            } else if (result.size >= 1024) {
+                sizeString = (result.size / 1024).toFixed(2) + ' KB';
+            } else {
+                sizeString = result.size + ' B';
+            }
+            // Rating cell
+            let ratingCell = '';
+            if (ratingInfo.ratingValue !== null) {
+                ratingCell = `<span class="rating-text clickable-rating" data-app-name="${appName}">${ratingInfo.ratingText}</span>`;
+            } else {
+                ratingCell = `<span class="rate-app clickable-rating" data-app-name="${appName}">Rate this ${type}</span>`;
+            }
+            // Build row HTML
+            let rowHtml = '<tr>';
+            rowHtml += `<td>${ratingCell}</td>`;
+            if (_qdnContext === 'gateway') {
+                rowHtml += `<td><a target="_blank" href="/${type}/${appName}">
+                    <img src="/arbitrary/THUMBNAIL/${appName}/qortal_avatar"
+                    style="width:24px;height:24px;"
+                    onerror="this.style='display:none'">
+                    ${appName}</a></td>`;
+            } else {
+                rowHtml += `<td class="clickable-name" data-name="${appName}">
+                    <img src="/arbitrary/THUMBNAIL/${appName}/qortal_avatar"
+                    style="width:24px;height:24px;"
+                    onerror="this.style='display:none'">
+                    ${appName}</td>`;
+            }
+            rowHtml += `<td>${sizeString}</td>
+                        <td>${createdString}</td>
+                        <td>${updatedString}</td>
+                    </tr>`;
+            tableHtml += rowHtml;
+        });
+        tableHtml += '</table>';
+        document.getElementById(`${type}-results`).innerHTML = tableHtml;
+        // Add event listeners for sorting
+        document.querySelectorAll('.sortable').forEach(element => {
+            element.addEventListener('click', function() {
+                const column = this.getAttribute('data-column');
+                if (currentSortColumnMap[type] === column) {
+                    // Reverse sort direction
+                    sortDirectionMap[type] *= -1;
+                } else {
+                    // Set new sort column and default direction
+                    currentSortColumnMap[type] = column;
+                    sortDirectionMap[type] = sortDirectionsDefault[column];
+                }
+                renderTable(type);
+            });
+        });
+        // Add event listeners for clickable names and ratings
+        document.querySelectorAll('.clickable-name').forEach(element => {
+            element.addEventListener('click', function() {
+                let target = this.getAttribute('data-name');
+                openNewTab(target, type);
+            });
+        });
+        document.querySelectorAll('.clickable-rating').forEach(element => {
+            element.addEventListener('click', function() {
+                let appName = this.getAttribute('data-app-name');
+                openRatingModal(appName, type);
+            });
+        });
+    } else {
+        document.getElementById(`${type}-results`).innerHTML = '<p>No results found.</p>';
+    }
+}
+
+function compareFunction(a, b, type) {
+    let aValue, bValue;
+    let currentSortColumn = currentSortColumnMap[type];
+    let sortDirection = sortDirectionMap[type];
+
+    switch(currentSortColumn) {
+        case 'Rating':
+            // Sort by ratingValue, then by ratingCount
+            aValue = a.ratingInfo.ratingValue !== null ? parseFloat(a.ratingInfo.ratingValue) : -Infinity;
+            bValue = b.ratingInfo.ratingValue !== null ? parseFloat(b.ratingInfo.ratingValue) : -Infinity;
+
+            if (aValue !== bValue) {
+                return (aValue - bValue) * sortDirection;
+            } else {
+                aValue = a.ratingInfo.ratingCount !== null ? a.ratingInfo.ratingCount : -Infinity;
+                bValue = b.ratingInfo.ratingCount !== null ? b.ratingInfo.ratingCount : -Infinity;
+                return (aValue - bValue) * sortDirection;
+            }
+
+        case 'Name':
+            return a.name.localeCompare(b.name) * sortDirection;
+
+        case 'Size':
+            aValue = a.size;
+            bValue = b.size;
+            return (aValue - bValue) * sortDirection;
+
+        case 'Created':
+            aValue = new Date(a.created).getTime();
+            bValue = new Date(b.created).getTime();
+            return (aValue - bValue) * sortDirection;
+
+        case 'Last Updated':
+            aValue = a.updated ? new Date(a.updated).getTime() : 0;
+            bValue = b.updated ? new Date(b.updated).getTime() : 0;
+            return (aValue - bValue) * sortDirection;
+
+        default:
+            return 0;
     }
 }
 

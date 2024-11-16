@@ -1,3 +1,14 @@
+let appResults = [];
+let currentSortColumn = 'Last Updated'; // Default sort column
+const sortDirectionsDefault = {
+    'Rating': -1,       // Descending
+    'Name': 1,          // Ascending
+    'Size': -1,         // Descending
+    'Created': -1,      // Descending
+    'Last Updated': -1  // Descending
+};
+let sortDirection = sortDirectionsDefault[currentSortColumn];
+
 document.addEventListener('DOMContentLoaded', function() {
     fetchBlockHeight()
         .then(() => {
@@ -71,18 +82,9 @@ async function searchByName(name) {
         const response = await fetch('/arbitrary/resources/search?service=APP&name=' + name);
         const results = await response.json();
         if (results.length > 0) {
-            let tableHtml = '<table>';
-            tableHtml += `
-                <tr>
-                    <th>Rating</th>
-                    <th>Name</th>
-                    <th>Size</th>
-                    <th>Created</th>
-                    <th>Last Updated</th>
-                </tr>
-            `;
-            results.sort((a, b) => (b.updated || b.created) - (a.updated || a.created));
-            const ratingPromises = results.map(async (result) => {
+            appResults = results;
+            // Fetch ratings and attach to appResults
+            const ratingPromises = appResults.map(async (result) => {
                 const appName = result.name;
                 const pollName = `app-library-APP-rating-${appName}`;
                 let ratingInfo = {
@@ -132,74 +134,156 @@ async function searchByName(name) {
                 return ratingInfo;
             });
             const ratings = await Promise.all(ratingPromises);
-            results.forEach((result, index) => {
+            appResults.forEach((result, index) => {
                 const ratingInfo = ratings[index];
-                const appName = result.name;
-                let createdString = new Date(result.created).toLocaleString();
-                let updatedString = new Date(result.updated).toLocaleString();
-                if (updatedString === 'Invalid Date') {
-                    updatedString = 'Never';
-                }
-                let sizeString = '';
-                if (result.size > (1024*1024)) {
-                    let adjustedSize = (result.size / (1024*1024)).toFixed(2);
-                    sizeString = adjustedSize + ' mb';
-                } else if (result.size > 1024) {
-                    let adjustedSize = (result.size / 1024).toFixed(2);
-                    sizeString = adjustedSize + ' kb';
-                } else {
-                    sizeString = result.size + ' b';
-                }
-                let ratingCell = '';
-                if (ratingInfo.ratingValue) {
-                    ratingCell = `<span class="rating-text clickable-rating" data-app-name="${appName}">${ratingInfo.ratingText}</span>`;
-                } else {
-                    ratingCell = `<span class="rate-app clickable-rating" data-app-name="${appName}">Rate this app</span>`;
-                }
-                let rowHtml = '<tr>';
-                rowHtml += `<td>${ratingCell}</td>`;
-                if (_qdnContext === 'gateway') {
-                    rowHtml += `<td><a target="_blank" href="/app/${appName}">
-                        <img src="/arbitrary/THUMBNAIL/${appName}/qortal_avatar"
-                        style="width:24px;height:24px;"
-                        onerror="this.style='display:none'"
-                        >${appName}</a></td>
-                    `;
-                } else {
-                    rowHtml += `<td class="clickable-name" data-name="${appName}">
-                        <img src="/arbitrary/THUMBNAIL/${appName}/qortal_avatar"
-                        style="width:24px;height:24px;"
-                        onerror="this.style='display:none'"
-                        >${appName}</td>
-                    `;
-                }
-                rowHtml += `<td>${sizeString}</td>
-                            <td>${createdString}</td>
-                            <td>${updatedString}</td>
-                        </tr>
-                `;
-                tableHtml += rowHtml;
+                result.ratingInfo = ratingInfo;
             });
-            tableHtml += '</table>';
-            document.getElementById('app-results').innerHTML = tableHtml;
-            document.querySelectorAll('.clickable-name').forEach(element => {
-                element.addEventListener('click', function() {
-                    let target = this.getAttribute('data-name');
-                    openNewTab(target, 'APP');
-                });
-            });
-            document.querySelectorAll('.clickable-rating').forEach(element => {
-                element.addEventListener('click', function() {
-                    let appName = this.getAttribute('data-app-name');
-                    openRatingModal(appName);
-                });
-            });
+            renderTable();
         } else {
             document.getElementById('app-results').innerHTML = '<p>No results found.</p>';
         }
     } catch (error) {
         console.error('Error searching by name:', error);
         document.getElementById('app-results').innerHTML = `<p>Error: ${error}</p>`;
+    }
+}
+
+function renderTable() {
+    if (appResults.length > 0) {
+        // Build table headers with sortable columns
+        let tableHtml = '<table>';
+        tableHtml += `
+            <tr>
+                <th class="sortable" data-column="Rating">Rating</th>
+                <th class="sortable" data-column="Name">Name</th>
+                <th class="sortable" data-column="Size">Size</th>
+                <th class="sortable" data-column="Created">Created</th>
+                <th class="sortable" data-column="Last Updated">Last Updated</th>
+            </tr>
+        `;
+        // Sort the appResults array
+        appResults.sort(compareFunction);
+        // Build table rows
+        appResults.forEach((result) => {
+            const appName = result.name;
+            const ratingInfo = result.ratingInfo;
+            let createdString = new Date(result.created).toLocaleString();
+            let updatedString = new Date(result.updated).toLocaleString();
+            if (updatedString === 'Invalid Date') {
+                updatedString = 'Never';
+            }
+            // Size formatting
+            let sizeString = '';
+            if (result.size >= (1024 ** 3)) {
+                sizeString = (result.size / (1024 ** 3)).toFixed(2) + ' GB';
+            } else if (result.size >= (1024 ** 2)) {
+                sizeString = (result.size / (1024 ** 2)).toFixed(2) + ' MB';
+            } else if (result.size >= 1024) {
+                sizeString = (result.size / 1024).toFixed(2) + ' KB';
+            } else {
+                sizeString = result.size + ' B';
+            }
+            // Rating cell
+            let ratingCell = '';
+            if (ratingInfo.ratingValue !== null) {
+                ratingCell = `<span class="rating-text clickable-rating" data-app-name="${appName}">${ratingInfo.ratingText}</span>`;
+            } else {
+                ratingCell = `<span class="rate-app clickable-rating" data-app-name="${appName}">Rate this app</span>`;
+            }
+            // Build row HTML
+            let rowHtml = '<tr>';
+            rowHtml += `<td>${ratingCell}</td>`;
+            if (_qdnContext === 'gateway') {
+                rowHtml += `<td><a target="_blank" href="/app/${appName}">
+                    <img src="/arbitrary/THUMBNAIL/${appName}/qortal_avatar"
+                    style="width:24px;height:24px;"
+                    onerror="this.style='display:none'">
+                    ${appName}</a></td>`;
+            } else {
+                rowHtml += `<td class="clickable-name" data-name="${appName}">
+                    <img src="/arbitrary/THUMBNAIL/${appName}/qortal_avatar"
+                    style="width:24px;height:24px;"
+                    onerror="this.style='display:none'">
+                    ${appName}</td>`;
+            }
+            rowHtml += `<td>${sizeString}</td>
+                        <td>${createdString}</td>
+                        <td>${updatedString}</td>
+                    </tr>`;
+            tableHtml += rowHtml;
+        });
+        tableHtml += '</table>';
+        document.getElementById('app-results').innerHTML = tableHtml;
+        // Add event listeners for sorting
+        document.querySelectorAll('.sortable').forEach(element => {
+            element.addEventListener('click', function() {
+                const column = this.getAttribute('data-column');
+                if (currentSortColumn === column) {
+                    // Reverse sort direction
+                    sortDirection *= -1;
+                } else {
+                    // Set new sort column and default direction
+                    currentSortColumn = column;
+                    sortDirection = sortDirectionsDefault[column];
+                }
+                renderTable();
+            });
+        });
+        // Add event listeners for clickable names and ratings
+        document.querySelectorAll('.clickable-name').forEach(element => {
+            element.addEventListener('click', function() {
+                let target = this.getAttribute('data-name');
+                openNewTab(target, 'APP');
+            });
+        });
+        document.querySelectorAll('.clickable-rating').forEach(element => {
+            element.addEventListener('click', function() {
+                let appName = this.getAttribute('data-app-name');
+                openRatingModal(appName);
+            });
+        });
+    } else {
+        document.getElementById('app-results').innerHTML = '<p>No results found.</p>';
+    }
+}
+
+function compareFunction(a, b) {
+    let aValue, bValue;
+
+    switch(currentSortColumn) {
+        case 'Rating':
+            // Sort by ratingValue, then by ratingCount
+            aValue = a.ratingInfo.ratingValue !== null ? parseFloat(a.ratingInfo.ratingValue) : -Infinity;
+            bValue = b.ratingInfo.ratingValue !== null ? parseFloat(b.ratingInfo.ratingValue) : -Infinity;
+
+            if (aValue !== bValue) {
+                return (aValue - bValue) * sortDirection;
+            } else {
+                aValue = a.ratingInfo.ratingCount !== null ? a.ratingInfo.ratingCount : -Infinity;
+                bValue = b.ratingInfo.ratingCount !== null ? b.ratingInfo.ratingCount : -Infinity;
+                return (aValue - bValue) * sortDirection;
+            }
+
+        case 'Name':
+            return a.name.localeCompare(b.name) * sortDirection;
+
+        case 'Size':
+            aValue = a.size;
+            bValue = b.size;
+            return (aValue - bValue) * sortDirection;
+
+        case 'Created':
+            aValue = new Date(a.created).getTime();
+            bValue = new Date(b.created).getTime();
+            return (aValue - bValue) * sortDirection;
+
+        case 'Last Updated':
+            aValue = a.updated ? new Date(a.updated).getTime() : 0;
+            bValue = b.updated ? new Date(b.updated).getTime() : 0;
+            return (aValue - bValue) * sortDirection;
+
+        default:
+            return 0;
     }
 }
 

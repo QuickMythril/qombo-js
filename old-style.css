@@ -72,7 +72,7 @@ th, td {
     vertical-align: middle;
 }
 
-th.clickable-name {
+th.sortable:hover {
     color: #008fd5;
     cursor: pointer;
     text-decoration: underline;
@@ -84,7 +84,13 @@ td.clickable-name {
     text-decoration: underline;
 }
 
-span.clickable-name, span.clickable-rating {
+span.clickable-name {
+    color: #008fd5;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+span.clickable-rating:hover {
     color: #008fd5;
     cursor: pointer;
     text-decoration: underline;
