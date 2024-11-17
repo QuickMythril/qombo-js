@@ -2016,13 +2016,13 @@ function calculateFeatures() {
     const dateDisable2 = new Date(timestampDisable2).toLocaleString();
     document.getElementById('date-disable2').textContent = dateDisable2;
     
-    const blocksUntilName = 1900300 - currentBlockHeight;
-    const untilName = currentBlockTime * blocksUntilName * 1000;
-    document.getElementById('until-name').textContent = formatDuration(untilName);
-    const timestampName = currentTimestamp + untilName;
-    document.getElementById('timestamp-name').textContent = timestampName;
-    const dateName = new Date(timestampName).toLocaleString();
-    document.getElementById('date-name').textContent = dateName;
+    const blocksUntilName1 = 1900300 - currentBlockHeight;
+    const untilName1 = currentBlockTime * blocksUntilName1 * 1000;
+    document.getElementById('until-name1').textContent = formatDuration(untilName1);
+    const timestampName1 = currentTimestamp + untilName1;
+    document.getElementById('timestamp-name1').textContent = timestampName1;
+    const dateName1 = new Date(timestampName1).toLocaleString();
+    document.getElementById('date-name1').textContent = dateName1;
     
     const blocksUntilGroup = 1902700 - currentBlockHeight;
     const untilGroup = currentBlockTime * blocksUntilGroup * 1000;
@@ -2039,4 +2039,17 @@ function calculateFeatures() {
     document.getElementById('timestamp-enable2').textContent = timestampEnable2;
     const dateEnable2 = new Date(timestampEnable2).toLocaleString();
     document.getElementById('date-enable2').textContent = dateEnable2;
+
+    const dateDecrease =  new Date(1731958200000).toLocaleString();
+    document.getElementById('date-decrease').textContent = dateDecrease;
+    const untilDecrease = 1731958200000 - currentTimestamp;
+    document.getElementById('until-decrease').textContent = formatDuration(untilDecrease);
+    
+    const blocksUntilName2 = 1935500 - currentBlockHeight;
+    const untilName2 = currentBlockTime * blocksUntilName2 * 1000;
+    document.getElementById('until-name2').textContent = formatDuration(untilName2);
+    const timestampName2 = currentTimestamp + untilName2;
+    document.getElementById('timestamp-name2').textContent = timestampName2;
+    const dateName2 = new Date(timestampName2).toLocaleString();
+    document.getElementById('date-name2').textContent = dateName2;
 }
