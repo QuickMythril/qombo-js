@@ -123,7 +123,6 @@ async function displayNameOrAddress(address) {
     if (displayNameCache[address]) {
         return displayNameCache[address];
     }
-    let shortenedAddress = address.substring(0, 4) + '...' + address.substring(address.length - 4);
     try {
         const response = await fetch(`/names/address/${address}`);
         const names = await response.json();
@@ -135,13 +134,13 @@ async function displayNameOrAddress(address) {
             displayNameCache[address] = displayName;
             return displayName;
         } else {
-            displayNameCache[address] = `(${shortenedAddress})`;
-            return `(${shortenedAddress})`;
+            displayNameCache[address] = address;
+            return address;
         }
     } catch (error) {
         console.error('Error fetching name:', error);
-        displayNameCache[address] = `(${shortenedAddress})`;
-        return `(${shortenedAddress})`;
+        displayNameCache[address] = address;
+        return address;
     }
 }
 
