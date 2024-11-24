@@ -35,6 +35,7 @@ function initApplication() {
     } else {
         document.getElementById('login-button').addEventListener('click', getUserAccount);
     }
+    initHomePage();
     getNodeStatus();
     getNodeInfo();
 }
