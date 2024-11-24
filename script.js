@@ -23,68 +23,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 document.getElementById('node-checkbox').addEventListener('change', changeRefreshSetting, false);
-document.getElementById('txs-more').addEventListener('click', function() {
-    fetchTxsByHeight();
-});
-
-document.getElementById('block-button').addEventListener('click', function() {
-    searchByHeight();
-});
-document.getElementById('block-input').addEventListener('keypress', function (e) {
-    if (e.key === 'Enter') {
-        searchByHeight();
-    }
-});
-document.getElementById('blocks-more').addEventListener('click', function() {
-    fetchAndDisplayBlocks();
-});
-
-document.getElementById('volume-button').addEventListener('click', function() {
-    fetchDailyVolumes(Date.now() - (24 * 60 * 60 * 1000));
-});
-const coinDropdown = document.getElementById('coin-dropdown');
-coinDropdown.addEventListener('change', function() {
-    fetchAndDisplayTrades(Date.now() - (24 * 60 * 60 * 1000), this.value);
-});
-document.getElementById('trades-more').addEventListener('click', function() {
-    fetchAndDisplayTrades(Date.now() - (24 * 60 * 60 * 1000), coinDropdown.value);
-});
-
-document.getElementById('website-button').addEventListener('click', function() {
-    searchByNameOrAddress('website');
-});
-document.getElementById('website-input').addEventListener('keypress', function (e) {
-    if (e.key === 'Enter') {
-        searchByNameOrAddress('website');
-    }
-});
-
-document.getElementById('app-button').addEventListener('click', function() {
-    searchByNameOrAddress('app');
-});
-document.getElementById('app-input').addEventListener('keypress', function (e) {
-    if (e.key === 'Enter') {
-        searchByNameOrAddress('app');
-    }
-});
-
-document.getElementById('poll-search-button').addEventListener('click', function() {
-    searchPolls();
-});
-document.getElementById('poll-create-button').addEventListener('click', function() {
-    createPoll();
-});
-
-document.getElementById('asset-button').addEventListener('click', function() {
-    searchAssets();
-});
-
-document.getElementById('extra-button').addEventListener('click', function() {
-    fetchExtrasDailyBlocks()
-    .then(() => {
-        calculateFeatures();
-    });
-});
 
 function initApplication() {
     document.getElementById('home-page').style.display = 'block';
@@ -1574,6 +1512,9 @@ function showSection(sectionId, event) {
         case 'polls':
             initPollsPage();
             break;
+        case 'assets':
+            initAssetsPage();
+            break;
         case 'extras':
             initExtrasPage();
             break;
@@ -1601,6 +1542,17 @@ function initHomePage() {
     });
 }
 function initBlocksPage() {
+    document.getElementById('block-button').addEventListener('click', function() {
+        searchByHeight();
+    });
+    document.getElementById('block-input').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            searchByHeight();
+        }
+    });
+    document.getElementById('blocks-more').addEventListener('click', function() {
+        fetchAndDisplayBlocks();
+    });
 }
 function initTxsPage() {
     document.getElementById('refresh-qdn-size').addEventListener('click', function() {
@@ -1644,6 +1596,16 @@ function initTxsPage() {
     });
 }
 function initTradesPage() {
+    document.getElementById('volume-button').addEventListener('click', function() {
+        fetchDailyVolumes(Date.now() - (24 * 60 * 60 * 1000));
+    });
+    const coinDropdown = document.getElementById('coin-dropdown');
+    coinDropdown.addEventListener('change', function() {
+        fetchAndDisplayTrades(Date.now() - (24 * 60 * 60 * 1000), this.value);
+    });
+    document.getElementById('trades-more').addEventListener('click', function() {
+        fetchAndDisplayTrades(Date.now() - (24 * 60 * 60 * 1000), coinDropdown.value);
+    });
 }
 function initAccountsPage() {
     document.getElementById('account-button').addEventListener('click', function() {
@@ -1656,12 +1618,45 @@ function initAccountsPage() {
     });
 }
 function initWebsitesPage() {
+    document.getElementById('website-button').addEventListener('click', function() {
+        searchByNameOrAddress('website');
+    });
+    document.getElementById('website-input').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            searchByNameOrAddress('website');
+        }
+    });
 }
 function initAppsPage() {
+    document.getElementById('app-button').addEventListener('click', function() {
+        searchByNameOrAddress('app');
+    });
+    document.getElementById('app-input').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            searchByNameOrAddress('app');
+        }
+    });
 }
 function initPollsPage() {
+    document.getElementById('poll-search-button').addEventListener('click', function() {
+        searchPolls();
+    });
+    document.getElementById('poll-create-button').addEventListener('click', function() {
+        createPoll();
+    });
+}
+function initAssetsPage() {
+    document.getElementById('asset-button').addEventListener('click', function() {
+        searchAssets();
+    });
 }
 function initExtrasPage() {
+    document.getElementById('extra-button').addEventListener('click', function() {
+        fetchExtrasDailyBlocks()
+        .then(() => {
+            calculateFeatures();
+        });
+    });
 }
 
 function toggleSidebar() {
