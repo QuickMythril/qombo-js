@@ -42,7 +42,7 @@ async function searchPolls() {
                 <th>Published</th>
             </tr>
         </table>
-        <p id="loading-indicator">Loading...</p>
+        <p id="loading-indicator">Loading</p>
     `;
 
     // Insert the initial table structure and loading indicator

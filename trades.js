@@ -39,7 +39,7 @@ function fetchBlockHeight(callback) {
 async function fetchDailyVolumes(timestamp) {
     const coins = ['LITECOIN', 'BITCOIN', 'DOGECOIN', 'RAVENCOIN', 'DIGIBYTE', 'PIRATECHAIN'];
     for (const coin of coins) {
-        document.getElementById(`${coin.toLowerCase()}-spent`).textContent = 'Loading...';
+        document.getElementById(`${coin.toLowerCase()}-spent`).textContent = 'Loading';
         try {
             const response = await fetch(`/crosschain/trades?foreignBlockchain=${coin}&minimumTimestamp=${timestamp}`);
             if (!response.ok) {

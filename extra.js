@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function fetchDailyBlocks() {
-    document.getElementById('block-time').textContent = 'Loading...';
+    document.getElementById('block-time').textContent = 'Loading';
     return fetch('/blocks/height')
         .then(response => response.text())
         .then(currentBlockHeight => {

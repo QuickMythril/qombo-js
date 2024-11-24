@@ -26,7 +26,7 @@ document.getElementById('search-input').addEventListener('keypress', function (e
 });
 
 async function fetchAssets() {
-    document.getElementById('asset-details').textContent = 'Loading...';
+    document.getElementById('asset-details').textContent = 'Loading';
     try {
         const response = await fetch('/assets');
         const results = await response.json();
@@ -58,7 +58,7 @@ async function fetchAssets() {
 }
 
 function fetchBlockHeight() {
-    document.getElementById('block-height').textContent = 'Loading...';
+    document.getElementById('block-height').textContent = 'Loading';
     return fetch('/blocks/height')
         .then(response => response.text())
         .then(data => {
@@ -72,7 +72,7 @@ function fetchBlockHeight() {
 }
 
 function fetchBlockReward(currentHeight) {
-    document.getElementById('block-reward').textContent = 'Loading...';
+    document.getElementById('block-reward').textContent = 'Loading';
     let reward = 5;
     const decreaseInterval = 259200;
     if (currentHeight > decreaseInterval) {
@@ -82,7 +82,7 @@ function fetchBlockReward(currentHeight) {
 }
 
 function fetchCirculatingSupply() {
-    document.getElementById('total-supply').textContent = 'Loading...';
+    document.getElementById('total-supply').textContent = 'Loading';
     return fetch('/stats/supply/circulating')
         .then(response => response.text())
         .then(data => {
@@ -97,7 +97,7 @@ function fetchCirculatingSupply() {
 }
 
 function fetchDailyBlocks() {
-    document.getElementById('blocks-past-day').textContent = 'Loading...';
+    document.getElementById('blocks-past-day').textContent = 'Loading';
     return fetch('/blocks/height')
         .then(response => response.text())
         .then(currentBlockHeight => {
@@ -125,7 +125,7 @@ function fetchDailyBlocks() {
 }
 
 function calculateDailyQort() {
-    document.getElementById('qort-per-day').textContent = 'Loading...';
+    document.getElementById('qort-per-day').textContent = 'Loading';
     const blocksInPastDay = parseInt(document.getElementById('blocks-past-day').textContent);
     const blockReward = parseFloat(document.getElementById('block-reward').textContent);
     const dailyQort = blocksInPastDay * blockReward;
@@ -159,7 +159,7 @@ function validateAddress(address) {
 }
 
 function fetchAddressDetails(address) {
-    document.getElementById('account-details').innerHTML = '<p>Loading...</p>';
+    document.getElementById('account-details').innerHTML = '<p>Loading</p>';
     Promise.all([
         fetch('/addresses/' + address).then(response => response.json()),
         fetch('/addresses/balance/' + address).then(response => response.text()),
@@ -288,8 +288,8 @@ async function displayNameOrAddress(address) {
 }
 
 function searchByName(name) {
-    document.getElementById('account-details').innerHTML = '<p>Loading...</p>';
-    document.getElementById('account-results').innerHTML = '<p>Loading...</p>';
+    document.getElementById('account-details').innerHTML = '<p>Loading</p>';
+    document.getElementById('account-results').innerHTML = '<p>Loading</p>';
     fetch('/names/search?query=' + name)
         .then(response => response.json())
         .then(results => {

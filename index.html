@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Qombo: Data Navigator - v1.11.4</title>
+    <title>Qombo: Data Navigator - v1.11.5</title>
     <link rel="icon" type="image/png" href="qombo-favicon.png">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -11,7 +11,7 @@
     <header>
     <button id="menu-button" onclick="toggleSidebar()">☰</button>
     <button id="login-button">Login</button>
-    <div id="qombo-logo">Qombo Data<br>Navigator v1.11.4</div>
+    <div id="qombo-logo">Qombo Data<br>Navigator v1.11.5</div>
     <table class="top-bar"><tr>
         <td class="topbar-item"><span id="node-status">Disconnected</span>
             <button id="node-button" onclick="refreshNode()">Refresh</button>
@@ -103,15 +103,80 @@
         
         <section id="txs-page" class="content-section">
             <h2>Transactions</h2>
-            <h3>Details<button id="txs-button">Refresh</button></h3>
-            <table><tr><th>Current QDN Size</th><td id="qdn-size"></td></tr></table>
-            <h3>Unconfirmed Transactions</h3>
-            <table id="txs-stats">
-                <tr><th>Total</th></tr>
-                <tr><th>Unconfirmed</th></tr>
+            <h3>Details</h3>
+            <table><tr>
+                <th>Current QDN Size<button id="refresh-qdn-size">Refresh</button></th>
+                <td id="qdn-size"></td>
+            </tr></table>
+            <h3>Unconfirmed Transactions<button id="refresh-unconfirmed">Refresh</button></h3>
+            <table id="transaction-table">
+                <!-- Content will be loaded upon clicking the refresh button -->
             </table>
-            <h3>Recent Transactions</h3>
-            <table id="txs-recent">
+            <h3>Transaction Search<button type="button" id="refresh-recent-txs">Recent</button></h3>
+            <form id="search-form">
+                <label for="startBlock">Start Block:</label>
+                <input type="number" id="startBlock" name="startBlock" min="0"><br>
+                <label for="blockLimit">Block Limit:</label>
+                <input type="number" id="blockLimit" name="blockLimit" min="0"><br>
+                <label for="txGroupId">Transaction Group ID:</label>
+                <input type="number" id="txGroupId" name="txGroupId" min="0"><br>
+                <label for="txType">Transaction Type:</label>
+                <select id="txType" name="txType" multiple size="10">
+                    <option value="GENESIS">GENESIS</option>
+                    <option value="PAYMENT">PAYMENT</option>
+                    <option value="REGISTER_NAME">REGISTER_NAME</option>
+                    <option value="UPDATE_NAME">UPDATE_NAME</option>
+                    <option value="SELL_NAME">SELL_NAME</option>
+                    <option value="CANCEL_SELL_NAME">CANCEL_SELL_NAME</option>
+                    <option value="BUY_NAME">BUY_NAME</option>
+                    <option value="CREATE_POLL">CREATE_POLL</option>
+                    <option value="VOTE_ON_POLL">VOTE_ON_POLL</option>
+                    <option value="ARBITRARY">ARBITRARY</option>
+                    <option value="ISSUE_ASSET">ISSUE_ASSET</option>
+                    <option value="TRANSFER_ASSET">TRANSFER_ASSET</option>
+                    <option value="CREATE_ASSET_ORDER">CREATE_ASSET_ORDER</option>
+                    <option value="CANCEL_ASSET_ORDER">CANCEL_ASSET_ORDER</option>
+                    <option value="MULTI_PAYMENT">MULTI_PAYMENT</option>
+                    <option value="DEPLOY_AT">DEPLOY_AT</option>
+                    <option value="MESSAGE">MESSAGE</option>
+                    <option value="CHAT">CHAT</option>
+                    <option value="PUBLICIZE">PUBLICIZE</option>
+                    <option value="AIRDROP">AIRDROP</option>
+                    <option value="AT">AT</option>
+                    <option value="CREATE_GROUP">CREATE_GROUP</option>
+                    <option value="UPDATE_GROUP">UPDATE_GROUP</option>
+                    <option value="ADD_GROUP_ADMIN">ADD_GROUP_ADMIN</option>
+                    <option value="REMOVE_GROUP_ADMIN">REMOVE_GROUP_ADMIN</option>
+                    <option value="GROUP_BAN">GROUP_BAN</option>
+                    <option value="CANCEL_GROUP_BAN">CANCEL_GROUP_BAN</option>
+                    <option value="GROUP_KICK">GROUP_KICK</option>
+                    <option value="GROUP_INVITE">GROUP_INVITE</option>
+                    <option value="CANCEL_GROUP_INVITE">CANCEL_GROUP_INVITE</option>
+                    <option value="JOIN_GROUP">JOIN_GROUP</option>
+                    <option value="LEAVE_GROUP">LEAVE_GROUP</option>
+                    <option value="GROUP_APPROVAL">GROUP_APPROVAL</option>
+                    <option value="SET_GROUP">SET_GROUP</option>
+                    <option value="UPDATE_ASSET">UPDATE_ASSET</option>
+                    <option value="ACCOUNT_FLAGS">ACCOUNT_FLAGS</option>
+                    <option value="ENABLE_FORGING">ENABLE_FORGING</option>
+                    <option value="REWARD_SHARE">REWARD_SHARE</option>
+                    <option value="ACCOUNT_LEVEL">ACCOUNT_LEVEL</option>
+                    <option value="TRANSFER_PRIVS">TRANSFER_PRIVS</option>
+                    <option value="PRESENCE">PRESENCE</option>
+                </select><br>
+                <label for="address">Address:</label>
+                <input type="text" id="address" name="address"><br>
+                <label for="limit">Limit (Default 20):</label>
+                <input type="number" id="limit" name="limit" min="0" placeholder="20"><br>
+                <label for="offset">Offset:</label>
+                <input type="number" id="offset" name="offset" min="0"><br>
+                <label for="reverse">Reverse:</label>
+                <input type="checkbox" id="reverse" name="reverse" checked><br>
+                <label for="confirmed">Confirmed:</label>
+                <input type="checkbox" id="confirmed" name="confirmed" checked><br>
+                <button type="submit" id="search-button">Search</button>
+            </form>
+            <table id="txs-table">
                 <thead>
                     <tr>
                         <th>Height</th>
@@ -124,9 +189,9 @@
                     </tr>
                 </thead>
                 <tbody>
+                    <!-- Search results will be displayed here -->
                 </tbody>
             </table>
-            <button id="txs-more">See 100 More Blocks</button>
         </section>
         
         <section id="trades-page" class="content-section">
@@ -139,7 +204,7 @@
                 <tr><th>Avg Cost / QORT</th><td id="litecoin-price"></td><td id="bitcoin-price"></td><td id="dogecoin-price"></td><td id="digibyte-price"></td><td id="ravencoin-price"></td><td id="piratechain-price"></td></tr>
             </table>
             <h3>Available Trades</h3>
-            <p>Total Available Trades: <span id="total-trades">Loading... (not working yet)</span></p>
+            <p>Total Available Trades: <span id="total-trades">Loading (not working yet)</span></p>
             <div id="trade-data">
             </div>
             <h2><div id="coin-selector">

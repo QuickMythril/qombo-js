@@ -28,7 +28,7 @@ function uiOnly() {
 */
 
 function fetchBlockHeight() {
-    document.getElementById('block-height').textContent = 'Loading...';
+    document.getElementById('block-height').textContent = 'Loading';
     return fetch('/blocks/height')
         .then(response => response.text())
         .then(data => {
@@ -42,7 +42,7 @@ function fetchBlockHeight() {
 }
 
 function fetchBlockReward(currentHeight) {
-    document.getElementById('block-reward').textContent = 'Loading...';
+    document.getElementById('block-reward').textContent = 'Loading';
     let reward = 5;
     const decreaseInterval = 259200;
     if (currentHeight > decreaseInterval) {
@@ -52,7 +52,7 @@ function fetchBlockReward(currentHeight) {
 }
 
 function fetchCirculatingSupply() {
-    document.getElementById('total-supply').textContent = 'Loading...';
+    document.getElementById('total-supply').textContent = 'Loading';
     return fetch('/stats/supply/circulating')
         .then(response => response.text())
         .then(data => {
@@ -67,7 +67,7 @@ function fetchCirculatingSupply() {
 }
 
 function fetchDailyBlocks() {
-    document.getElementById('block-time').textContent = 'Loading...';
+    document.getElementById('block-time').textContent = 'Loading';
     return fetch('/blocks/height')
         .then(response => response.text())
         .then(currentBlockHeight => {
@@ -97,7 +97,7 @@ function fetchDailyBlocks() {
 }
 
 function calculateDailyQort() {
-    document.getElementById('qort-per-day').textContent = 'Loading...';
+    document.getElementById('qort-per-day').textContent = 'Loading';
     const blocksInPastDay = parseInt(document.getElementById('blocks-past-day').textContent);
     const blockReward = parseFloat(document.getElementById('block-reward').textContent);
     const dailyQort = blocksInPastDay * blockReward;
