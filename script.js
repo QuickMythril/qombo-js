@@ -671,9 +671,6 @@ async function fetchPoll(pollName) {
         htmlContent += `<button onclick="showVotes('${pollData.pollName}')">Show Votes</button>`;
         htmlContent += `<div id="voter-info"></div>`;
         document.getElementById('poll-details').innerHTML = htmlContent;
-    } catch (error) {
-        console.error('Error fetching poll:', error);
-        document.getElementById('poll-details').innerHTML = `Error: ${error}`;
         // Attach the event listener
         const copyEmbedLinkButton = document.getElementById('copy-embed-link-button');
         if (copyEmbedLinkButton) {
@@ -682,6 +679,9 @@ async function fetchPoll(pollName) {
                 copyEmbedLink(pollName);
             });
         }
+    } catch (error) {
+        console.error('Error fetching poll:', error);
+        document.getElementById('poll-details').innerHTML = `Error: ${error}`;
     }
 }
 
