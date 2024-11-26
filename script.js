@@ -2188,4 +2188,12 @@ function calculateFeatures() {
     document.getElementById('timestamp-name2').textContent = timestampName2;
     const dateName2 = new Date(timestampName2).toLocaleString();
     document.getElementById('date-name2').textContent = dateName2;
+    
+    const blocksUntilBatchFix = 1945900 - currentBlockHeight;
+    const untilBatchFix = currentBlockTime * blocksUntilBatchFix * 1000;
+    document.getElementById('until-batchfix').textContent = formatDuration(untilBatchFix);
+    const timestampBatchFix = currentTimestamp + untilBatchFix;
+    document.getElementById('timestamp-batchfix').textContent = timestampBatchFix;
+    const dateBatchFix = new Date(timestampBatchFix).toLocaleString();
+    document.getElementById('date-batchfix').textContent = dateBatchFix;
 }
