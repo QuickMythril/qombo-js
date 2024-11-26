@@ -159,7 +159,7 @@ async function fetchPoll(pollName) {
         });
         let displayName = await displayNameOrAddress(pollData.owner);
         let publishedString = new Date(pollData.published).toLocaleString();
-        let htmlContent = `<table><tr><th>${pollData.pollName} <button onclick="copyEmbedLink(${JSON.stringify(pollData.pollName)})">Copy Embed Link</button></th><td>${displayName}</td>`;
+        let htmlContent = `<table><tr><th>${pollData.pollName} <button id="copy-embed-link-button" data-poll-name="${encodeURIComponent(pollData.pollName)}">Copy Embed Link</button></th><td>${displayName}</td>`;
         htmlContent += `<td>${publishedString}</td></tr></table>`;
         htmlContent += `<table><tr><td>${pollData.description}</td></tr></table>`;
         htmlContent += `<table><tr><th>Poll Options</th>`;
@@ -180,6 +180,14 @@ async function fetchPoll(pollName) {
         htmlContent += `<button onclick="showVotes('${pollData.pollName}')">Show Votes</button>`;
         htmlContent += `<div id="voter-info"></div>`;
         document.getElementById('poll-details').innerHTML = htmlContent;
+        // Attach the event listener
+        const copyEmbedLinkButton = document.getElementById('copy-embed-link-button');
+        if (copyEmbedLinkButton) {
+            copyEmbedLinkButton.addEventListener('click', function() {
+                const pollName = decodeURIComponent(this.getAttribute('data-poll-name'));
+                copyEmbedLink(pollName);
+            });
+        }
     } catch (error) {
         console.error('Error fetching poll:', error);
         document.getElementById('poll-details').innerHTML = `Error: ${error}`;
@@ -290,6 +298,7 @@ async function fetchAccountLevel(address) {
 }
 
 async function copyEmbedLink(pollName) {
+    console.log('copyEmbedLink called with pollName:', pollName); // Add this line
     try {
         const response = await qortalRequest({
             action: "CREATE_AND_COPY_EMBED_LINK",
@@ -297,7 +306,7 @@ async function copyEmbedLink(pollName) {
             type: 'POLL',
             ref: 'qortal://APP/Qombo'
         });
-        alert('Embed link copied to clipboard!');
+        alert(`Embed link copied to clipboard: ${response}`);
     } catch (error) {
         console.error('Error copying embed link:', error);
         alert('Error copying embed link: ' + error);
