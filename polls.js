@@ -159,7 +159,7 @@ async function fetchPoll(pollName) {
         });
         let displayName = await displayNameOrAddress(pollData.owner);
         let publishedString = new Date(pollData.published).toLocaleString();
-        let htmlContent = `<table><tr><th>${pollData.pollName}</th><td>${displayName}</td>`;
+        let htmlContent = `<table><tr><th>${pollData.pollName} <button onclick="copyEmbedLink(${JSON.stringify(pollData.pollName)})">Copy Embed Link</button></th><td>${displayName}</td>`;
         htmlContent += `<td>${publishedString}</td></tr></table>`;
         htmlContent += `<table><tr><td>${pollData.description}</td></tr></table>`;
         htmlContent += `<table><tr><th>Poll Options</th>`;
@@ -286,5 +286,20 @@ async function fetchAccountLevel(address) {
         return accountInfo.level;
     } catch (error) {
         console.error('Error fetching account level:', error);
+    }
+}
+
+async function copyEmbedLink(pollName) {
+    try {
+        const response = await qortalRequest({
+            action: "CREATE_AND_COPY_EMBED_LINK",
+            name: pollName,
+            type: 'POLL',
+            ref: 'qortal://APP/Qombo'
+        });
+        alert('Embed link copied to clipboard!');
+    } catch (error) {
+        console.error('Error copying embed link:', error);
+        alert('Error copying embed link: ' + error);
     }
 }

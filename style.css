@@ -17,12 +17,17 @@ body {
 
 button {
     background-color: #008fd5;
-    color: #c9d2d9;
+    color: #070d19;
+    font-weight: bold;
     padding: 5px 5px;
     border: none;
     cursor: pointer;
     border-radius: 15px;
     vertical-align: middle;
+}
+
+button:hover {
+    background-color: #006fa1; /* Darker shade on hover */
 }
 
 footer {
@@ -253,7 +258,8 @@ img {
 
 #pagination-controls button {
     background-color: #008fd5;
-    color: #c9d2d9;
+    color: #070d19;
+    font-weight: bold;
     padding: 5px 10px;
     border: none;
     cursor: pointer;
@@ -264,6 +270,14 @@ img {
 #pagination-info {
     display: inline-block;
     margin: 0 10px;
+}
+
+#search-button {
+    padding: 5px 10px;
+    border-radius: 10px;
+    margin-right: 10px;
+    color: #070d19;
+    font-weight: bold;
 }
 
 /* Style for form labels and inputs */
