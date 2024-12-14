@@ -214,7 +214,12 @@ async function displayTxsPage(page) {
         let shortenedSignature = tx.signature.substring(0, 4) + '...' + tx.signature.substring(tx.signature.length - 4);
         row.insertCell(1).textContent = shortenedSignature;
         row.insertCell(2).textContent = tx.type;
-        let nameOrAddress = await displayNameOrAddress(tx.creatorAddress);
+        let nameOrAddress = '';
+        if (tx.creatorAddress === 'QdSnUy6sUiEnaN87dWmE92g1uQjrvPgrWG') {
+            nameOrAddress = '[Null Account]';
+        } else {
+            nameOrAddress = await displayNameOrAddress(tx.creatorAddress);
+        }
         row.insertCell(3).innerHTML = nameOrAddress;
         // Handle different transaction types
         switch (tx.type) {
@@ -222,20 +227,129 @@ async function displayTxsPage(page) {
                 let payNameOrAddress = await displayNameOrAddress(tx.recipient);
                 row.insertCell(4).innerHTML = `${parseFloat(tx.amount)} QORT -> ${payNameOrAddress}`;
                 break;
+            case 'REGISTER_NAME':
+                row.insertCell(4).innerHTML = `${tx.creatorAddress}<br>${tx.data}`;
+                break;
+            case 'UPDATE_NAME':
+                row.insertCell(4).innerHTML = `${tx.name} -> ${tx.newName}<br>${tx.newData}`;
+                break;
+            case 'SELL_NAME':
+                row.insertCell(4).innerHTML = `${tx.name} (${parseFloat(tx.amount)} QORT)`;
+                break;
+            case 'CANCEL_SELL_NAME':
+                row.insertCell(4).innerHTML = `${tx.name}`;
+                break;
+            case 'BUY_NAME':
+                let sellerNameOrAddress = await displayNameOrAddress(tx.seller);
+                row.insertCell(4).innerHTML = `${tx.name}<br>${parseFloat(tx.amount)} QORT -> ${sellerNameOrAddress}`;
+                break;
+            case 'CREATE_POLL':
+                row.insertCell(4).innerHTML = `${tx.pollName}<br>${tx.description}`;
+                break;
+            case 'VOTE_ON_POLL':
+                row.insertCell(4).innerHTML = `${tx.pollName}: ${tx.optionIndex}`;
+                break;
             case 'ARBITRARY':
                 row.insertCell(4).innerHTML = `${displayServiceName(tx.service)}<br>${tx.identifier}`;
                 break;
-            case 'JOIN_GROUP':
-            case 'LEAVE_GROUP':
-                let groupName = await displayGroupName(tx.groupId);
-                row.insertCell(4).innerHTML = `${tx.groupId}: ${groupName}`;
+            case 'ISSUE_ASSET':
+                row.insertCell(4).innerHTML = `(${tx.assetId}) ${parseFloat(tx.quantity)} ${tx.assetName}<br>${tx.description}`;
+                break;
+            case 'TRANSFER_ASSET':
+                let xferNameOrAddress = await displayNameOrAddress(tx.recipient);
+                row.insertCell(4).innerHTML = `${parseFloat(tx.amount)} ${tx.assetName} -> ${xferNameOrAddress}`;
+                break;
+            case 'DEPLOY_AT':
+                row.insertCell(4).innerHTML = `${tx.name}<br>${parseFloat(tx.amount)} QORT -> ${tx.aTAddress}`;
+                break;
+            case 'MESSAGE':
+                row.insertCell(4).innerHTML = `${tx.recipient}`;
+                break;
+            // case 'PUBLICIZE':
+                // N/A
+            case 'AT':
+                let atRecipientName = await displayNameOrAddress(tx.recipient)
+                row.insertCell(4).innerHTML = `${tx.atAddress}<br>${parseFloat(tx.amount)} QORT -> ${atRecipientName}`;
+                break;
+            case 'CREATE_GROUP':
+                row.insertCell(4).innerHTML = `${tx.groupId}: ${tx.groupName}${tx.isOpen ? '' : ' (Private)'}<br>${tx.description}`;
+                break;
+            case 'UPDATE_GROUP':
+                let groupUpdateName = await displayGroupName(tx.groupId)
+                row.insertCell(4).innerHTML = `${tx.groupId}: ${groupUpdateName}${tx.newIsOpen ? '' : ' (Private)'}<br>${tx.newDescription}`;
+                break;
+            case 'ADD_GROUP_ADMIN':
+                let adminGroupName = await displayGroupName(tx.groupId);
+                let adminNameOrAddress = await displayNameOrAddress(tx.member)
+                row.insertCell(4).innerHTML = `${tx.groupId}: ${adminGroupName}<br>${adminNameOrAddress}`;
+                break;
+            case 'REMOVE_GROUP_ADMIN':
+                let removeGroupName = await displayGroupName(tx.groupId);
+                let removeNameOrAddress = await displayNameOrAddress(tx.admin)
+                row.insertCell(4).innerHTML = `${tx.groupId}: ${removeGroupName}<br>${removeNameOrAddress}`;
+                break;
+            case 'GROUP_BAN':
+                let banGroupName = await displayGroupName(tx.groupId);
+                let banNameOrAddress = await displayNameOrAddress(tx.offender)
+                row.insertCell(4).innerHTML = `${tx.groupId}: ${banGroupName}<br>${banNameOrAddress}`;
+                break;
+            case 'CANCEL_GROUP_BAN':
+            case 'GROUP_KICK':
+                let kickGroupName = await displayGroupName(tx.groupId);
+                let kickNameOrAddress = await displayNameOrAddress(tx.member)
+                row.insertCell(4).innerHTML = `${tx.groupId}: ${kickGroupName}<br>${kickNameOrAddress}`;
                 break;
             case 'GROUP_INVITE':
                 let groupInviteName = await displayGroupName(tx.groupId);
                 let inviteeNameOrAddress = await displayNameOrAddress(tx.invitee);
                 row.insertCell(4).innerHTML = `${inviteeNameOrAddress}<br>${tx.groupId}: ${groupInviteName}`;
                 break;
+            case 'CANCEL_GROUP_INVITE':
+                // needs to link to transaction
+                row.insertCell(4).innerHTML = `${tx.reference}`;
+                break;
+            case 'JOIN_GROUP':
+            case 'LEAVE_GROUP':
+                let groupName = await displayGroupName(tx.groupId);
+                row.insertCell(4).innerHTML = `${tx.groupId}: ${groupName}`;
+                break;
+            case 'GROUP_APPROVAL':
+                // needs to link to transaction
+                row.insertCell(4).innerHTML = `${tx.pendingSignature}`;
+                break;
+            case 'REWARD_SHARE':
+                let rewardShareNameOrAddress = await displayNameOrAddress(tx.recipient);
+                row.insertCell(4).innerHTML = `${tx.sharePercent}: ${rewardShareNameOrAddress}`;
+                break;
+            case 'ACCOUNT_FLAGS':
+                let targetNameOrAddress = await displayNameOrAddress(tx.target);
+                row.insertCell(4).innerHTML = `${targetNameOrAddress}<br>and=${tx.andMask},or=${tx.orMask},xor=${tx.xorMask}`;
+                break;
+            case 'ACCOUNT_LEVEL':
+                let levelNameOrAddress = await displayNameOrAddress(tx.target);
+                row.insertCell(4).innerHTML = `${levelNameOrAddress} -> Lv.${tx.level}`;
+                break;
+            case 'GENESIS':
+                let genesisNameOrAddress = await displayNameOrAddress(tx.recipient);
+                row.insertCell(4).innerHTML = `${parseFloat(tx.amount)} (${tx.assetId}) -> ${genesisNameOrAddress}`;
+                break;
+            // case 'TRANSFER_PRIVS':
+                // needs to show previous address
+            case '':
             // Add other cases as needed
+                /*
+                // Never Used:
+                CREATE_ASSET_ORDER
+                CANCEL_ASSET_ORDER
+                MULTI_PAYMENT
+                AIRDROP
+                SET_GROUP
+                UPDATE_ASSET
+                ENABLE_FORGING
+                // Never Confirmed:
+                PRESENCE
+                CHAT
+                */
             default:
                 row.insertCell(4).textContent = 'N/A';
                 break;
