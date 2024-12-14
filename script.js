@@ -362,6 +362,16 @@ async function displayTxsPage(page) {
             case 'ARBITRARY':
                 row.insertCell(4).innerHTML = `${displayServiceName(tx.service)}<br>${tx.identifier}`;
                 break;
+            case 'JOIN_GROUP':
+            case 'LEAVE_GROUP':
+                let groupName = await displayGroupName(tx.groupId);
+                row.insertCell(4).innerHTML = `${tx.groupId}: ${groupName}`;
+                break;
+            case 'GROUP_INVITE':
+                let groupInviteName = await displayGroupName(tx.groupId);
+                let inviteeNameOrAddress = await displayNameOrAddress(tx.invitee);
+                row.insertCell(4).innerHTML = `${inviteeNameOrAddress}<br>${tx.groupId}: ${groupInviteName}`;
+                break;
             // Add other cases as needed
             default:
                 row.insertCell(4).textContent = 'N/A';
