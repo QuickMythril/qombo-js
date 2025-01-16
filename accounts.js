@@ -131,8 +131,10 @@ function fetchAddressDetails(address) {
         fetch('/addresses/' + address).then(response => response.json()),
         fetch('/addresses/balance/' + address).then(response => response.text()),
         fetch('/names/address/' + address).then(response => response.json()),
-        fetch('/addresses/rewardshares?involving=' + address).then(response => response.json())
-    ]).then(async ([addressDetails, balance, names, rewardShares]) => {
+        fetch('/addresses/rewardshares?involving=' + address).then(response => response.json()),
+        fetch('/transactions/search?txType=TRANSFER_PRIVS&confirmationStatus=CONFIRMED&limit=0&address=' + address).then(response => response.json()),
+        fetch('/transactions/search?txType=REWARD_SHARE&confirmationStatus=CONFIRMED&limit=0&address=' + address).then(response => response.json()),
+    ]).then(async ([addressDetails, balance, names, rewardShares, transferPrivs, mintingHeight]) => {
         let tableHtml = '<table>';
         if (names.length > 0) {
             tableHtml += `<tr><th>Registered Name</th><th><img src="/arbitrary/THUMBNAIL/${names[0].name}/qortal_avatar"
@@ -140,13 +142,19 @@ function fetchAddressDetails(address) {
             onerror="this.style.display='none'"
             >${names[0].name}</th></tr>`;
         }
+        if (transferPrivs.length > 0) {
+            const response = await fetch('/transactions/search?txType=REWARD_SHARE&confirmationStatus=CONFIRMED&limit=0&address=' + transferPrivs[0].creatorAddress);
+            mintingHeight = await response.json();
+            tableHtml += `<tr><td>TRANSFER_PRIVS from</td><td>${transferPrivs[0].creatorAddress}</td></tr>`;
+        }
+        const blockPercentage = addressDetails.blocksMinted / (document.getElementById('block-height').textContent - mintingHeight[0].blockHeight) * 100;
         tableHtml += `
             <tr><th>Address</th><th>${address}</th></tr>
             <tr><td>Public Key</td><td>${addressDetails.publicKey}</td></tr>
             <tr><td>Level</td><td>${addressDetails.level}${addressDetails.flags === 1 ? ' (Founder)' : ''}</td></tr>
             <tr><td>Blocks Minted</td>
                 <td>
-                    ${addressDetails.blocksMinted}
+                    ${addressDetails.blocksMinted} (${blockPercentage.toFixed(0)}%)
                     ${addressDetails.blocksMintedAdjustment > 0 ? ` +${addressDetails.blocksMintedAdjustment}` : ''}
                     ${addressDetails.blocksMintedPenalty < 0 ? ` ${addressDetails.blocksMintedPenalty}` : ''}
                     ${addressDetails.blocksMintedAdjustment > 0 || addressDetails.blocksMintedPenalty < 0 ?
