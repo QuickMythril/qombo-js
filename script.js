@@ -1310,7 +1310,10 @@ function fetchAddressDetails(address) {
             mintingHeight = await response.json();
             tableHtml += `<tr><td>TRANSFER_PRIVS from</td><td>${transferPrivs[0].creatorAddress}</td></tr>`;
         }
-        const blockPercentage = addressDetails.blocksMinted / (parseInt(document.getElementById('node-height').textContent.slice(8)) - mintingHeight[0].blockHeight) * 100;
+        let blockPercentage = 0;
+        if (mintingHeight.length > 0) {
+            blockPercentage = addressDetails.blocksMinted / (parseInt(document.getElementById('node-height').textContent.slice(8)) - mintingHeight[0].blockHeight) * 100;
+        }
         tableHtml += `
             <tr><th>Address</th><th>${address}</th></tr>
             <tr><td>Public Key</td><td>${addressDetails.publicKey}</td></tr>
