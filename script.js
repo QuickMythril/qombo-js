@@ -2355,4 +2355,12 @@ function calculateFeatures() {
     document.getElementById('timestamp-ignore').textContent = timestampIgnore;
     const dateIgnore = new Date(timestampIgnore).toLocaleString();
     document.getElementById('date-ignore').textContent = dateIgnore;
+    
+    const blocksUntilQueryFix = 9999999 - currentBlockHeight;
+    const untilQueryFix = currentBlockTime * blocksUntilQueryFix * 1000;
+    document.getElementById('until-queryfix').textContent = formatDuration(untilQueryFix);
+    const timestampQueryFix = currentTimestamp + untilQueryFix;
+    document.getElementById('timestamp-queryfix').textContent = timestampQueryFix;
+    const dateQueryFix = new Date(timestampQueryFix).toLocaleString();
+    document.getElementById('date-queryfix').textContent = dateQueryFix;
 }
