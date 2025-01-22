@@ -313,7 +313,7 @@ function calculateFeatures() {
     const dateBatchFix = new Date(timestampBatchFix).toLocaleString();
     document.getElementById('date-batchfix').textContent = dateBatchFix;
     
-    const blocksUntilReplace = 9999999 - currentBlockHeight;
+    const blocksUntilReplace = 2012800 - currentBlockHeight;
     const untilReplace = currentBlockTime * blocksUntilReplace * 1000;
     document.getElementById('until-replace').textContent = formatDuration(untilReplace);
     const timestampReplace = currentTimestamp + untilReplace;
@@ -321,7 +321,7 @@ function calculateFeatures() {
     const dateReplace = new Date(timestampReplace).toLocaleString();
     document.getElementById('date-replace').textContent = dateReplace;
     
-    const blocksUntilNull = 9999999 - currentBlockHeight;
+    const blocksUntilNull = 2012800 - currentBlockHeight;
     const untilNull = currentBlockTime * blocksUntilNull * 1000;
     document.getElementById('until-null').textContent = formatDuration(untilNull);
     const timestampNull = currentTimestamp + untilNull;
@@ -329,7 +329,7 @@ function calculateFeatures() {
     const dateNull = new Date(timestampNull).toLocaleString();
     document.getElementById('date-null').textContent = dateNull;
     
-    const blocksUntilIgnore = 9999999 - currentBlockHeight;
+    const blocksUntilIgnore = 2012800 - currentBlockHeight;
     const untilIgnore = currentBlockTime * blocksUntilIgnore * 1000;
     document.getElementById('until-ignore').textContent = formatDuration(untilIgnore);
     const timestampIgnore = currentTimestamp + untilIgnore;
@@ -337,7 +337,7 @@ function calculateFeatures() {
     const dateIgnore = new Date(timestampIgnore).toLocaleString();
     document.getElementById('date-ignore').textContent = dateIgnore;
     
-    const blocksUntilQueryFix = 9999999 - currentBlockHeight;
+    const blocksUntilQueryFix = 2012800 - currentBlockHeight;
     const untilQueryFix = currentBlockTime * blocksUntilQueryFix * 1000;
     document.getElementById('until-queryfix').textContent = formatDuration(untilQueryFix);
     const timestampQueryFix = currentTimestamp + untilQueryFix;
