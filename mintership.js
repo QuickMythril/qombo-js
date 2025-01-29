@@ -168,6 +168,9 @@ async function renderTable() {
         let tableHtml = '<table>';
         tableHtml += `
             <tr>
+                <th colspan="5">(work in progress - data may not be fully accurate)</th>
+            </tr>
+            <tr>
                 <th class="sortable" data-column="Name">Name</th>
                 <th>Status</th>
                 <th>Poll</th>
