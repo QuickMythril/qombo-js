@@ -88,37 +88,46 @@ function checkMinterGroup() {
 }
 
 async function renderMintershipAdmins() {
+    let headerHtml = "";
+    let rowsHtml = "";
     // Filter out the admins
     // (If `isAdmin` is missing for non-admins, this will skip them automatically)
     const admins = minterGroupMembers.filter(m => m.isAdmin);
 
     // Build just the rows (no outer <table> tags)
-    let rowsHtml = "";
+    headerHtml += `<tr><th>Total Admins: ${admins.length}</th><th>Signatures Needed: ${Math.ceil(admins.length * 0.4)}</th></tr>`;
+    headerHtml += `<tr><th>Admin Name</th><th>Admin Address</th></tr>`;
+    // admins.sort((a, b) => a.member.localeCompare(b.member));
     for (const admin of admins) {
         let address = admin.member;
-        let name = "";
+        admin.name = "";
         if (address === "QdSnUy6sUiEnaN87dWmE92g1uQjrvPgrWG") {
-            name = "[Null Account]";
+            admin.name = "[Null Account]";
         } else {
             try {
                 const res = await fetch("/names/address/" + address);
                 const data = await res.json();
                 if (data.length > 0) {
-                    name = data[0].name;
+                    admin.name = data[0].name;
                 } else {
-                    name = address;
+                    admin.name = address;
                 }
             } catch (error) {
                 console.error("Error fetching admin name:", error);
-                name = address;
+                admin.name = address;
             }
         }
+    }
+    admins.sort((a, b) => a.name.localeCompare(b.name));
+    for (const admin of admins) {
         rowsHtml += `<tr>
-            <td>${name}</td>
-            <td>${address}</td>
+            <td>${admin.name}</td>
+            <td>${admin.member}</td>
         </tr>`;
     }
     // Insert those rows into the existing <tbody>
+    const thead = document.querySelector("#mintership-admins-table thead");
+    thead.innerHTML = headerHtml;
     const tbody = document.querySelector("#mintership-admins-table tbody");
     tbody.innerHTML = rowsHtml;
 }
@@ -153,34 +162,53 @@ async function searchByName(name) {
     }
 }
 
-function renderTable() {
+async function renderTable() {
     if (mintershipResults.length > 0) {
+        mintershipResults.sort(compareFunction);
         let tableHtml = '<table>';
         tableHtml += `
             <tr>
                 <th class="sortable" data-column="Name">Name</th>
                 <th>Status</th>
+                <th>Poll</th>
                 <th class="sortable" data-column="Created">Created</th>
                 <th class="sortable" data-column="Last Updated">Last Updated</th>
             </tr>
         `;
-        mintershipResults.sort(compareFunction);
-        mintershipResults.forEach((result) => {
+        for (const result of mintershipResults) {
             const cardName = result.name;
             let createdString = new Date(result.created).toLocaleString();
             let updatedString = new Date(result.updated).toLocaleString();
             if (updatedString === 'Invalid Date') {
                 updatedString = 'Never';
             }
+            // Fetch poll results
+            let pollString = 'N/A';
+            try {
+                const pollResponse = await fetch(`/polls/votes/${result.identifier}-poll`);
+                if (pollResponse.ok) {
+                    const pollResults = await pollResponse.json();
+                    // For example: voteCounts: [{ optionName, voteCount }]
+                    pollString = pollResults.voteCounts
+                        .map(v => `${v.optionName}: ${v.voteCount}`)
+                        .join(', ');
+                } else {
+                    pollString = 'No poll data';
+                }
+            } catch (err) {
+                console.error('Error fetching poll data:', err);
+                pollString = 'Error loading poll';
+            }
             tableHtml += `
                 <tr>
                     <td>${cardName}</td>
                     <td>${result.status}</td>
+                    <td>${pollString}</td>
                     <td>${createdString}</td>
                     <td>${updatedString}</td>
                 </tr>
             `;
-        });
+        }
         tableHtml += '</table>';
         document.getElementById('mintership-results').innerHTML = tableHtml;
         document.querySelectorAll('.sortable').forEach(element => {
