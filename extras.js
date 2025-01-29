@@ -1,12 +1,15 @@
 document.addEventListener('DOMContentLoaded', function() {
     fetchDailyBlocks()
         .then(() => {
-            calculateFeatures();
+            calculateStats();
         })
         .catch(error => {
             console.error('An error occurred in the fetch chain:', error);
         });
 });
+
+let triggersLoaded = false;
+let rewardsLoaded = false;
 
 function fetchDailyBlocks() {
     document.getElementById('block-time').textContent = 'Loading';
@@ -40,7 +43,7 @@ function fetchDailyBlocks() {
         });
 }
 
-function calculateFeatures() {
+function calculateStats() {
     const currentTimestamp = Date.now();
     const currentBlockHeight = parseInt(document.getElementById('block-height').textContent);
     const currentBlockTime = parseFloat(document.getElementById('block-time').textContent);
@@ -55,110 +58,12 @@ function calculateFeatures() {
     document.getElementById('timestamp-reward').textContent = timestampReward;
     const dateReward = new Date(timestampReward).toLocaleString();
     document.getElementById('date-reward').textContent = dateReward;
+}
 
-    const blocksUntilReduction1 = 1 - currentBlockHeight;
-    const untilReduction1 = currentBlockTime * blocksUntilReduction1 * 1000;
-    document.getElementById('until-reduction1').textContent = formatDuration(untilReduction1);
-    const timestampReduction1 = currentTimestamp + untilReduction1;
-    document.getElementById('timestamp-reduction1').textContent = timestampReduction1;
-    const dateReduction1 = new Date(timestampReduction1).toLocaleString();
-    document.getElementById('date-reduction1').textContent = dateReduction1;
-
-    const blocksUntilReduction2 = 259201 - currentBlockHeight;
-    const untilReduction2 = currentBlockTime * blocksUntilReduction2 * 1000;
-    document.getElementById('until-reduction2').textContent = formatDuration(untilReduction2);
-    const timestampReduction2 = currentTimestamp + untilReduction2;
-    document.getElementById('timestamp-reduction2').textContent = timestampReduction2;
-    const dateReduction2 = new Date(timestampReduction2).toLocaleString();
-    document.getElementById('date-reduction2').textContent = dateReduction2;
-
-    const blocksUntilReduction3 = 518401 - currentBlockHeight;
-    const untilReduction3 = currentBlockTime * blocksUntilReduction3 * 1000;
-    document.getElementById('until-reduction3').textContent = formatDuration(untilReduction3);
-    const timestampReduction3 = currentTimestamp + untilReduction3;
-    document.getElementById('timestamp-reduction3').textContent = timestampReduction3;
-    const dateReduction3 = new Date(timestampReduction3).toLocaleString();
-    document.getElementById('date-reduction3').textContent = dateReduction3;
-
-    const blocksUntilReduction4 = 777601 - currentBlockHeight;
-    const untilReduction4 = currentBlockTime * blocksUntilReduction4 * 1000;
-    document.getElementById('until-reduction4').textContent = formatDuration(untilReduction4);
-    const timestampReduction4 = currentTimestamp + untilReduction4;
-    document.getElementById('timestamp-reduction4').textContent = timestampReduction4;
-    const dateReduction4 = new Date(timestampReduction4).toLocaleString();
-    document.getElementById('date-reduction4').textContent = dateReduction4;
-
-    const blocksUntilReduction5 = 1036801 - currentBlockHeight;
-    const untilReduction5 = currentBlockTime * blocksUntilReduction5 * 1000;
-    document.getElementById('until-reduction5').textContent = formatDuration(untilReduction5);
-    const timestampReduction5 = currentTimestamp + untilReduction5;
-    document.getElementById('timestamp-reduction5').textContent = timestampReduction5;
-    const dateReduction5 = new Date(timestampReduction5).toLocaleString();
-    document.getElementById('date-reduction5').textContent = dateReduction5;
-
-    const blocksUntilReduction6 = 1296001 - currentBlockHeight;
-    const untilReduction6 = currentBlockTime * blocksUntilReduction6 * 1000;
-    document.getElementById('until-reduction6').textContent = formatDuration(untilReduction6);
-    const timestampReduction6 = currentTimestamp + untilReduction6;
-    document.getElementById('timestamp-reduction6').textContent = timestampReduction6;
-    const dateReduction6 = new Date(timestampReduction6).toLocaleString();
-    document.getElementById('date-reduction6').textContent = dateReduction6;
-
-    const blocksUntilReduction7 = 1555201 - currentBlockHeight;
-    const untilReduction7 = currentBlockTime * blocksUntilReduction7 * 1000;
-    document.getElementById('until-reduction7').textContent = formatDuration(untilReduction7);
-    const timestampReduction7 = currentTimestamp + untilReduction7;
-    document.getElementById('timestamp-reduction7').textContent = timestampReduction7;
-    const dateReduction7 = new Date(timestampReduction7).toLocaleString();
-    document.getElementById('date-reduction7').textContent = dateReduction7;
-
-    const blocksUntilReduction8 = 1814401 - currentBlockHeight;
-    const untilReduction8 = currentBlockTime * blocksUntilReduction8 * 1000;
-    document.getElementById('until-reduction8').textContent = formatDuration(untilReduction8);
-    const timestampReduction8 = currentTimestamp + untilReduction8;
-    document.getElementById('timestamp-reduction8').textContent = timestampReduction8;
-    const dateReduction8 = new Date(timestampReduction8).toLocaleString();
-    document.getElementById('date-reduction8').textContent = dateReduction8;
-
-    const blocksUntilReduction9 = 2073601 - currentBlockHeight;
-    const untilReduction9 = currentBlockTime * blocksUntilReduction9 * 1000;
-    document.getElementById('until-reduction9').textContent = formatDuration(untilReduction9);
-    const timestampReduction9 = currentTimestamp + untilReduction9;
-    document.getElementById('timestamp-reduction9').textContent = timestampReduction9;
-    const dateReduction9 = new Date(timestampReduction9).toLocaleString();
-    document.getElementById('date-reduction9').textContent = dateReduction9;
-
-    const blocksUntilReduction10 = 2332801 - currentBlockHeight;
-    const untilReduction10 = currentBlockTime * blocksUntilReduction10 * 1000;
-    document.getElementById('until-reduction10').textContent = formatDuration(untilReduction10);
-    const timestampReduction10 = currentTimestamp + untilReduction10;
-    document.getElementById('timestamp-reduction10').textContent = timestampReduction10;
-    const dateReduction10 = new Date(timestampReduction10).toLocaleString();
-    document.getElementById('date-reduction10').textContent = dateReduction10;
-
-    const blocksUntilReduction11 = 2592001 - currentBlockHeight;
-    const untilReduction11 = currentBlockTime * blocksUntilReduction11 * 1000;
-    document.getElementById('until-reduction11').textContent = formatDuration(untilReduction11);
-    const timestampReduction11 = currentTimestamp + untilReduction11;
-    document.getElementById('timestamp-reduction11').textContent = timestampReduction11;
-    const dateReduction11 = new Date(timestampReduction11).toLocaleString();
-    document.getElementById('date-reduction11').textContent = dateReduction11;
-
-    const blocksUntilReduction12 = 2851201 - currentBlockHeight;
-    const untilReduction12 = currentBlockTime * blocksUntilReduction12 * 1000;
-    document.getElementById('until-reduction12').textContent = formatDuration(untilReduction12);
-    const timestampReduction12 = currentTimestamp + untilReduction12;
-    document.getElementById('timestamp-reduction12').textContent = timestampReduction12;
-    const dateReduction12 = new Date(timestampReduction12).toLocaleString();
-    document.getElementById('date-reduction12').textContent = dateReduction12;
-
-    const blocksUntilReduction13 = 3110401 - currentBlockHeight;
-    const untilReduction13 = currentBlockTime * blocksUntilReduction13 * 1000;
-    document.getElementById('until-reduction13').textContent = formatDuration(untilReduction13);
-    const timestampReduction13 = currentTimestamp + untilReduction13;
-    document.getElementById('timestamp-reduction13').textContent = timestampReduction13;
-    const dateReduction13 = new Date(timestampReduction13).toLocaleString();
-    document.getElementById('date-reduction13').textContent = dateReduction13;
+function calculateFeatureTriggers() {
+    const currentTimestamp = Date.now();
+    const currentBlockHeight = parseInt(document.getElementById('block-height').textContent);
+    const currentBlockTime = parseFloat(document.getElementById('block-time').textContent);
 
     const dateGenesis =  new Date(1593450000000).toLocaleString();
     document.getElementById('date-genesis').textContent = dateGenesis;
@@ -344,6 +249,129 @@ function calculateFeatures() {
     document.getElementById('timestamp-queryfix').textContent = timestampQueryFix;
     const dateQueryFix = new Date(timestampQueryFix).toLocaleString();
     document.getElementById('date-queryfix').textContent = dateQueryFix;
+}
+
+function calculateBlockRewards() {
+    const currentTimestamp = Date.now();
+    const currentBlockHeight = parseInt(document.getElementById('block-height').textContent);
+    const currentBlockTime = parseFloat(document.getElementById('block-time').textContent);
+
+    const blocksUntilReduction1 = 1 - currentBlockHeight;
+    const untilReduction1 = currentBlockTime * blocksUntilReduction1 * 1000;
+    document.getElementById('until-reduction1').textContent = formatDuration(untilReduction1);
+    const timestampReduction1 = currentTimestamp + untilReduction1;
+    document.getElementById('timestamp-reduction1').textContent = timestampReduction1;
+    const dateReduction1 = new Date(timestampReduction1).toLocaleString();
+    document.getElementById('date-reduction1').textContent = dateReduction1;
+
+    const blocksUntilReduction2 = 259201 - currentBlockHeight;
+    const untilReduction2 = currentBlockTime * blocksUntilReduction2 * 1000;
+    document.getElementById('until-reduction2').textContent = formatDuration(untilReduction2);
+    const timestampReduction2 = currentTimestamp + untilReduction2;
+    document.getElementById('timestamp-reduction2').textContent = timestampReduction2;
+    const dateReduction2 = new Date(timestampReduction2).toLocaleString();
+    document.getElementById('date-reduction2').textContent = dateReduction2;
+
+    const blocksUntilReduction3 = 518401 - currentBlockHeight;
+    const untilReduction3 = currentBlockTime * blocksUntilReduction3 * 1000;
+    document.getElementById('until-reduction3').textContent = formatDuration(untilReduction3);
+    const timestampReduction3 = currentTimestamp + untilReduction3;
+    document.getElementById('timestamp-reduction3').textContent = timestampReduction3;
+    const dateReduction3 = new Date(timestampReduction3).toLocaleString();
+    document.getElementById('date-reduction3').textContent = dateReduction3;
+
+    const blocksUntilReduction4 = 777601 - currentBlockHeight;
+    const untilReduction4 = currentBlockTime * blocksUntilReduction4 * 1000;
+    document.getElementById('until-reduction4').textContent = formatDuration(untilReduction4);
+    const timestampReduction4 = currentTimestamp + untilReduction4;
+    document.getElementById('timestamp-reduction4').textContent = timestampReduction4;
+    const dateReduction4 = new Date(timestampReduction4).toLocaleString();
+    document.getElementById('date-reduction4').textContent = dateReduction4;
+
+    const blocksUntilReduction5 = 1036801 - currentBlockHeight;
+    const untilReduction5 = currentBlockTime * blocksUntilReduction5 * 1000;
+    document.getElementById('until-reduction5').textContent = formatDuration(untilReduction5);
+    const timestampReduction5 = currentTimestamp + untilReduction5;
+    document.getElementById('timestamp-reduction5').textContent = timestampReduction5;
+    const dateReduction5 = new Date(timestampReduction5).toLocaleString();
+    document.getElementById('date-reduction5').textContent = dateReduction5;
+
+    const blocksUntilReduction6 = 1296001 - currentBlockHeight;
+    const untilReduction6 = currentBlockTime * blocksUntilReduction6 * 1000;
+    document.getElementById('until-reduction6').textContent = formatDuration(untilReduction6);
+    const timestampReduction6 = currentTimestamp + untilReduction6;
+    document.getElementById('timestamp-reduction6').textContent = timestampReduction6;
+    const dateReduction6 = new Date(timestampReduction6).toLocaleString();
+    document.getElementById('date-reduction6').textContent = dateReduction6;
+
+    const blocksUntilReduction7 = 1555201 - currentBlockHeight;
+    const untilReduction7 = currentBlockTime * blocksUntilReduction7 * 1000;
+    document.getElementById('until-reduction7').textContent = formatDuration(untilReduction7);
+    const timestampReduction7 = currentTimestamp + untilReduction7;
+    document.getElementById('timestamp-reduction7').textContent = timestampReduction7;
+    const dateReduction7 = new Date(timestampReduction7).toLocaleString();
+    document.getElementById('date-reduction7').textContent = dateReduction7;
+
+    const blocksUntilReduction8 = 1814401 - currentBlockHeight;
+    const untilReduction8 = currentBlockTime * blocksUntilReduction8 * 1000;
+    document.getElementById('until-reduction8').textContent = formatDuration(untilReduction8);
+    const timestampReduction8 = currentTimestamp + untilReduction8;
+    document.getElementById('timestamp-reduction8').textContent = timestampReduction8;
+    const dateReduction8 = new Date(timestampReduction8).toLocaleString();
+    document.getElementById('date-reduction8').textContent = dateReduction8;
+
+    const blocksUntilReduction9 = 2073601 - currentBlockHeight;
+    const untilReduction9 = currentBlockTime * blocksUntilReduction9 * 1000;
+    document.getElementById('until-reduction9').textContent = formatDuration(untilReduction9);
+    const timestampReduction9 = currentTimestamp + untilReduction9;
+    document.getElementById('timestamp-reduction9').textContent = timestampReduction9;
+    const dateReduction9 = new Date(timestampReduction9).toLocaleString();
+    document.getElementById('date-reduction9').textContent = dateReduction9;
+
+    const blocksUntilReduction10 = 2332801 - currentBlockHeight;
+    const untilReduction10 = currentBlockTime * blocksUntilReduction10 * 1000;
+    document.getElementById('until-reduction10').textContent = formatDuration(untilReduction10);
+    const timestampReduction10 = currentTimestamp + untilReduction10;
+    document.getElementById('timestamp-reduction10').textContent = timestampReduction10;
+    const dateReduction10 = new Date(timestampReduction10).toLocaleString();
+    document.getElementById('date-reduction10').textContent = dateReduction10;
+
+    const blocksUntilReduction11 = 2592001 - currentBlockHeight;
+    const untilReduction11 = currentBlockTime * blocksUntilReduction11 * 1000;
+    document.getElementById('until-reduction11').textContent = formatDuration(untilReduction11);
+    const timestampReduction11 = currentTimestamp + untilReduction11;
+    document.getElementById('timestamp-reduction11').textContent = timestampReduction11;
+    const dateReduction11 = new Date(timestampReduction11).toLocaleString();
+    document.getElementById('date-reduction11').textContent = dateReduction11;
+
+    const blocksUntilReduction12 = 2851201 - currentBlockHeight;
+    const untilReduction12 = currentBlockTime * blocksUntilReduction12 * 1000;
+    document.getElementById('until-reduction12').textContent = formatDuration(untilReduction12);
+    const timestampReduction12 = currentTimestamp + untilReduction12;
+    document.getElementById('timestamp-reduction12').textContent = timestampReduction12;
+    const dateReduction12 = new Date(timestampReduction12).toLocaleString();
+    document.getElementById('date-reduction12').textContent = dateReduction12;
+
+    const blocksUntilReduction13 = 3110401 - currentBlockHeight;
+    const untilReduction13 = currentBlockTime * blocksUntilReduction13 * 1000;
+    document.getElementById('until-reduction13').textContent = formatDuration(untilReduction13);
+    const timestampReduction13 = currentTimestamp + untilReduction13;
+    document.getElementById('timestamp-reduction13').textContent = timestampReduction13;
+    const dateReduction13 = new Date(timestampReduction13).toLocaleString();
+    document.getElementById('date-reduction13').textContent = dateReduction13;
+}
+
+function toggleSection(sectionId, loadFn, loadedFlagName) {
+    const section = document.getElementById(sectionId);
+    if (section.style.display === 'none') {
+        section.style.display = 'block';
+        if (!window[loadedFlagName]) {
+            loadFn();
+            window[loadedFlagName] = true;
+        }
+    } else {
+        section.style.display = 'none';
+    }
 }
 
 function formatDuration(duration) {

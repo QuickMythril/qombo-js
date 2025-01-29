@@ -171,12 +171,18 @@ section {
     margin-bottom: 20px;
 }
 
-section h2 {
+section h2, h3.expandable-header {
     background-color: #070d19;
     color: #c9d2d9;
     padding: 5px;
     border-radius: 15px;
     text-align: center;
+}
+
+h3.expandable-header:hover {
+    color: #070d19;
+    background-color: #1e90ff;
+    transition: background-color 0.3s ease;
 }
 
 section caption {
@@ -190,7 +196,7 @@ p {
     margin: 10px 0;
 }
 
-table {
+table, #trigger-info, #rewards-info {
     width: 100%;
 }
 

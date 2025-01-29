@@ -291,8 +291,8 @@
                 <tr><th>Blocks/Day</th><td id="extras-blocksperday"></td><th>Seconds/Block</th><td id="extras-blocktime"></td></tr>
                 <tr><th id="height-reward">Next Reward = </th><td id="timestamp-reward"></td><td id="date-reward"></td><td id="until-reward"></td></tr>
             </table>
-            <h3>Feature Triggers<button id="extra-button">Refresh</button></h3>
-            <table>
+            <h3 class="expandable-header" onclick="toggleSection('trigger-info', calculateFeatureTriggers, 'triggersLoaded')">Feature Triggers &#9660;</h3>
+            <table id="trigger-info" style="display: none;">
                 <tr><th>genesisBlockTimestamp</th><td>1593450000000</td><td id="date-genesis"></td><td id="until-genesis"></td></tr>
                 <tr><th>nameFee 0.001 -> 5</th><td>1645372800000</td><td id="date-name-fee1"></td><td id="until-name-fee1"></td></tr>
                 <tr><th>nameFee 5 -> 1.25</th><td>1651420800000</td><td id="date-name-fee2"></td><td id="until-name-fee2"></td></tr>
@@ -322,8 +322,8 @@
                 <tr><th>ignoreLevelForRewardShareHeight = 2012800</th><td id="timestamp-ignore"></td><td id="date-ignore"></td><td id="until-ignore"></td></tr>
                 <tr><th>adminQueryFixHeight = 2012800</th><td id="timestamp-queryfix"></td><td id="date-queryfix"></td><td id="until-queryfix"></td></tr>
             </table>
-            <h3>Block Rewards</h3>
-            <table>
+            <h3 class="expandable-header" onclick="toggleSection('reward-info', calculateBlockRewards, 'rewardsLoaded')">Block Rewards &#9660;</h3>
+            <table id="reward-info" style="display: none;">
                 <tr><th>5.00 QORT/block = 1</th><td id="timestamp-reduction1"></td><td id="date-reduction1"></td><td id="until-reduction1"></td></tr>
                 <tr><th>4.75 QORT/block = 259201</th><td id="timestamp-reduction2"></td><td id="date-reduction2"></td><td id="until-reduction2"></td></tr>
                 <tr><th>4.50 QORT/block = 518401</th><td id="timestamp-reduction3"></td><td id="date-reduction3"></td><td id="until-reduction3"></td></tr>

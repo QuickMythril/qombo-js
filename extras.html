@@ -28,8 +28,8 @@
             </table>
         </section>
         
-        <section id="trigger-info">
-            <h3>Feature Triggers</h3>
+        <h3 class="expandable-header" onclick="toggleSection('trigger-info', calculateFeatureTriggers, 'triggersLoaded')">Feature Triggers &#9660;</h3>
+        <section id="trigger-info" style="display: none;">
             <table>
                 <tr><th>genesisBlockTimestamp</th><td>1593450000000</td><td id="date-genesis"></td><td id="until-genesis"></td></tr>
                 <tr><th>nameFee 0.001 -> 5</th><td>1645372800000</td><td id="date-name-fee1"></td><td id="until-name-fee1"></td></tr>
@@ -62,8 +62,8 @@
             </table>
         </section>
         
-        <section id="reward-info">
-            <h3>Block Rewards</h3>
+        <h3 class="expandable-header" onclick="toggleSection('reward-info', calculateBlockRewards, 'rewardsLoaded')">Block Rewards &#9660;</h3>
+        <section id="reward-info" style="display: none;">
             <table>
                 <tr><th>5.00 QORT/block = 1</th><td id="timestamp-reduction1"></td><td id="date-reduction1"></td><td id="until-reduction1"></td></tr>
                 <tr><th>4.75 QORT/block = 259201</th><td id="timestamp-reduction2"></td><td id="date-reduction2"></td><td id="until-reduction2"></td></tr>

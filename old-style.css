@@ -73,12 +73,18 @@ section h2 {
     border-radius: 20px;
 }
 
-section h3 {
+section h3, h3.expandable-header {
     background-color: #070d19;
     color: #c9d2d9;
     padding: 5px;
     margin-top: 0;
     border-radius: 15px;
+}
+
+h3.expandable-header:hover {
+    color: #070d19;
+    background-color: #1e90ff;
+    transition: background-color 0.3s ease;
 }
 
 p, table {
