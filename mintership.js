@@ -200,7 +200,7 @@ async function renderTable() {
                 pollString = 'Error loading poll';
             }
             tableHtml += `
-                <tr>
+                <tr ${result.status === 'Minter' ? 'style="background-color: #ADD8E6; color: #070d19"' : ''}>
                     <td>${cardName}</td>
                     <td>${result.status}</td>
                     <td>${pollString}</td>
