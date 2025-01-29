@@ -6,15 +6,16 @@ const sortDirectionsDefault = {
     'Last Updated': -1
 };
 let sortDirection = sortDirectionsDefault[currentSortColumn];
+let minterGroupMembers = [];
 
-document.addEventListener('DOMContentLoaded', function() {
-    fetchBlockHeight()
-        .then(() => {
-            searchByName('');
-        })
-        .catch(error => {
-            console.error('An error occurred in the fetch chain:', error);
-        });
+document.addEventListener('DOMContentLoaded', async function() {
+    try {
+        await fetchBlockHeight();
+        await checkMinterGroup();
+        searchByName('');
+    } catch (error) {
+        console.error('An error occurred in the fetch chain:', error);
+    }
 });
 
 document.getElementById('search-button').addEventListener('click', handleSearch);
@@ -74,6 +75,54 @@ function fetchAddressDetails(address) {
     }).catch(error => console.error('Error fetching address details:', error));
 }
 
+function checkMinterGroup() {
+    return fetch('/groups/members/694?limit=0')
+        .then(response => response.json())
+        .then(data => {
+            minterGroupMembers = data.members;
+            renderMintershipAdmins();
+        })
+        .catch(error => {
+            console.error('Error fetching minter group:', error);
+        });
+}
+
+async function renderMintershipAdmins() {
+    // Filter out the admins
+    // (If `isAdmin` is missing for non-admins, this will skip them automatically)
+    const admins = minterGroupMembers.filter(m => m.isAdmin);
+
+    // Build just the rows (no outer <table> tags)
+    let rowsHtml = "";
+    for (const admin of admins) {
+        let address = admin.member;
+        let name = "";
+        if (address === "QdSnUy6sUiEnaN87dWmE92g1uQjrvPgrWG") {
+            name = "[Null Account]";
+        } else {
+            try {
+                const res = await fetch("/names/address/" + address);
+                const data = await res.json();
+                if (data.length > 0) {
+                    name = data[0].name;
+                } else {
+                    name = address;
+                }
+            } catch (error) {
+                console.error("Error fetching admin name:", error);
+                name = address;
+            }
+        }
+        rowsHtml += `<tr>
+            <td>${name}</td>
+            <td>${address}</td>
+        </tr>`;
+    }
+    // Insert those rows into the existing <tbody>
+    const tbody = document.querySelector("#mintership-admins-table tbody");
+    tbody.innerHTML = rowsHtml;
+}
+
 async function searchByName(name) {
     document.getElementById('mintership-results').innerHTML = '<p>Searching...</p>';
     try {
@@ -81,6 +130,19 @@ async function searchByName(name) {
         const results = await response.json();
         if (results.length > 0) {
             mintershipResults = results;
+            // For each result, fetch the name's details to get the owner,
+            // then compare with the minterGroupMembers array to decide the status.
+            for (const r of mintershipResults) {
+                try {
+                    const ownerResponse = await fetch(`/names/${r.name}`);
+                    const ownerData = await ownerResponse.json();
+                    const isInGroup = minterGroupMembers.some(m => m.member === ownerData.owner);
+                    r.status = isInGroup ? 'Minter' : 'Pending';
+                } catch (err) {
+                    console.error('Error fetching owner data:', err);
+                    r.status = 'Pending';
+                }
+            }
             renderTable();
         } else {
             document.getElementById('mintership-results').innerHTML = '<p>No results found.</p>';
@@ -97,6 +159,7 @@ function renderTable() {
         tableHtml += `
             <tr>
                 <th class="sortable" data-column="Name">Name</th>
+                <th>Status</th>
                 <th class="sortable" data-column="Created">Created</th>
                 <th class="sortable" data-column="Last Updated">Last Updated</th>
             </tr>
@@ -112,6 +175,7 @@ function renderTable() {
             tableHtml += `
                 <tr>
                     <td>${cardName}</td>
+                    <td>${result.status}</td>
                     <td>${createdString}</td>
                     <td>${updatedString}</td>
                 </tr>
@@ -153,3 +217,4 @@ function compareFunction(a, b) {
             return 0;
     }
 }
+
