@@ -133,6 +133,12 @@ button:active {
     z-index: 2;
 }
 
+#version-switch {
+    position: absolute;
+    top: 65px;
+    right: 10px;
+}
+
 #node-button {
     padding: 0 5px;
     font-size: 12px;

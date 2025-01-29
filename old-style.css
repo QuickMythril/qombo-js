@@ -152,6 +152,13 @@ img {
     text-align: center;
 }
 
+#version-switch {
+    width: 30px;
+    position: absolute;
+    top: 15px;
+    right: 10px;
+}
+
 #pagination-controls {
     text-align: center;
     margin-top: 10px;

@@ -29,6 +29,13 @@ function initApplication() {
     document.getElementById('menu-home').classList.add('active-menu');
     document.getElementById('menu-button').addEventListener('mouseover', showOverlay);
     document.getElementById('main-content').addEventListener('mouseover', hideOverlay);
+    document.getElementById('version-switch').addEventListener('click', function() {
+        const currentSection = document.querySelector('.content-section:not([style*="display: none"])');
+        if (currentSection) {
+            const target = currentSection.id.replace('-page', '') + '.html';
+            window.location.href = target;
+        }
+    });
     if ((typeof qortalRequest === 'undefined') || (_qdnContext === 'gateway')) {
         document.getElementById('login-button').innerHTML =
         `<a href='https://qortal.dev' target='blank'>Download</a>`;
