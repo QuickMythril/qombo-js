@@ -7,6 +7,7 @@ const sortDirectionsDefault = {
 };
 let sortDirection = sortDirectionsDefault[currentSortColumn];
 let minterGroupMembers = [];
+let minterAdminsLoaded = false;
 
 document.addEventListener('DOMContentLoaded', async function() {
     try {
@@ -80,7 +81,6 @@ function checkMinterGroup() {
         .then(response => response.json())
         .then(data => {
             minterGroupMembers = data.members;
-            renderMintershipAdmins();
         })
         .catch(error => {
             console.error('Error fetching minter group:', error);
@@ -215,6 +215,19 @@ function compareFunction(a, b) {
             return (aValue - bValue) * sortDirection;
         default:
             return 0;
+    }
+}
+
+function toggleSection(sectionId, loadFn, loadedFlagName) {
+    const section = document.getElementById(sectionId);
+    if (section.style.display === 'none') {
+        section.style.display = 'block';
+        if (!window[loadedFlagName]) {
+            loadFn();
+            window[loadedFlagName] = true;
+        }
+    } else {
+        section.style.display = 'none';
     }
 }
 
